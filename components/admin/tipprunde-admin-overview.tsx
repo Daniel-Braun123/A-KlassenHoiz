@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 
+import { EinladungPanel } from "@/components/admin/einladung-panel";
+
 type TipprundeAdminOverviewProps = {
   tipprundeId: string;
 };
@@ -75,6 +77,7 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
           <h2>Grunddaten</h2>
           <p>Tipprunden-Name, Status und Besitzerrechte verwalten.</p>
         </section>
+        <EinladungPanel tipprundeId={tipprundeId} />
         <section>
           <h2>Co-Admins</h2>
           <p>Mitglieder zu Co-Admins ernennen oder Co-Admin-Rechte entfernen.</p>

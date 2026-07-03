@@ -90,17 +90,17 @@
 
 ### Tests for User Story 2
 
-- [ ] T037 [P] [US2] Create invitation rotation and expiry tests in `tests/integration/us2.einladungen.test.ts`
-- [ ] T038 [P] [US2] Create e2e test for joining by Einladungslink and Tipprunden-Nickname in `tests/e2e/us2-join-tipprunde.spec.ts`
+- [x] T037 [P] [US2] Create invitation rotation and expiry tests in `tests/integration/us2.einladungen.test.ts`
+- [x] T038 [P] [US2] Create e2e test for joining by Einladungslink and Tipprunden-Nickname in `tests/e2e/us2-join-tipprunde.spec.ts`
 
 ### Implementation for User Story 2
 
-- [ ] T039 [US2] Implement one-active-link invitation service with 7-day validity in `lib/domain/einladungen-service.ts`
-- [ ] T040 [US2] Implement create invitation operation in `app/api/tipprunden/[tipprundeId]/einladung/route.ts`
-- [ ] T041 [US2] Implement join invitation operation in `app/api/einladungen/[token]/join/route.ts`
-- [ ] T042 [US2] Implement join page with Tipprunden-Nickname form in `app/(tipprunden)/einladungen/[token]/page.tsx`
-- [ ] T043 [US2] Implement QR-Code display using a simple library when available in `components/admin/einladung-qr-code.tsx`
-- [ ] T044 [US2] Implement invitation link management UI in `components/admin/einladung-panel.tsx`
+- [x] T039 [US2] Implement one-active-link invitation service with 7-day validity in `lib/domain/einladungen-service.ts`
+- [x] T040 [US2] Implement create invitation operation in `app/api/tipprunden/[tipprundeId]/einladung/route.ts`
+- [x] T041 [US2] Implement join invitation operation in `app/api/einladungen/[token]/join/route.ts`
+- [x] T042 [US2] Implement join page with Tipprunden-Nickname form in `app/(tipprunden)/einladungen/[token]/page.tsx`
+- [x] T043 [US2] Implement QR-Code display using a simple library when available in `components/admin/einladung-qr-code.tsx`
+- [x] T044 [US2] Implement invitation link management UI in `components/admin/einladung-panel.tsx`
 
 **Checkpoint**: User Story 2 is independently functional and testable.
 

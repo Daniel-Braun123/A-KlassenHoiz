@@ -333,6 +333,18 @@ grant select, insert, update, delete on table public.ergebnisse to authenticated
 grant select, insert on table public.ergebnis_aenderungen to authenticated;
 grant select, insert, update, delete on table public.punktewertungen to authenticated;
 
+grant select, insert, update, delete on table public.profiles to service_role;
+grant select, insert, update, delete on table public.tipprunden to service_role;
+grant select, insert, update, delete on table public.mitgliedschaften to service_role;
+grant select, insert, update, delete on table public.einladungen to service_role;
+grant select, insert, update, delete on table public.teams to service_role;
+grant select, insert, update, delete on table public.spieltage to service_role;
+grant select, insert, update, delete on table public.spiele to service_role;
+grant select, insert, update, delete on table public.tipps to service_role;
+grant select, insert, update, delete on table public.ergebnisse to service_role;
+grant select, insert, update, delete on table public.ergebnis_aenderungen to service_role;
+grant select, insert, update, delete on table public.punktewertungen to service_role;
+
 grant select, insert, update, delete on all tables in schema public to service_role;
 grant usage, select on all sequences in schema public to authenticated, service_role;
 

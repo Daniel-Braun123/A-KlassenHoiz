@@ -85,6 +85,18 @@ button:disabled {
   background: #ffffff;
 }
 
+.link-box,
+.qr-panel {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.qr-panel img {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
 .eyebrow {
   color: #475569;
   font-size: 0.875rem;
