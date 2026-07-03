@@ -233,12 +233,12 @@
 
 **Purpose**: Validate the complete MVP against quickstart scenarios and harden security, wording and mobile quality.
 
-- [ ] T088 [P] Run Supabase security review for explicit grants, RLS policies and service-role isolation in `supabase/tests/security-review.md`
-- [ ] T089 [P] Add copy review to avoid Wette/Einsatz/Quote/Auszahlung terminology in `tests/unit/copy.terminology.test.ts`
-- [ ] T090 [P] Add accessibility checks for mobile forms and navigation in `tests/e2e/accessibility-mobile.spec.ts`
-- [ ] T091 [P] Add README setup notes for environment/configuration without Supabase project refs in `README.md`
-- [ ] T092 Run all quickstart scenarios and record outcomes in `specs/001-local-football-tips/quickstart-results.md`
-- [ ] T093 Run final lint, typecheck, unit, integration, e2e and build commands from `package.json`
+- [x] T088 [P] Run Supabase security review for explicit grants, RLS policies and service-role isolation in `supabase/tests/security-review.md`
+- [x] T089 [P] Add copy review to avoid Wette/Einsatz/Quote/Auszahlung terminology in `tests/unit/copy.terminology.test.ts`
+- [x] T090 [P] Add accessibility checks for mobile forms and navigation in `tests/e2e/accessibility-mobile.spec.ts`
+- [x] T091 [P] Add README setup notes for environment/configuration without Supabase project refs in `README.md`
+- [x] T092 Run all quickstart scenarios and record outcomes in `specs/001-local-football-tips/quickstart-results.md`
+- [x] T093 Run final lint, typecheck, unit, integration, e2e and build commands from `package.json`
 
 ---
 
