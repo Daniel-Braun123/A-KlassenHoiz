@@ -166,17 +166,17 @@
 
 ### Tests for User Story 5
 
-- [ ] T065 [P] [US5] Create Ergebnis history integration tests in `tests/integration/us5.ergebnisse-history.test.ts`
-- [ ] T066 [P] [US5] Create idempotent Punktewertung integration tests in `tests/integration/us5.punktewertung.test.ts`
-- [ ] T067 [P] [US5] Create e2e admin Ergebnis entry test in `tests/e2e/us5-ergebnisse.spec.ts`
+- [x] T065 [P] [US5] Create Ergebnis history integration tests in `tests/integration/us5.ergebnisse-history.test.ts`
+- [x] T066 [P] [US5] Create idempotent Punktewertung integration tests in `tests/integration/us5.punktewertung.test.ts`
+- [x] T067 [P] [US5] Create e2e admin Ergebnis entry test in `tests/e2e/us5-ergebnisse.spec.ts`
 
 ### Implementation for User Story 5
 
-- [ ] T068 [US5] Implement Ergebnis repository and change history in `lib/domain/ergebnisse-repository.ts`
-- [ ] T069 [US5] Implement idempotent Punktewertung service in `lib/domain/punktewertung-service.ts`
-- [ ] T070 [US5] Implement Ergebnis entry operation in `app/api/tipprunden/[tipprundeId]/spiele/[spielId]/ergebnis/route.ts`
-- [ ] T071 [US5] Implement Ergebnis admin UI in `components/admin/ergebnis-form.tsx`
-- [ ] T072 [US5] Implement changed Ergebnis marker in `components/tipps/ergebnis-status.tsx`
+- [x] T068 [US5] Implement Ergebnis repository and change history in `lib/domain/ergebnisse-repository.ts`
+- [x] T069 [US5] Implement idempotent Punktewertung service in `lib/domain/punktewertung-service.ts`
+- [x] T070 [US5] Implement Ergebnis entry operation in `app/api/tipprunden/[tipprundeId]/spiele/[spielId]/ergebnis/route.ts`
+- [x] T071 [US5] Implement Ergebnis admin UI in `components/admin/ergebnis-form.tsx`
+- [x] T072 [US5] Implement changed Ergebnis marker in `components/tipps/ergebnis-status.tsx`
 
 **Checkpoint**: User Story 5 is independently functional and testable.
 
@@ -190,16 +190,16 @@
 
 ### Tests for User Story 6
 
-- [ ] T073 [P] [US6] Create integration tests for derived Gesamt- and Spieltagsranglisten in `tests/integration/us6.ranglisten.test.ts`
-- [ ] T074 [P] [US6] Create e2e test for viewing Ranglisten and past Ergebnisse in `tests/e2e/us6-ranglisten.spec.ts`
+- [x] T073 [P] [US6] Create integration tests for derived Gesamt- and Spieltagsranglisten in `tests/integration/us6.ranglisten.test.ts`
+- [x] T074 [P] [US6] Create e2e test for viewing Ranglisten and past Ergebnisse in `tests/e2e/us6-ranglisten.spec.ts`
 
 ### Implementation for User Story 6
 
-- [ ] T075 [US6] Implement derived Rangliste query service in `lib/domain/ranglisten-service.ts`
-- [ ] T076 [US6] Implement Rangliste API operations in `app/api/tipprunden/[tipprundeId]/rangliste/route.ts` and `app/api/tipprunden/[tipprundeId]/spieltage/[spieltagId]/rangliste/route.ts`
-- [ ] T077 [US6] Implement Rangliste components in `components/ranglisten/rangliste-table.tsx`
-- [ ] T078 [US6] Implement Gesamt- and Spieltagsrangliste pages in `app/(tipprunden)/[tipprundeId]/rangliste/page.tsx` and `app/(tipprunden)/[tipprundeId]/spieltage/[spieltagId]/rangliste/page.tsx`
-- [ ] T079 [US6] Implement past Spieltage and Ergebnisse view in `app/(tipprunden)/[tipprundeId]/ergebnisse/page.tsx`
+- [x] T075 [US6] Implement derived Rangliste query service in `lib/domain/ranglisten-service.ts`
+- [x] T076 [US6] Implement Rangliste API operations in `app/api/tipprunden/[tipprundeId]/rangliste/route.ts` and `app/api/tipprunden/[tipprundeId]/spieltage/[spieltagId]/rangliste/route.ts`
+- [x] T077 [US6] Implement Rangliste components in `components/ranglisten/rangliste-table.tsx`
+- [x] T078 [US6] Implement Gesamt- and Spieltagsrangliste pages in `app/(tipprunden)/[tipprundeId]/rangliste/page.tsx` and `app/(tipprunden)/[tipprundeId]/spieltage/[spieltagId]/rangliste/page.tsx`
+- [x] T079 [US6] Implement past Spieltage and Ergebnisse view in `app/(tipprunden)/[tipprundeId]/ergebnisse/page.tsx`
 
 **Checkpoint**: User Story 6 is independently functional and testable.
 

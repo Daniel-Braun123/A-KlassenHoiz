@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
+import { ErgebnisForm } from "@/components/admin/ergebnis-form";
 import { TeamLogo } from "@/components/admin/team-logo";
 import { SPIEL_STATUS, SPIELTAG_ABSCHNITT } from "@/lib/domain/constants";
 
@@ -382,6 +383,8 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
             </button>
           </form>
         </section>
+
+        <ErgebnisForm tipprundeId={tipprundeId} />
       </div>
     </section>
   );

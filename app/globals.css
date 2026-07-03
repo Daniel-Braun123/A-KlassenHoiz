@@ -188,6 +188,95 @@ button:disabled {
   color: #7f1d1d;
 }
 
+.ergebnis-status {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #334155;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.ergebnis-status.changed {
+  background: #fef3c7;
+  color: #78350f;
+}
+
+.rangliste-section,
+.ergebnisse-page {
+  display: grid;
+  gap: 18px;
+}
+
+.rangliste-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #d8dee8;
+}
+
+.rangliste-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.rangliste-table th,
+.rangliste-table td {
+  border-bottom: 1px solid #e2e8f0;
+  padding: 12px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.rangliste-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-size: 0.85rem;
+}
+
+.ergebnisse-list,
+.ergebnisse-spiele {
+  display: grid;
+  gap: 14px;
+}
+
+.ergebnisse-spieltag {
+  display: grid;
+  gap: 10px;
+}
+
+.ergebnis-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #d8dee8;
+  padding: 12px;
+}
+
+.ergebnis-row div {
+  display: grid;
+  gap: 4px;
+}
+
+.ergebnis-row span {
+  color: #475569;
+}
+
+.ergebnis-score {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .ergebnis-row {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+
 .eyebrow {
   color: #475569;
   font-size: 0.875rem;
