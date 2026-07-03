@@ -18,18 +18,19 @@ test.describe("US7 PWA und mobile Navigation", () => {
       name: "A-KlassenHoiz",
       short_name: "KlassenHoiz",
       display: "standalone",
-      theme_color: "#14532d",
+      theme_color: "#0b2a3a",
     });
     expect(manifest.icons.some((icon) => icon.src.includes("icon"))).toBe(true);
 
     await page.goto("/demo-tipprunde/spieltage/demo-spieltag");
-    await expect(page.getByRole("link", { name: "Jetzt tippen" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Zur Home-Übersicht" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Home", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Tippen" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Rangliste" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Aktueller Spieltag" })).toBeVisible();
 
     await page.evaluate(() => window.dispatchEvent(new Event("offline")));
     await expect(
-      page.getByText("Keine Verbindung. Tipps koennen nur online gespeichert werden."),
+      page.getByText("Keine Verbindung. Tipps können nur online gespeichert werden."),
     ).toBeVisible();
   });
 });

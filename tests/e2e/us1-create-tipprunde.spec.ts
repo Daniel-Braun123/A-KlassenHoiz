@@ -17,7 +17,7 @@ test.describe("US1 Tipprunde creation and Admin dashboard", () => {
     await page.goto("/admin/tipprunden/demo-tipprunde");
     await expect(page.getByRole("heading", { name: "Tipprunde verwalten" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Archivieren" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Endgueltig loeschen" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Endgültig löschen" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Co-Admins" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Spielplan verwalten" })).toHaveAttribute(
       "href",

@@ -34,7 +34,7 @@ export function NoConnectionMessage() {
 
   return (
     <p className="offline-message" role="status">
-      Keine Verbindung. Tipps koennen nur online gespeichert werden.
+      Keine Verbindung. Tipps können nur online gespeichert werden.
     </p>
   );
 }

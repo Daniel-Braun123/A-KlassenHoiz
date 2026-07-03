@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarDays, ClipboardCheck, Swords, UsersRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { ErgebnisForm } from "@/components/admin/ergebnis-form";
@@ -32,11 +33,11 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
     setIsSubmitting(false);
 
     if (!response.ok) {
-      setMessage(payload?.error?.message ?? "Aenderung konnte nicht gespeichert werden.");
+      setMessage(payload?.error?.message ?? "Änderung konnte nicht gespeichert werden.");
       return;
     }
 
-    setMessage("Aenderung gespeichert.");
+    setMessage("Änderung gespeichert.");
   }
 
   async function handleCreateTeam(event: FormEvent<HTMLFormElement>) {
@@ -181,7 +182,10 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
       {message ? <p role="status">{message}</p> : null}
 
       <div className="admin-actions">
-        <section>
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <UsersRound aria-hidden="true" size={22} />
+          </div>
           <h2>Teams/Vereine</h2>
           <div className="logo-preview">
             <TeamLogo name="AK" logoUrl={null} />
@@ -219,16 +223,19 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
           </form>
           <form className="inline-form" onSubmit={handleDeleteTeam}>
             <label>
-              Team-ID loeschen
+              Team-ID löschen
               <input name="teamId" type="text" />
             </label>
             <button type="submit" disabled={isSubmitting}>
-              Team loeschen
+              Team löschen
             </button>
           </form>
         </section>
 
-        <section>
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <CalendarDays aria-hidden="true" size={22} />
+          </div>
           <h2>Spieltage</h2>
           <form className="stack" onSubmit={handleCreateSpieltag}>
             <label>
@@ -243,7 +250,7 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
                     {abschnitt === "hinrunde"
                       ? "Hinrunde"
                       : abschnitt === "rueckrunde"
-                        ? "Rueckrunde"
+                        ? "Rückrunde"
                         : abschnitt === "nachholspiele"
                           ? "Nachholspiele"
                           : "Frei"}
@@ -288,40 +295,43 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
           </form>
           <form className="inline-form" onSubmit={handleDeleteSpieltag}>
             <label>
-              Spieltag-ID loeschen
+              Spieltag-ID löschen
               <input name="spieltagId" type="text" />
             </label>
             <button type="submit" disabled={isSubmitting}>
-              Spieltag loeschen
+              Spieltag löschen
             </button>
           </form>
         </section>
 
-        <section>
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <Swords aria-hidden="true" size={22} />
+          </div>
           <h2>Spiele</h2>
           <form className="stack" onSubmit={handleCreateSpiel}>
             <label>
-              Spieltag-ID fuer Spiel
+              Spieltag-ID für Spiel
               <input name="spieltagId" type="text" required />
             </label>
             <label>
-              Heimteam-ID fuer Spiel
+              Heimteam-ID für Spiel
               <input name="heimteamId" type="text" required />
             </label>
             <label>
-              Auswaertsteam-ID fuer Spiel
+              Auswärtsteam-ID für Spiel
               <input name="auswaertsteamId" type="text" required />
             </label>
             <label>
-              Anstossdatum fuer Spiel
+              Anstoßdatum für Spiel
               <input name="anstossDatum" type="date" required />
             </label>
             <label>
-              Anstosszeit fuer Spiel
+              Anstoßzeit für Spiel
               <input name="anstossUhrzeit" type="time" required />
             </label>
             <label>
-              Status fuer Spiel
+              Status für Spiel
               <select name="status" defaultValue="geplant">
                 {SPIEL_STATUS.map((status) => (
                   <option key={status} value={status}>
@@ -348,15 +358,15 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
               <input name="heimteamId" type="text" />
             </label>
             <label>
-              Auswaertsteam-ID bearbeiten
+              Auswärtsteam-ID bearbeiten
               <input name="auswaertsteamId" type="text" />
             </label>
             <label>
-              Anstossdatum bearbeiten
+              Anstoßdatum bearbeiten
               <input name="anstossDatum" type="date" />
             </label>
             <label>
-              Anstosszeit bearbeiten
+              Anstoßzeit bearbeiten
               <input name="anstossUhrzeit" type="time" />
             </label>
             <label>
@@ -375,16 +385,21 @@ export function SpielplanAdmin({ tipprundeId }: SpielplanAdminProps) {
           </form>
           <form className="inline-form" onSubmit={handleDeleteSpiel}>
             <label>
-              Spiel-ID loeschen
+              Spiel-ID löschen
               <input name="spielId" type="text" />
             </label>
             <button type="submit" disabled={isSubmitting}>
-              Spiel loeschen
+              Spiel löschen
             </button>
           </form>
         </section>
 
-        <ErgebnisForm tipprundeId={tipprundeId} />
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <ClipboardCheck aria-hidden="true" size={22} />
+          </div>
+          <ErgebnisForm tipprundeId={tipprundeId} />
+        </section>
       </div>
     </section>
   );

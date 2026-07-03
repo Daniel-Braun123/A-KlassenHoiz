@@ -31,12 +31,12 @@ export function RegisterForm() {
     setIsSubmitting(false);
 
     if (error) {
-      setMessage("Registrierung fehlgeschlagen. Bitte pruefe deine Angaben.");
+      setMessage("Registrierung fehlgeschlagen. Bitte prüfe deine Angaben.");
       return;
     }
 
     if (!data.session) {
-      setMessage("Registrierung erstellt. Bitte pruefe deine E-Mail zur Bestaetigung.");
+      setMessage("Registrierung erstellt. Bitte prüfe deine E-Mail zur Bestätigung.");
       return;
     }
 

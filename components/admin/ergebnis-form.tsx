@@ -48,12 +48,12 @@ export function ErgebnisForm({ tipprundeId }: ErgebnisFormProps) {
   }
 
   return (
-    <section>
+    <div>
       <h2>Ergebnisse</h2>
       <ErgebnisStatus isChanged />
       <form className="stack compact-form" onSubmit={handleSubmit}>
         <label>
-          Spiel-ID fuer Ergebnis
+          Spiel-ID für Ergebnis
           <input name="spielId" type="text" required />
         </label>
         <label>
@@ -61,11 +61,11 @@ export function ErgebnisForm({ tipprundeId }: ErgebnisFormProps) {
           <input name="heimtore" type="number" min={0} required />
         </label>
         <label>
-          Auswaertstore Ergebnis
+          Auswärtstore Ergebnis
           <input name="auswaertstore" type="number" min={0} required />
         </label>
         <label>
-          Aenderungsgrund
+          Änderungsgrund
           <input name="reason" type="text" />
         </label>
         <button type="submit" disabled={isSubmitting}>
@@ -73,6 +73,6 @@ export function ErgebnisForm({ tipprundeId }: ErgebnisFormProps) {
         </button>
       </form>
       {message ? <p role="status">{message}</p> : null}
-    </section>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight, Plus, ShieldCheck, Trophy, UserRound } from "lucide-react";
 
 import { ActiveTipprundeLink } from "@/components/tipps/tipprunden-switcher";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
@@ -8,8 +9,19 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type HomeProfile = {
   anzeigename: string;
-  email: string;
 };
+
+function roleLabel(rolle: ActiveTipprundeOption["rolle"]): string {
+  if (rolle === "admin") {
+    return "Admin";
+  }
+
+  if (rolle === "co_admin") {
+    return "Co-Admin";
+  }
+
+  return "Mitglied";
+}
 
 function demoTipprunden(kind?: string): ActiveTipprundeOption[] {
   if (kind === "0") {
@@ -101,15 +113,17 @@ function HomeOverview({
         <div>
           <p className="eyebrow">A-KlassenHoiz</p>
           <h1>Meine Tipprunden</h1>
-          {profile ? <p>Angemeldet als {profile.anzeigename}</p> : null}
+          {profile ? <p>Servus {profile.anzeigename}, hier ist deine Übersicht.</p> : null}
         </div>
         <nav className="home-actions" aria-label="Home Aktionen">
           {showProfileLink ? (
             <Link className="button-link secondary" href="/profil">
+              <UserRound aria-hidden="true" size={18} />
               Profil
             </Link>
           ) : null}
           <Link className="button-link" href="/admin/tipprunden/neu">
+            <Plus aria-hidden="true" size={18} />
             Tipprunde erstellen
           </Link>
         </nav>
@@ -117,9 +131,13 @@ function HomeOverview({
 
       {tipprunden.length === 0 ? (
         <section className="empty-state">
-          <h2>Keine Tipprunden</h2>
+          <div className="empty-state-icon">
+            <Trophy aria-hidden="true" size={28} />
+          </div>
+          <h2>Noch keine Tipprunde</h2>
           <p>Du bist noch in keiner Tipprunde.</p>
           <Link className="button-link secondary" href="/login">
+            <ArrowRight aria-hidden="true" size={18} />
             Per Einladungslink beitreten
           </Link>
         </section>
@@ -131,11 +149,20 @@ function HomeOverview({
             return (
               <article className="tipprunde-card" key={tipprunde.id}>
                 <div>
+                  <span className="card-icon">
+                    <Trophy aria-hidden="true" size={22} />
+                  </span>
                   <h2>{tipprunde.name}</h2>
-                  {tipprunde.rolle ? <p>Rolle: {tipprunde.rolle}</p> : null}
+                  <p>
+                    <ShieldCheck aria-hidden="true" size={16} />
+                    {roleLabel(tipprunde.rolle)}
+                  </p>
                 </div>
                 <div className="tipprunde-card-actions">
-                  <ActiveTipprundeLink tipprunde={tipprunde}>Oeffnen</ActiveTipprundeLink>
+                  <ActiveTipprundeLink tipprunde={tipprunde}>
+                    Öffnen
+                    <ArrowRight aria-hidden="true" size={18} />
+                  </ActiveTipprundeLink>
                   {canManage ? (
                     <Link
                       className="button-link secondary"
@@ -157,11 +184,15 @@ function HomeOverview({
 function LoggedOutHome() {
   return (
     <main className="tipprunden-page">
-      <h1>A-KlassenHoiz</h1>
-      <p>Private Tippspiel-App fuer lokale Fussballspiele.</p>
-      <Link className="button-link" href="/login">
-        Anmelden
-      </Link>
+      <section className="logged-out-panel">
+        <p className="eyebrow">A-KlassenHoiz</p>
+        <h1>Lokale Fußballtipps, sauber organisiert.</h1>
+        <p>Private Tippspiel-App für lokale Fußballspiele.</p>
+        <Link className="button-link" href="/login">
+          <ArrowRight aria-hidden="true" size={18} />
+          Anmelden
+        </Link>
+      </section>
     </main>
   );
 }
@@ -177,7 +208,7 @@ export default async function HomePage({
     return (
       <HomeOverview
         tipprunden={demoTipprunden(params.demoTipprunden)}
-        profile={{ anzeigename: "Demo Nutzer", email: "demo@example.invalid" }}
+        profile={{ anzeigename: "Demo Nutzer" }}
         showProfileLink={false}
       />
     );
@@ -198,7 +229,7 @@ export default async function HomePage({
   return (
     <HomeOverview
       tipprunden={tipprunden}
-      profile={{ anzeigename: profile.anzeigename, email: profile.email }}
+      profile={{ anzeigename: profile.anzeigename }}
       showProfileLink
     />
   );

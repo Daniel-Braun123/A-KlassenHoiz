@@ -13,7 +13,7 @@ test.describe("US4 Mobile Spieltag tippen", () => {
 
     const openCard = page.getByTestId("tipp-card-spiel-offen");
     await expect(openCard.getByLabel("Heimtore")).toBeVisible();
-    await expect(openCard.getByLabel("Auswaertstore")).toBeVisible();
+    await expect(openCard.getByLabel("Auswärtstore")).toBeVisible();
     await expect(openCard.getByRole("button", { name: "Tipp speichern" })).toBeVisible();
   });
 });

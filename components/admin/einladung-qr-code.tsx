@@ -42,7 +42,7 @@ export function EinladungQrCode({ einladungslink }: EinladungQrCodeProps) {
       {einladungslink && dataUrl ? (
         <Image
           src={dataUrl}
-          alt="QR-Code fuer den Einladungslink"
+          alt="QR-Code für den Einladungslink"
           width={180}
           height={180}
           unoptimized

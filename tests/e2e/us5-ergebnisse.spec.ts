@@ -5,11 +5,11 @@ test.describe("US5 Ergebnisverwaltung", () => {
     await page.goto("/admin/tipprunden/demo-tipprunde/spielplan");
 
     await expect(page.getByRole("heading", { name: "Ergebnisse" })).toBeVisible();
-    await expect(page.getByLabel("Spiel-ID fuer Ergebnis")).toBeVisible();
+    await expect(page.getByLabel("Spiel-ID für Ergebnis")).toBeVisible();
     await expect(page.getByLabel("Heimtore Ergebnis")).toBeVisible();
-    await expect(page.getByLabel("Auswaertstore Ergebnis")).toBeVisible();
-    await expect(page.getByLabel("Aenderungsgrund")).toBeVisible();
+    await expect(page.getByLabel("Auswärtstore Ergebnis")).toBeVisible();
+    await expect(page.getByLabel("Änderungsgrund")).toBeVisible();
     await expect(page.getByRole("button", { name: "Ergebnis speichern" })).toBeVisible();
-    await expect(page.getByText("Geaendertes Ergebnis")).toBeVisible();
+    await expect(page.getByText("Geändertes Ergebnis")).toBeVisible();
   });
 });

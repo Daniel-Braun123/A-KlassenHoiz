@@ -3,5 +3,5 @@ export function ErgebnisStatus({ isChanged }: { isChanged: boolean }) {
     return <span className="ergebnis-status">Ergebnis</span>;
   }
 
-  return <span className="ergebnis-status changed">Geaendertes Ergebnis</span>;
+  return <span className="ergebnis-status changed">Geändertes Ergebnis</span>;
 }

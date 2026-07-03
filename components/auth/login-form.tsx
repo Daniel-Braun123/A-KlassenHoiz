@@ -24,7 +24,7 @@ export function LoginForm() {
     setIsSubmitting(false);
 
     if (error) {
-      setMessage("Anmeldung fehlgeschlagen. Bitte pruefe E-Mail und Passwort.");
+      setMessage("Anmeldung fehlgeschlagen. Bitte prüfe E-Mail und Passwort.");
       return;
     }
 

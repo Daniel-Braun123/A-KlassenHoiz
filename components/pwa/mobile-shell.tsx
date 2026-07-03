@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BarChart3, CalendarDays, Home, Settings, Trophy } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { NoConnectionMessage } from "@/components/pwa/no-connection-message";
@@ -26,6 +27,9 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
     <div className="mobile-shell">
       <header className="mobile-shell-header">
         <Link className="app-brand" href="/">
+          <span className="app-brand-mark">
+            <Trophy aria-hidden="true" size={18} />
+          </span>
           A-KlassenHoiz
         </Link>
         <TipprundenSwitcher activeTipprundeId={activeTipprunde.id} tipprunden={tipprunden} />
@@ -33,11 +37,23 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
       <NoConnectionMessage />
       <div className="mobile-shell-content">{children}</div>
       <nav className="mobile-nav" aria-label="Mobile Navigation">
-        <Link href={spieltagPath}>Jetzt tippen</Link>
-        <Link href={`/${activeTipprunde.id}/rangliste`}>Rangliste</Link>
-        <Link href={spieltagPath}>Aktueller Spieltag</Link>
+        <Link href="/">
+          <Home aria-hidden="true" size={19} />
+          Home
+        </Link>
+        <Link href={spieltagPath}>
+          <CalendarDays aria-hidden="true" size={19} />
+          Tippen
+        </Link>
+        <Link href={`/${activeTipprunde.id}/rangliste`}>
+          <BarChart3 aria-hidden="true" size={19} />
+          Rangliste
+        </Link>
         {canManageTipprunde ? (
-          <Link href={`/admin/tipprunden/${activeTipprunde.id}`}>Verwalten</Link>
+          <Link href={`/admin/tipprunden/${activeTipprunde.id}`}>
+            <Settings aria-hidden="true" size={19} />
+            Verwalten
+          </Link>
         ) : null}
       </nav>
     </div>

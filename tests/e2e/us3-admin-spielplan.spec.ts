@@ -18,10 +18,10 @@ test.describe("US3 Admin Spielplanpflege", () => {
     await expect(page.getByLabel("Sortierung", { exact: true })).toBeVisible();
 
     await expect(page.getByRole("heading", { name: "Spiele" })).toBeVisible();
-    await expect(page.getByLabel("Heimteam-ID fuer Spiel")).toBeVisible();
-    await expect(page.getByLabel("Auswaertsteam-ID fuer Spiel")).toBeVisible();
-    await expect(page.getByLabel("Anstossdatum fuer Spiel")).toBeVisible();
-    await expect(page.getByLabel("Anstosszeit fuer Spiel")).toBeVisible();
+    await expect(page.getByLabel("Heimteam-ID für Spiel")).toBeVisible();
+    await expect(page.getByLabel("Auswärtsteam-ID für Spiel")).toBeVisible();
+    await expect(page.getByLabel("Anstoßdatum für Spiel")).toBeVisible();
+    await expect(page.getByLabel("Anstoßzeit für Spiel")).toBeVisible();
     await expect(page.getByRole("combobox", { name: "Status bearbeiten" })).toContainText(
       "verschoben",
     );

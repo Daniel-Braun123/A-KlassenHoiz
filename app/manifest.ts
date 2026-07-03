@@ -4,14 +4,14 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "A-KlassenHoiz",
     short_name: "KlassenHoiz",
-    description: "Private Tippspiel-App fuer lokale Fussballspiele.",
+    description: "Private Tippspiel-App für lokale Fußballspiele.",
     id: "/",
     start_url: "/",
     scope: "/",
     display: "standalone",
     orientation: "portrait",
-    background_color: "#f8fafc",
-    theme_color: "#14532d",
+    background_color: "#f4f8f6",
+    theme_color: "#0b2a3a",
     icons: [
       {
         src: "/icon.svg",

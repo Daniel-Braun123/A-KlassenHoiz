@@ -22,6 +22,6 @@ test.describe("US6 Ranglisten und Ergebnisse", () => {
     await expect(page.getByText("1. Spieltag")).toBeVisible();
     await expect(page.getByText("FC Hoiz")).toBeVisible();
     await expect(page.getByText("2:1")).toBeVisible();
-    await expect(page.getByText("Geaendertes Ergebnis")).toBeVisible();
+    await expect(page.getByText("Geändertes Ergebnis")).toBeVisible();
   });
 });

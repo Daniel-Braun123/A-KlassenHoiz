@@ -14,7 +14,7 @@ export default async function EinladungJoinPage({
       <section className="admin-panel" aria-labelledby="join-heading">
         <p className="eyebrow">Einladung</p>
         <h1 id="join-heading">Tipprunde beitreten</h1>
-        <p>Waehle deinen Anzeigenamen fuer diese Tipprunde.</p>
+        <p>Wähle deinen Anzeigenamen für diese Tipprunde.</p>
         <EinladungJoinForm token={token} />
         <p>
           Noch nicht angemeldet? <Link href="/login">Anmelden</Link> oder{" "}

@@ -1,5 +1,6 @@
 "use client";
 
+import { Link2 } from "lucide-react";
 import { useState } from "react";
 
 import { EinladungQrCode } from "@/components/admin/einladung-qr-code";
@@ -49,11 +50,14 @@ export function EinladungPanel({ tipprundeId }: EinladungPanelProps) {
 
     setEinladungslink(payload.einladungslink);
     setExpiresAt(payload.einladung.expiresAt);
-    setMessage("Neuer Einladungslink ist aktiv. Der alte Link ist ungueltig.");
+    setMessage("Neuer Einladungslink ist aktiv. Der alte Link ist ungültig.");
   }
 
   return (
-    <section>
+    <section className="admin-action-card">
+      <div className="admin-card-icon">
+        <Link2 aria-hidden="true" size={22} />
+      </div>
       <h2>Einladungslink</h2>
       <p>Es ist immer nur ein Link aktiv. Ein neuer Link ersetzt den bisherigen Link.</p>
       <button type="button" onClick={handleCreateEinladung} disabled={isSubmitting}>
@@ -66,7 +70,7 @@ export function EinladungPanel({ tipprundeId }: EinladungPanelProps) {
             Aktiver Einladungslink
             <input readOnly value={einladungslink} />
           </label>
-          {expiresAt ? <p>Gueltig bis {new Date(expiresAt).toLocaleString("de-DE")}.</p> : null}
+          {expiresAt ? <p>Gültig bis {new Date(expiresAt).toLocaleString("de-DE")}.</p> : null}
         </div>
       ) : null}
       <EinladungQrCode einladungslink={einladungslink} />

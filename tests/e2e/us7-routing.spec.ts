@@ -11,7 +11,7 @@ test.describe("US7 Login-Routing und Tipprunden-Wechsel", () => {
     await page.goto("/?demoTipprunden=1");
     await expect(page.getByRole("heading", { name: "Meine Tipprunden" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Demo Tipprunde" })).toBeVisible();
-    await page.getByRole("link", { name: "Oeffnen" }).click();
+    await page.getByRole("link", { name: "Öffnen" }).click();
     await expect(page).toHaveURL(/\/demo-tipprunde\/spieltage\/demo-spieltag$/);
 
     await page.context().clearCookies();
@@ -22,7 +22,7 @@ test.describe("US7 Login-Routing und Tipprunden-Wechsel", () => {
     await page
       .locator("article")
       .filter({ has: page.getByRole("heading", { name: "Zweite Tipprunde" }) })
-      .getByRole("link", { name: "Oeffnen" })
+      .getByRole("link", { name: "Öffnen" })
       .click();
     await expect(page).toHaveURL(/\/zweite-tipprunde\/spieltage\/demo-spieltag$/);
     await expect(

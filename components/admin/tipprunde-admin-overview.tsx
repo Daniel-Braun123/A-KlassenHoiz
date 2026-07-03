@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Archive, CalendarPlus, ShieldCheck, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { EinladungPanel } from "@/components/admin/einladung-panel";
@@ -32,11 +33,11 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
     setIsSubmitting(false);
 
     if (!response.ok) {
-      setMessage(payload?.error?.message ?? "Aktion konnte nicht ausgefuehrt werden.");
+      setMessage(payload?.error?.message ?? "Aktion konnte nicht ausgeführt werden.");
       return false;
     }
 
-    setMessage("Aenderung gespeichert.");
+    setMessage("Änderung gespeichert.");
     return true;
   }
 
@@ -74,11 +75,17 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
       <h1 id="tipprunde-admin-heading">Tipprunde verwalten</h1>
       {message ? <p role="status">{message}</p> : null}
       <div className="admin-actions">
-        <section>
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <ShieldCheck aria-hidden="true" size={22} />
+          </div>
           <h2>Grunddaten</h2>
-          <p>Tipprunden-Name, Status und Besitzerrechte verwalten.</p>
+          <p>Tipprunden-Name, Status und Besitzerrechte im Blick behalten.</p>
         </section>
-        <section>
+        <section className="admin-action-card primary-card">
+          <div className="admin-card-icon">
+            <CalendarPlus aria-hidden="true" size={22} />
+          </div>
           <h2>Spielplan</h2>
           <p>Teams, Spieltage, Spiele, Logos und Ergebnisse verwalten.</p>
           <Link className="button-link" href={`/admin/tipprunden/${tipprundeId}/spielplan`}>
@@ -86,7 +93,10 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
           </Link>
         </section>
         <EinladungPanel tipprundeId={tipprundeId} />
-        <section>
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <ShieldCheck aria-hidden="true" size={22} />
+          </div>
           <h2>Co-Admins</h2>
           <p>Mitglieder zu Co-Admins ernennen oder Co-Admin-Rechte entfernen.</p>
           <form className="stack" onSubmit={handleRoleChange}>
@@ -106,23 +116,29 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
             </button>
           </form>
         </section>
-        <section>
+        <section className="admin-action-card">
+          <div className="admin-card-icon">
+            <Archive aria-hidden="true" size={22} />
+          </div>
           <h2>Archivieren</h2>
-          <p>Tipprunde fuer normale Nutzung deaktivieren.</p>
+          <p>Tipprunde für normale Nutzung deaktivieren.</p>
           <button type="button" onClick={handleArchive} disabled={isSubmitting}>
             Archivieren
           </button>
         </section>
-        <section>
-          <h2>Endgueltig loeschen</h2>
-          <p>Nur mit Sicherheitspruefung und Besitzer/Admin-Rechten.</p>
+        <section className="admin-action-card danger-card">
+          <div className="admin-card-icon">
+            <Trash2 aria-hidden="true" size={22} />
+          </div>
+          <h2>Endgültig löschen</h2>
+          <p>Nur mit Sicherheitsprüfung und Besitzer/Admin-Rechten.</p>
           <form className="stack" onSubmit={handleDelete}>
             <label>
-              Tipprunden-Namen zur Sicherheitspruefung
+              Tipprunden-Namen zur Sicherheitsprüfung
               <input name="confirmation" type="text" required />
             </label>
             <button type="submit" disabled={isSubmitting}>
-              Endgueltig loeschen
+              Endgültig löschen
             </button>
           </form>
         </section>

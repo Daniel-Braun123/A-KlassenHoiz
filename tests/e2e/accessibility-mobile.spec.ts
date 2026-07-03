@@ -18,7 +18,7 @@ test.describe("Mobile Accessibility", () => {
 
     const openCard = page.getByTestId("tipp-card-spiel-offen");
     await expect(openCard.getByLabel("Heimtore")).toBeVisible();
-    await expect(openCard.getByLabel("Auswaertstore")).toBeVisible();
+    await expect(openCard.getByLabel("Auswärtstore")).toBeVisible();
 
     await page.keyboard.press("Tab");
     await expect(page.locator(":focus")).toBeVisible();

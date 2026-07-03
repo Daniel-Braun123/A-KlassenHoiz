@@ -55,7 +55,7 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
         <div>
           <p className="eyebrow">{formatAnstosszeit(spiel.anstosszeit)}</p>
           <h2>
-            {spiel.heimteamName} - {spiel.auswaertsteamName}
+            {spiel.heimteamName} gegen {spiel.auswaertsteamName}
           </h2>
         </div>
         <span className={spiel.istTippbar ? "status-open" : "status-locked"}>
@@ -76,7 +76,7 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
           />
         </label>
         <label>
-          Auswaertstore
+          Auswärtstore
           <input
             name="auswaertstoreTipp"
             type="number"
