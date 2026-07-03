@@ -20,7 +20,7 @@ export async function requireAuthenticatedProfile() {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, is_global_admin")
+    .select("id, email, anzeigename, is_global_admin")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -40,7 +40,7 @@ export async function requireAuthenticatedProfile() {
         email: user.email ?? `${user.id}@local.invalid`,
         anzeigename,
       })
-      .select("id, is_global_admin")
+      .select("id, email, anzeigename, is_global_admin")
       .single();
 
     if (createError || !createdProfile) {
@@ -51,6 +51,8 @@ export async function requireAuthenticatedProfile() {
       user,
       profile: {
         id: createdProfile.id as string,
+        email: String(createdProfile.email),
+        anzeigename: String(createdProfile.anzeigename),
         isGlobalAdmin: Boolean(createdProfile.is_global_admin),
       },
     };
@@ -60,6 +62,8 @@ export async function requireAuthenticatedProfile() {
     user,
     profile: {
       id: data.id as string,
+      email: String(data.email),
+      anzeigename: String(data.anzeigename),
       isGlobalAdmin: Boolean(data.is_global_admin),
     },
   };

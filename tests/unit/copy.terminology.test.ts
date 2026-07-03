@@ -7,6 +7,7 @@ import { VERBOTENE_WETTBEGRIFFE } from "@/lib/domain/constants";
 
 const COPY_FILES = [
   "app/page.tsx",
+  "app/profil/page.tsx",
   "app/manifest.ts",
   "app/layout.tsx",
   "components/admin/einladung-panel.tsx",

@@ -112,7 +112,7 @@ button:disabled {
   left: 0;
   z-index: 30;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
   border-top: 1px solid #cbd5e1;
   background: #ffffff;
   box-shadow: 0 -10px 24px rgba(15, 23, 42, 0.08);
@@ -148,6 +148,79 @@ button:disabled {
   display: grid;
   gap: 12px;
   max-width: 520px;
+}
+
+.home-header {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.home-header h1,
+.tipprunde-card h2 {
+  margin: 0;
+}
+
+.home-actions,
+.tipprunde-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tipprunden-list {
+  display: grid;
+  gap: 14px;
+  max-width: 720px;
+}
+
+.tipprunde-card,
+.empty-state,
+.profile-details {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 16px;
+}
+
+.tipprunde-card {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.tipprunde-card p {
+  margin-bottom: 0;
+  color: #475569;
+}
+
+.profile-page {
+  max-width: 760px;
+}
+
+.profile-details {
+  max-width: 620px;
+}
+
+.profile-details div {
+  display: grid;
+  gap: 4px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+
+.profile-details div:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.profile-details span {
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .button-link.secondary {
@@ -360,6 +433,15 @@ button:disabled {
 @media (max-width: 640px) {
   .mobile-shell-header {
     grid-template-columns: 1fr;
+  }
+
+  .home-header,
+  .tipprunde-card {
+    grid-template-columns: 1fr;
+  }
+
+  .home-header {
+    display: grid;
   }
 
   .ergebnis-row {

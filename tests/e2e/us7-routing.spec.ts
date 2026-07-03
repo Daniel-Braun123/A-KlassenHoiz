@@ -9,13 +9,21 @@ test.describe("US7 Login-Routing und Tipprunden-Wechsel", () => {
     await expect(page.getByText("Du bist noch in keiner Tipprunde.")).toBeVisible();
 
     await page.goto("/?demoTipprunden=1");
+    await expect(page.getByRole("heading", { name: "Meine Tipprunden" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Demo Tipprunde" })).toBeVisible();
+    await page.getByRole("link", { name: "Oeffnen" }).click();
     await expect(page).toHaveURL(/\/demo-tipprunde\/spieltage\/demo-spieltag$/);
 
     await page.context().clearCookies();
     await page.evaluate(() => localStorage.clear());
     await page.goto("/?demoTipprunden=mehrere");
-    await expect(page.getByRole("heading", { name: "Tipprunde waehlen" })).toBeVisible();
-    await page.getByRole("link", { name: "Zweite Tipprunde oeffnen" }).click();
+    await expect(page.getByRole("heading", { name: "Meine Tipprunden" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Zweite Tipprunde" })).toBeVisible();
+    await page
+      .locator("article")
+      .filter({ has: page.getByRole("heading", { name: "Zweite Tipprunde" }) })
+      .getByRole("link", { name: "Oeffnen" })
+      .click();
     await expect(page).toHaveURL(/\/zweite-tipprunde\/spieltage\/demo-spieltag$/);
     await expect(
       page.evaluate(() => localStorage.getItem("a-klassenhoiz.active-tipprunde")),

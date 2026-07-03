@@ -1,16 +1,15 @@
 import Link from "next/link";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 import { ActiveTipprundeLink } from "@/components/tipps/tipprunden-switcher";
-import {
-  ACTIVE_TIPPRUNDE_COOKIE,
-  getTipprundeStartPath,
-  type ActiveTipprundeOption,
-} from "@/lib/domain/active-tipprunde";
+import { requireAuthenticatedProfile } from "@/lib/auth/guards";
+import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
 import { AppError } from "@/lib/domain/errors";
-import { chooseTipprundenLanding } from "@/lib/domain/tipprunden-landing";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+
+type HomeProfile = {
+  anzeigename: string;
+  email: string;
+};
 
 function demoTipprunden(kind?: string): ActiveTipprundeOption[] {
   if (kind === "0") {
@@ -31,7 +30,10 @@ function demoTipprunden(kind?: string): ActiveTipprundeOption[] {
   return [];
 }
 
-function readTipprundeRelation(row: { tipprunden?: unknown }): { id: string; name: string } | null {
+function readTipprundeMembership(row: {
+  rolle?: unknown;
+  tipprunden?: unknown;
+}): ActiveTipprundeOption | null {
   const relation = Array.isArray(row.tipprunden) ? row.tipprunden[0] : row.tipprunden;
   if (!relation || typeof relation !== "object" || !("id" in relation) || !("name" in relation)) {
     return null;
@@ -40,6 +42,10 @@ function readTipprundeRelation(row: { tipprunden?: unknown }): { id: string; nam
   return {
     id: String((relation as { id: string }).id),
     name: String((relation as { name: string }).name),
+    rolle:
+      row.rolle === "admin" || row.rolle === "co_admin" || row.rolle === "nutzer"
+        ? row.rolle
+        : null,
   };
 }
 
@@ -47,7 +53,7 @@ async function listActiveTipprundenForUser(nutzerId: string): Promise<ActiveTipp
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("mitgliedschaften")
-    .select("tipprunden:tipprunde_id(id, name)")
+    .select("rolle, tipprunden:tipprunde_id(id, name)")
     .eq("nutzer_id", nutzerId)
     .eq("status", "active");
 
@@ -56,8 +62,8 @@ async function listActiveTipprundenForUser(nutzerId: string): Promise<ActiveTipp
   }
 
   const tipprunden = (data ?? [])
-    .map((row) => readTipprundeRelation(row))
-    .filter((tipprunde): tipprunde is { id: string; name: string } => Boolean(tipprunde));
+    .map((row) => readTipprundeMembership(row))
+    .filter((tipprunde): tipprunde is ActiveTipprundeOption => Boolean(tipprunde));
 
   return Promise.all(
     tipprunden.map(async (tipprunde) => ({
@@ -80,34 +86,70 @@ async function loadCurrentSpieltagId(tipprundeId: string): Promise<string | null
   return data?.id ?? null;
 }
 
-function TipprundenSelection({ tipprunden }: { tipprunden: ActiveTipprundeOption[] }) {
+function HomeOverview({
+  tipprunden,
+  profile,
+  showProfileLink,
+}: {
+  tipprunden: ActiveTipprundeOption[];
+  profile?: HomeProfile;
+  showProfileLink: boolean;
+}) {
   return (
     <main className="tipprunden-page">
-      <h1>Tipprunde waehlen</h1>
-      <div className="selection-list">
-        {tipprunden.map((tipprunde) => (
-          <ActiveTipprundeLink key={tipprunde.id} tipprunde={tipprunde}>
-            {tipprunde.name} oeffnen
-          </ActiveTipprundeLink>
-        ))}
-      </div>
-    </main>
-  );
-}
+      <header className="home-header">
+        <div>
+          <p className="eyebrow">A-KlassenHoiz</p>
+          <h1>Meine Tipprunden</h1>
+          {profile ? <p>Angemeldet als {profile.anzeigename}</p> : null}
+        </div>
+        <nav className="home-actions" aria-label="Home Aktionen">
+          {showProfileLink ? (
+            <Link className="button-link secondary" href="/profil">
+              Profil
+            </Link>
+          ) : null}
+          <Link className="button-link" href="/admin/tipprunden/neu">
+            Tipprunde erstellen
+          </Link>
+        </nav>
+      </header>
 
-function Onboarding() {
-  return (
-    <main className="tipprunden-page">
-      <h1>Meine Tipprunden</h1>
-      <section className="stack">
-        <p>Du bist noch in keiner Tipprunde.</p>
-        <Link className="button-link" href="/admin/tipprunden/neu">
-          Tipprunde erstellen
-        </Link>
-        <Link className="button-link secondary" href="/login">
-          Per Einladungslink beitreten
-        </Link>
-      </section>
+      {tipprunden.length === 0 ? (
+        <section className="empty-state">
+          <h2>Keine Tipprunden</h2>
+          <p>Du bist noch in keiner Tipprunde.</p>
+          <Link className="button-link secondary" href="/login">
+            Per Einladungslink beitreten
+          </Link>
+        </section>
+      ) : (
+        <section className="tipprunden-list" aria-label="Tipprunden">
+          {tipprunden.map((tipprunde) => {
+            const canManage = tipprunde.rolle === "admin" || tipprunde.rolle === "co_admin";
+
+            return (
+              <article className="tipprunde-card" key={tipprunde.id}>
+                <div>
+                  <h2>{tipprunde.name}</h2>
+                  {tipprunde.rolle ? <p>Rolle: {tipprunde.rolle}</p> : null}
+                </div>
+                <div className="tipprunde-card-actions">
+                  <ActiveTipprundeLink tipprunde={tipprunde}>Oeffnen</ActiveTipprundeLink>
+                  {canManage ? (
+                    <Link
+                      className="button-link secondary"
+                      href={`/admin/tipprunden/${tipprunde.id}`}
+                    >
+                      Verwalten
+                    </Link>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </section>
+      )}
     </main>
   );
 }
@@ -130,22 +172,14 @@ export default async function HomePage({
   searchParams: Promise<{ demoTipprunden?: string }>;
 }) {
   const params = await searchParams;
-  const cookieStore = await cookies();
-  const lastActiveTipprundeId = cookieStore.get(ACTIVE_TIPPRUNDE_COOKIE)?.value ?? null;
 
   if (params.demoTipprunden) {
-    const tipprunden = demoTipprunden(params.demoTipprunden);
-    const decision = chooseTipprundenLanding({ tipprunden, lastActiveTipprundeId });
-
-    if (decision.type === "open") {
-      const selected = tipprunden.find((tipprunde) => tipprunde.id === decision.tipprundeId);
-      redirect(getTipprundeStartPath(selected ?? { id: decision.tipprundeId }));
-    }
-
-    return decision.type === "selection" ? (
-      <TipprundenSelection tipprunden={tipprunden} />
-    ) : (
-      <Onboarding />
+    return (
+      <HomeOverview
+        tipprunden={demoTipprunden(params.demoTipprunden)}
+        profile={{ anzeigename: "Demo Nutzer", email: "demo@example.invalid" }}
+        showProfileLink={false}
+      />
     );
   }
 
@@ -158,17 +192,14 @@ export default async function HomePage({
     return <LoggedOutHome />;
   }
 
+  const { profile } = await requireAuthenticatedProfile();
   const tipprunden = await listActiveTipprundenForUser(user.id);
-  const decision = chooseTipprundenLanding({ tipprunden, lastActiveTipprundeId });
 
-  if (decision.type === "open") {
-    const selected = tipprunden.find((tipprunde) => tipprunde.id === decision.tipprundeId);
-    redirect(getTipprundeStartPath(selected ?? { id: decision.tipprundeId }));
-  }
-
-  return decision.type === "selection" ? (
-    <TipprundenSelection tipprunden={tipprunden} />
-  ) : (
-    <Onboarding />
+  return (
+    <HomeOverview
+      tipprunden={tipprunden}
+      profile={{ anzeigename: profile.anzeigename, email: profile.email }}
+      showProfileLink
+    />
   );
 }
