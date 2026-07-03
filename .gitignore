@@ -4,6 +4,7 @@ coverage/
 .env
 .env*.local
 !.env.example
+supabase/.temp/
 npm-debug.log*
 next-env.d.ts.bak
 playwright-report/
