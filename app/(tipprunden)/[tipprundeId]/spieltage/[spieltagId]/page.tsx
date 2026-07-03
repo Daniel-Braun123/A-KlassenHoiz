@@ -14,7 +14,10 @@ export default async function SpieltagTippPage({
 }) {
   const { tipprundeId, spieltagId } = await params;
 
-  if (tipprundeId === "demo-tipprunde" && spieltagId === "demo-spieltag") {
+  if (
+    (tipprundeId === "demo-tipprunde" || tipprundeId === "zweite-tipprunde") &&
+    spieltagId === "demo-spieltag"
+  ) {
     return (
       <main>
         <SpieltagTipps view={createDemoSpieltagTippView()} />

@@ -6,6 +6,13 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "A-KlassenHoiz",
   description: "Private Tippspiel-App fuer lokale Fussballspiele.",
+  applicationName: "A-KlassenHoiz",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    title: "A-KlassenHoiz",
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport: Viewport = {

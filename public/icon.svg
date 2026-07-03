@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="A-KlassenHoiz App Icon">
+  <rect width="512" height="512" rx="108" fill="#14532d"/>
+  <circle cx="256" cy="256" r="154" fill="#f8fafc"/>
+  <path d="M256 102l48 58-48 54-48-54 48-58zM154 198l74 8 18 72-62 42-64-38 34-84zM358 198l34 84-64 38-62-42 18-72 74-8zM202 366l54-40 54 40-18 72h-72l-18-72z" fill="#0f172a"/>
+  <path d="M194 108h124l52 58-114 160-114-160 52-58z" fill="none" stroke="#14532d" stroke-width="18" stroke-linejoin="round" opacity=".22"/>
+</svg>

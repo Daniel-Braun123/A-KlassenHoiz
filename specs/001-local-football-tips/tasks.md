@@ -213,17 +213,17 @@
 
 ### Tests for User Story 7
 
-- [ ] T080 [P] [US7] Create e2e tests for no/one/multiple Tipprunde login routing in `tests/e2e/us7-routing.spec.ts`
-- [ ] T081 [P] [US7] Create e2e tests for PWA manifest and mobile navigation in `tests/e2e/us7-pwa-mobile.spec.ts`
+- [x] T080 [P] [US7] Create e2e tests for no/one/multiple Tipprunde login routing in `tests/e2e/us7-routing.spec.ts`
+- [x] T081 [P] [US7] Create e2e tests for PWA manifest and mobile navigation in `tests/e2e/us7-pwa-mobile.spec.ts`
 
 ### Implementation for User Story 7
 
-- [ ] T082 [US7] Implement active Tipprunde persistence in `lib/domain/active-tipprunde.ts`
-- [ ] T083 [US7] Implement mobile navigation shell in `components/pwa/mobile-shell.tsx`
-- [ ] T084 [US7] Implement Tipprunden switcher in `components/tipps/tipprunden-switcher.tsx`
-- [ ] T085 [US7] Implement PWA manifest metadata in `app/manifest.ts`
-- [ ] T086 [US7] Implement no-connection message component in `components/pwa/no-connection-message.tsx`
-- [ ] T087 [US7] Wire mobile-first layout into `app/(tipprunden)/[tipprundeId]/layout.tsx`
+- [x] T082 [US7] Implement active Tipprunde persistence in `lib/domain/active-tipprunde.ts`
+- [x] T083 [US7] Implement mobile navigation shell in `components/pwa/mobile-shell.tsx`
+- [x] T084 [US7] Implement Tipprunden switcher in `components/tipps/tipprunden-switcher.tsx`
+- [x] T085 [US7] Implement PWA manifest metadata in `app/manifest.ts`
+- [x] T086 [US7] Implement no-connection message component in `components/pwa/no-connection-message.tsx`
+- [x] T087 [US7] Wire mobile-first layout into `app/(tipprunden)/[tipprundeId]/layout.tsx`
 
 **Checkpoint**: User Story 7 is independently functional and testable.
 
