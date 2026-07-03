@@ -63,20 +63,20 @@
 
 ### Tests for User Story 1
 
-- [ ] T026 [P] [US1] Create contract tests for create/archive/delete Tipprunde operations in `tests/integration/us1.tipprunde.contract.test.ts`
-- [ ] T027 [P] [US1] Create role management tests for Admin and Co-Admin boundaries in `tests/integration/us1.roles.test.ts`
-- [ ] T028 [P] [US1] Create e2e test for Tipprunde creation and Admin dashboard access in `tests/e2e/us1-create-tipprunde.spec.ts`
+- [x] T026 [P] [US1] Create contract tests for create/archive/delete Tipprunde operations in `tests/integration/us1.tipprunde.contract.test.ts`
+- [x] T027 [P] [US1] Create role management tests for Admin and Co-Admin boundaries in `tests/integration/us1.roles.test.ts`
+- [x] T028 [P] [US1] Create e2e test for Tipprunde creation and Admin dashboard access in `tests/e2e/us1-create-tipprunde.spec.ts`
 
 ### Implementation for User Story 1
 
-- [ ] T029 [US1] Implement registration/login pages for email/password and Anzeigename in `app/(auth)/login/page.tsx` and `app/(auth)/register/page.tsx`
-- [ ] T030 [US1] Implement authenticated landing logic for no/one/multiple Tipprunden in `app/(tipprunden)/page.tsx`
-- [ ] T031 [US1] Implement Tipprunde creation operation in `app/api/tipprunden/route.ts`
-- [ ] T032 [US1] Implement Tipprunde repository operations in `lib/domain/tipprunden-repository.ts`
-- [ ] T033 [US1] Implement Admin role assignment and membership creation in `lib/domain/mitgliedschaften-service.ts`
-- [ ] T034 [US1] Implement owner-only archive and permanent delete operations in `app/api/tipprunden/[tipprundeId]/archive/route.ts` and `app/api/tipprunden/[tipprundeId]/route.ts`
-- [ ] T035 [US1] Implement Co-Admin role management operation in `app/api/tipprunden/[tipprundeId]/members/[nutzerId]/role/route.ts`
-- [ ] T036 [US1] Implement Tipprunde admin overview UI in `app/admin/tipprunden/[tipprundeId]/page.tsx`
+- [x] T029 [US1] Implement registration/login pages for email/password and Anzeigename in `app/(auth)/login/page.tsx` and `app/(auth)/register/page.tsx`
+- [x] T030 [US1] Implement authenticated landing logic for no/one/multiple Tipprunden in `app/(tipprunden)/page.tsx`
+- [x] T031 [US1] Implement Tipprunde creation operation in `app/api/tipprunden/route.ts`
+- [x] T032 [US1] Implement Tipprunde repository operations in `lib/domain/tipprunden-repository.ts`
+- [x] T033 [US1] Implement Admin role assignment and membership creation in `lib/domain/mitgliedschaften-service.ts`
+- [x] T034 [US1] Implement owner-only archive and permanent delete operations in `app/api/tipprunden/[tipprundeId]/archive/route.ts` and `app/api/tipprunden/[tipprundeId]/route.ts`
+- [x] T035 [US1] Implement Co-Admin role management operation in `app/api/tipprunden/[tipprundeId]/members/[nutzerId]/role/route.ts`
+- [x] T036 [US1] Implement Tipprunde admin overview UI in `app/admin/tipprunden/[tipprundeId]/page.tsx`
 
 **Checkpoint**: User Story 1 is independently functional and testable.
 

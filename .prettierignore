@@ -5,4 +5,6 @@ coverage/
 node_modules/
 specs/
 package-lock.json
+playwright-report/
+test-results/
 tsconfig.tsbuildinfo

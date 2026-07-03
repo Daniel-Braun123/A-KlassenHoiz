@@ -22,3 +22,70 @@ main {
   min-height: 100vh;
   padding: 32px;
 }
+
+input,
+button,
+select {
+  font: inherit;
+}
+
+label,
+.stack {
+  display: grid;
+  gap: 12px;
+}
+
+input,
+select {
+  min-height: 42px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  background: #ffffff;
+}
+
+button,
+.button-link {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  background: #14532d;
+  color: #ffffff;
+  padding: 8px 14px;
+  text-decoration: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.button-link.secondary {
+  background: #334155;
+}
+
+.auth-panel,
+.admin-panel {
+  max-width: 680px;
+}
+
+.admin-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.admin-actions section {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 16px;
+  background: #ffffff;
+}
+
+.eyebrow {
+  color: #475569;
+  font-size: 0.875rem;
+}

@@ -15,6 +15,56 @@ export async function requireAuthenticatedUser() {
   return user;
 }
 
+export async function requireAuthenticatedProfile() {
+  const user = await requireAuthenticatedUser();
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, is_global_admin")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) {
+    throw new AppError("Profil konnte nicht geladen werden.", "profile_load_failed", 500);
+  }
+
+  if (!data) {
+    const anzeigename =
+      typeof user.user_metadata?.anzeigename === "string" && user.user_metadata.anzeigename.trim()
+        ? user.user_metadata.anzeigename.trim()
+        : "Nutzer";
+    const { data: createdProfile, error: createError } = await supabase
+      .from("profiles")
+      .insert({
+        id: user.id,
+        email: user.email ?? `${user.id}@local.invalid`,
+        anzeigename,
+      })
+      .select("id, is_global_admin")
+      .single();
+
+    if (createError || !createdProfile) {
+      throw new AppError("Profil konnte nicht erstellt werden.", "profile_create_failed", 500);
+    }
+
+    return {
+      user,
+      profile: {
+        id: createdProfile.id as string,
+        isGlobalAdmin: Boolean(createdProfile.is_global_admin),
+      },
+    };
+  }
+
+  return {
+    user,
+    profile: {
+      id: data.id as string,
+      isGlobalAdmin: Boolean(data.is_global_admin),
+    },
+  };
+}
+
 export async function requireTipprundeMembership(tipprundeId: string) {
   const user = await requireAuthenticatedUser();
   const supabase = await createSupabaseServerClient();
