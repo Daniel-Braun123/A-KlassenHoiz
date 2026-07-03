@@ -19,6 +19,8 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
       currentSpieltagId: "demo-spieltag",
     };
   const spieltagPath = getTipprundeStartPath(activeTipprunde);
+  const canManageTipprunde =
+    activeTipprunde.rolle === "admin" || activeTipprunde.rolle === "co_admin";
 
   return (
     <div className="mobile-shell">
@@ -34,6 +36,9 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
         <Link href={spieltagPath}>Jetzt tippen</Link>
         <Link href={`/${activeTipprunde.id}/rangliste`}>Rangliste</Link>
         <Link href={spieltagPath}>Aktueller Spieltag</Link>
+        {canManageTipprunde ? (
+          <Link href={`/admin/tipprunden/${activeTipprunde.id}`}>Verwalten</Link>
+        ) : null}
       </nav>
     </div>
   );

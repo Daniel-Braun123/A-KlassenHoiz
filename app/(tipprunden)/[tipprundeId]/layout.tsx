@@ -11,7 +11,10 @@ function demoOptions(): ActiveTipprundeOption[] {
   ];
 }
 
-function readTipprundeRelation(row: { tipprunden?: unknown }): { id: string; name: string } | null {
+function readTipprundeMembership(row: {
+  rolle?: unknown;
+  tipprunden?: unknown;
+}): ActiveTipprundeOption | null {
   const relation = Array.isArray(row.tipprunden) ? row.tipprunden[0] : row.tipprunden;
   if (!relation || typeof relation !== "object" || !("id" in relation) || !("name" in relation)) {
     return null;
@@ -20,6 +23,10 @@ function readTipprundeRelation(row: { tipprunden?: unknown }): { id: string; nam
   return {
     id: String((relation as { id: string }).id),
     name: String((relation as { name: string }).name),
+    rolle:
+      row.rolle === "admin" || row.rolle === "co_admin" || row.rolle === "nutzer"
+        ? row.rolle
+        : null,
   };
 }
 
@@ -48,12 +55,12 @@ async function loadUserTipprunden(tipprundeId: string): Promise<ActiveTipprundeO
 
   const { data } = await supabase
     .from("mitgliedschaften")
-    .select("tipprunden:tipprunde_id(id, name)")
+    .select("rolle, tipprunden:tipprunde_id(id, name)")
     .eq("nutzer_id", user.id)
     .eq("status", "active");
   const tipprunden = (data ?? [])
-    .map((row) => readTipprundeRelation(row))
-    .filter((tipprunde): tipprunde is { id: string; name: string } => Boolean(tipprunde));
+    .map((row) => readTipprundeMembership(row))
+    .filter((tipprunde): tipprunde is ActiveTipprundeOption => Boolean(tipprunde));
 
   if (tipprunden.length === 0) {
     return [{ id: tipprundeId, name: "Tipprunde", currentSpieltagId: null }];

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 
 import { EinladungPanel } from "@/components/admin/einladung-panel";
@@ -76,6 +77,13 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
         <section>
           <h2>Grunddaten</h2>
           <p>Tipprunden-Name, Status und Besitzerrechte verwalten.</p>
+        </section>
+        <section>
+          <h2>Spielplan</h2>
+          <p>Teams, Spieltage, Spiele, Logos und Ergebnisse verwalten.</p>
+          <Link className="button-link" href={`/admin/tipprunden/${tipprundeId}/spielplan`}>
+            Spielplan verwalten
+          </Link>
         </section>
         <EinladungPanel tipprundeId={tipprundeId} />
         <section>

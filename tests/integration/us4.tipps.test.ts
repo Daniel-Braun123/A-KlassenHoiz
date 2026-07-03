@@ -224,4 +224,31 @@ describe("US4 Tipps", () => {
       istTippbar: true,
     });
   });
+
+  it("shows an empty Spieltag view without loading Tipps when no Spiele exist", async () => {
+    let tippsLoaded = false;
+    const repository: Pick<TippsRepository, "listSpieleForSpieltag" | "listTippsForSpieltag"> = {
+      async listSpieleForSpieltag() {
+        return [];
+      },
+      async listTippsForSpieltag() {
+        tippsLoaded = true;
+        return [];
+      },
+    };
+
+    const view = await createSpieltagTippView(repository, {
+      tipprundeId: "tipprunde-neu",
+      spieltagId: "spieltag-leer",
+      nutzerId: "nutzer-1",
+      now: new Date("2026-08-01T14:00:00.000Z"),
+    });
+
+    expect(view).toMatchObject({
+      tipprundeId: "tipprunde-neu",
+      spieltagId: "spieltag-leer",
+      spiele: [],
+    });
+    expect(tippsLoaded).toBe(false);
+  });
 });

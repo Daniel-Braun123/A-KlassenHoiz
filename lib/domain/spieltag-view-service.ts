@@ -24,10 +24,17 @@ export async function createSpieltagTippView(
   },
 ): Promise<SpieltagTippView> {
   const now = input.now ?? new Date();
-  const [spiele, tipps] = await Promise.all([
-    repository.listSpieleForSpieltag(input.tipprundeId, input.spieltagId),
-    repository.listTippsForSpieltag(input.tipprundeId, input.spieltagId),
-  ]);
+  const spiele = await repository.listSpieleForSpieltag(input.tipprundeId, input.spieltagId);
+
+  if (spiele.length === 0) {
+    return {
+      tipprundeId: input.tipprundeId,
+      spieltagId: input.spieltagId,
+      spiele: [],
+    };
+  }
+
+  const tipps = await repository.listTippsForSpieltag(input.tipprundeId, input.spieltagId);
 
   return {
     tipprundeId: input.tipprundeId,

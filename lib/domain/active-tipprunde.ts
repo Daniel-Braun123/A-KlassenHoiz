@@ -1,3 +1,5 @@
+import type { TipprundeRolle } from "@/lib/domain/types";
+
 export const ACTIVE_TIPPRUNDE_STORAGE_KEY = "a-klassenhoiz.active-tipprunde";
 export const ACTIVE_TIPPRUNDE_COOKIE = "a_klassenhoiz_active_tipprunde";
 
@@ -5,13 +7,17 @@ export type ActiveTipprundeOption = {
   id: string;
   name: string;
   currentSpieltagId?: string | null;
+  rolle?: TipprundeRolle | null;
 };
 
 export function getTipprundeStartPath(
   option: Pick<ActiveTipprundeOption, "id" | "currentSpieltagId">,
 ): string {
-  const spieltagId = option.currentSpieltagId || "demo-spieltag";
-  return `/${option.id}/spieltage/${spieltagId}`;
+  if (!option.currentSpieltagId) {
+    return `/${option.id}/rangliste`;
+  }
+
+  return `/${option.id}/spieltage/${option.currentSpieltagId}`;
 }
 
 export function readActiveTipprundeId(): string | null {
