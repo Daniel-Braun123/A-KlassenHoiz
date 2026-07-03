@@ -18,16 +18,16 @@
 
 **Purpose**: Initialize the web app, tooling and planned project structure without implementing feature behavior.
 
-- [ ] T001 Initialize the Next.js TypeScript project configuration in `package.json`
-- [ ] T002 [P] Configure TypeScript settings in `tsconfig.json`
-- [ ] T003 [P] Configure Next.js application settings in `next.config.ts`
-- [ ] T004 [P] Configure linting and formatting in `eslint.config.mjs` and `.prettierrc.json`
-- [ ] T005 [P] Create the application route directories in `app/(auth)/`, `app/(tipprunden)/`, `app/admin/` and `app/api/`
-- [ ] T006 [P] Create shared source directories in `components/admin/`, `components/tipps/`, `components/ranglisten/`, `components/pwa/`, `lib/auth/`, `lib/supabase/`, `lib/domain/`, `lib/scoring/` and `lib/timezone/`
-- [ ] T007 [P] Create test directories in `tests/unit/`, `tests/integration/`, `tests/e2e/` and `supabase/tests/`
-- [ ] T008 [P] Add environment template variables for Supabase project configuration in `.env.example`
-- [ ] T009 [P] Configure unit, integration and e2e test scripts in `package.json`
-- [ ] T010 [P] Configure PWA metadata entry points in `app/manifest.ts` and `components/pwa/install-status.tsx`
+- [x] T001 Initialize the Next.js TypeScript project configuration in `package.json`
+- [x] T002 [P] Configure TypeScript settings in `tsconfig.json`
+- [x] T003 [P] Configure Next.js application settings in `next.config.ts`
+- [x] T004 [P] Configure linting and formatting in `eslint.config.mjs` and `.prettierrc.json`
+- [x] T005 [P] Create the application route directories in `app/(auth)/`, `app/(tipprunden)/`, `app/admin/` and `app/api/`
+- [x] T006 [P] Create shared source directories in `components/admin/`, `components/tipps/`, `components/ranglisten/`, `components/pwa/`, `lib/auth/`, `lib/supabase/`, `lib/domain/`, `lib/scoring/` and `lib/timezone/`
+- [x] T007 [P] Create test directories in `tests/unit/`, `tests/integration/`, `tests/e2e/` and `supabase/tests/`
+- [x] T008 [P] Add environment template variables for Supabase project configuration in `.env.example`
+- [x] T009 [P] Configure unit, integration and e2e test scripts in `package.json`
+- [x] T010 [P] Configure PWA metadata entry points in `app/manifest.ts` and `components/pwa/install-status.tsx`
 
 ---
 
@@ -35,21 +35,21 @@
 
 **Purpose**: Core domain, Supabase, authorization and validation foundation that must exist before any user story implementation.
 
-- [ ] T011 Create shared German domain enums and constants in `lib/domain/constants.ts`
-- [ ] T012 Create shared domain types for Nutzer, Tipprunde, Mitgliedschaft, Einladung, Spieltag, Spiel, TeamVerein, Tipp, Ergebnis, Punktewertung and Rangliste in `lib/domain/types.ts`
-- [ ] T013 [P] Create Europe/Berlin date-time helpers and tests in `lib/timezone/berlin.ts` and `tests/unit/timezone.berlin.test.ts`
-- [ ] T014 [P] Create scoring test cases for exact result, Tordifferenz, Tendenz and zero Punkte in `tests/unit/scoring.calculate.test.ts`
-- [ ] T015 [P] Create ranking derivation test cases for equal Platzierung and alphabetical tie sorting in `tests/unit/ranglisten.derive.test.ts`
-- [ ] T016 [P] Create permission matrix tests for Nutzer, Admin, Co-Admin and global App-Admin in `tests/unit/permissions.matrix.test.ts`
-- [ ] T017 Implement deterministic scoring functions in `lib/scoring/calculate-punkte.ts`
-- [ ] T018 Implement derived Rangliste functions in `lib/scoring/derive-ranglisten.ts`
-- [ ] T019 Implement role and membership permission helpers in `lib/auth/permissions.ts`
-- [ ] T020 Implement Supabase browser and server clients in `lib/supabase/client.ts` and `lib/supabase/server.ts`
-- [ ] T021 Create Supabase migration for initial schema, explicit grants and RLS policies in `supabase/migrations/001_initial_schema.sql`
-- [ ] T022 Create Supabase policy tests for member visibility, own Tipp writes and Admin/Co-Admin writes in `supabase/tests/rls_policies.test.sql`
-- [ ] T023 Create seed data for local validation in `supabase/seed.sql`
-- [ ] T024 Create reusable route guards for authenticated Nutzer and Tipprunden membership in `lib/auth/guards.ts`
-- [ ] T025 Create shared user-facing error helpers that avoid betting terminology in `lib/domain/errors.ts`
+- [x] T011 Create shared German domain enums and constants in `lib/domain/constants.ts`
+- [x] T012 Create shared domain types for Nutzer, Tipprunde, Mitgliedschaft, Einladung, Spieltag, Spiel, TeamVerein, Tipp, Ergebnis, Punktewertung and Rangliste in `lib/domain/types.ts`
+- [x] T013 [P] Create Europe/Berlin date-time helpers and tests in `lib/timezone/berlin.ts` and `tests/unit/timezone.berlin.test.ts`
+- [x] T014 [P] Create scoring test cases for exact result, Tordifferenz, Tendenz and zero Punkte in `tests/unit/scoring.calculate.test.ts`
+- [x] T015 [P] Create ranking derivation test cases for equal Platzierung and alphabetical tie sorting in `tests/unit/ranglisten.derive.test.ts`
+- [x] T016 [P] Create permission matrix tests for Nutzer, Admin, Co-Admin and global App-Admin in `tests/unit/permissions.matrix.test.ts`
+- [x] T017 Implement deterministic scoring functions in `lib/scoring/calculate-punkte.ts`
+- [x] T018 Implement derived Rangliste functions in `lib/scoring/derive-ranglisten.ts`
+- [x] T019 Implement role and membership permission helpers in `lib/auth/permissions.ts`
+- [x] T020 Implement Supabase browser and server clients in `lib/supabase/client.ts` and `lib/supabase/server.ts`
+- [x] T021 Create Supabase migration for initial schema, explicit grants and RLS policies in `supabase/migrations/001_initial_schema.sql`
+- [x] T022 Create Supabase policy tests for member visibility, own Tipp writes and Admin/Co-Admin writes in `supabase/tests/rls_policies.test.sql`
+- [x] T023 Create seed data for local validation in `supabase/seed.sql`
+- [x] T024 Create reusable route guards for authenticated Nutzer and Tipprunden membership in `lib/auth/guards.ts`
+- [x] T025 Create shared user-facing error helpers that avoid betting terminology in `lib/domain/errors.ts`
 
 **Checkpoint**: Foundation ready. No user story work starts until T011-T025 are complete.
 
