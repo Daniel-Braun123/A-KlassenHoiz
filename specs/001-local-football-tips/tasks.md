@@ -114,20 +114,20 @@
 
 ### Tests for User Story 3
 
-- [ ] T045 [P] [US3] Create integration tests for Team/Verein CRUD and Fallback-Logo behavior in `tests/integration/us3.teams.test.ts`
-- [ ] T046 [P] [US3] Create integration tests for Spieltag and Spiel CRUD with German status values in `tests/integration/us3.spiele.test.ts`
-- [ ] T047 [P] [US3] Create e2e admin maintenance test in `tests/e2e/us3-admin-spielplan.spec.ts`
+- [x] T045 [P] [US3] Create integration tests for Team/Verein CRUD and Fallback-Logo behavior in `tests/integration/us3.teams.test.ts`
+- [x] T046 [P] [US3] Create integration tests for Spieltag and Spiel CRUD with German status values in `tests/integration/us3.spiele.test.ts`
+- [x] T047 [P] [US3] Create e2e admin maintenance test in `tests/e2e/us3-admin-spielplan.spec.ts`
 
 ### Implementation for User Story 3
 
-- [ ] T048 [US3] Implement Team/Verein repository and validation in `lib/domain/teams-repository.ts`
-- [ ] T049 [US3] Implement Spieltag repository and validation in `lib/domain/spieltage-repository.ts`
-- [ ] T050 [US3] Implement Spiel repository with statuses `geplant`, `beendet`, `verschoben`, `abgesagt` and `abgebrochen` in `lib/domain/spiele-repository.ts`
-- [ ] T051 [US3] Implement Team/Verein API operations in `app/api/tipprunden/[tipprundeId]/teams/route.ts` and `app/api/tipprunden/[tipprundeId]/teams/[teamId]/route.ts`
-- [ ] T052 [US3] Implement Spieltag API operations in `app/api/tipprunden/[tipprundeId]/spieltage/route.ts` and `app/api/tipprunden/[tipprundeId]/spieltage/[spieltagId]/route.ts`
-- [ ] T053 [US3] Implement Spiel API operations in `app/api/tipprunden/[tipprundeId]/spiele/route.ts` and `app/api/tipprunden/[tipprundeId]/spiele/[spielId]/route.ts`
-- [ ] T054 [US3] Implement Fallback-Logo component in `components/admin/team-logo.tsx`
-- [ ] T055 [US3] Implement admin Spielplan management UI in `app/admin/tipprunden/[tipprundeId]/spielplan/page.tsx`
+- [x] T048 [US3] Implement Team/Verein repository and validation in `lib/domain/teams-repository.ts`
+- [x] T049 [US3] Implement Spieltag repository and validation in `lib/domain/spieltage-repository.ts`
+- [x] T050 [US3] Implement Spiel repository with statuses `geplant`, `beendet`, `verschoben`, `abgesagt` and `abgebrochen` in `lib/domain/spiele-repository.ts`
+- [x] T051 [US3] Implement Team/Verein API operations in `app/api/tipprunden/[tipprundeId]/teams/route.ts` and `app/api/tipprunden/[tipprundeId]/teams/[teamId]/route.ts`
+- [x] T052 [US3] Implement Spieltag API operations in `app/api/tipprunden/[tipprundeId]/spieltage/route.ts` and `app/api/tipprunden/[tipprundeId]/spieltage/[spieltagId]/route.ts`
+- [x] T053 [US3] Implement Spiel API operations in `app/api/tipprunden/[tipprundeId]/spiele/route.ts` and `app/api/tipprunden/[tipprundeId]/spiele/[spielId]/route.ts`
+- [x] T054 [US3] Implement Fallback-Logo component in `components/admin/team-logo.tsx`
+- [x] T055 [US3] Implement admin Spielplan management UI in `app/admin/tipprunden/[tipprundeId]/spielplan/page.tsx`
 
 **Checkpoint**: User Story 3 is independently functional and testable.
 

@@ -97,6 +97,37 @@ button:disabled {
   border-radius: 6px;
 }
 
+.compact-form,
+.inline-form {
+  margin-top: 18px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 14px;
+}
+
+.inline-form {
+  display: grid;
+  gap: 12px;
+}
+
+.logo-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.fallback-logo {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid #94a3b8;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #14532d;
+  font-weight: 700;
+}
+
 .eyebrow {
   color: #475569;
   font-size: 0.875rem;
