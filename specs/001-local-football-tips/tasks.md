@@ -141,18 +141,18 @@
 
 ### Tests for User Story 4
 
-- [ ] T056 [P] [US4] Create unit tests for Tippfrist locking per Spiel in `tests/unit/tipps.deadline.test.ts`
-- [ ] T057 [P] [US4] Create integration tests for own Tipp create/update authorization in `tests/integration/us4.tipps.test.ts`
-- [ ] T058 [P] [US4] Create e2e mobile viewport test for quickly tipping a Spieltag in `tests/e2e/us4-tipps-mobile.spec.ts`
+- [x] T056 [P] [US4] Create unit tests for Tippfrist locking per Spiel in `tests/unit/tipps.deadline.test.ts`
+- [x] T057 [P] [US4] Create integration tests for own Tipp create/update authorization in `tests/integration/us4.tipps.test.ts`
+- [x] T058 [P] [US4] Create e2e mobile viewport test for quickly tipping a Spieltag in `tests/e2e/us4-tipps-mobile.spec.ts`
 
 ### Implementation for User Story 4
 
-- [ ] T059 [US4] Implement Tipp deadline validation in `lib/domain/tippfristen.ts`
-- [ ] T060 [US4] Implement Tipp repository and upsert behavior in `lib/domain/tipps-repository.ts`
-- [ ] T061 [US4] Implement submit Tipp operation in `app/api/tipprunden/[tipprundeId]/spiele/[spielId]/tipp/route.ts`
-- [ ] T062 [US4] Implement Spieltag Tipp view data loader in `lib/domain/spieltag-view-service.ts`
-- [ ] T063 [US4] Implement mobile Tipp input components in `components/tipps/tipp-card.tsx` and `components/tipps/spieltag-tipps.tsx`
-- [ ] T064 [US4] Implement selected Spieltag Tipp page in `app/(tipprunden)/[tipprundeId]/spieltage/[spieltagId]/page.tsx`
+- [x] T059 [US4] Implement Tipp deadline validation in `lib/domain/tippfristen.ts`
+- [x] T060 [US4] Implement Tipp repository and upsert behavior in `lib/domain/tipps-repository.ts`
+- [x] T061 [US4] Implement submit Tipp operation in `app/api/tipprunden/[tipprundeId]/spiele/[spielId]/tipp/route.ts`
+- [x] T062 [US4] Implement Spieltag Tipp view data loader in `lib/domain/spieltag-view-service.ts`
+- [x] T063 [US4] Implement mobile Tipp input components in `components/tipps/tipp-card.tsx` and `components/tipps/spieltag-tipps.tsx`
+- [x] T064 [US4] Implement selected Spieltag Tipp page in `app/(tipprunden)/[tipprundeId]/spieltage/[spieltagId]/page.tsx`
 
 **Checkpoint**: User Story 4 is independently functional and testable.
 

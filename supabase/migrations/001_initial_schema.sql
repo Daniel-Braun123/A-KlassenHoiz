@@ -491,7 +491,22 @@ create policy "spiele_write_admin_coadmin"
 create policy "tipps_select_member"
   on public.tipps for select
   to authenticated
-  using (public.is_tipprunde_member(tipprunde_id) or public.is_global_admin());
+  using (
+    public.is_global_admin()
+    or (
+      public.is_tipprunde_member(tipprunde_id)
+      and (
+        nutzer_id = (select auth.uid())
+        or exists (
+          select 1
+          from public.spiele
+          where spiele.id = tipps.spiel_id
+            and spiele.tipprunde_id = tipps.tipprunde_id
+            and now() >= spiele.anstosszeit
+        )
+      )
+    )
+  );
 
 create policy "tipps_insert_own_before_deadline"
   on public.tipps for insert

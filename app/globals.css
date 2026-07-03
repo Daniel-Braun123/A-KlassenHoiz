@@ -128,7 +128,77 @@ button:disabled {
   font-weight: 700;
 }
 
+.tipps-page {
+  max-width: 720px;
+}
+
+.tipp-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.tipp-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 16px;
+}
+
+.tipp-card-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.tipp-card h2 {
+  margin: 4px 0 0;
+  font-size: 1.05rem;
+}
+
+.tipp-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 10px;
+}
+
+.tipp-form button {
+  grid-column: 1 / -1;
+}
+
+.status-open,
+.status-locked {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.status-open {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+.status-locked {
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
 .eyebrow {
   color: #475569;
   font-size: 0.875rem;
+}
+
+@media (max-width: 520px) {
+  main {
+    padding: 18px;
+  }
+
+  .tipp-card {
+    padding: 14px;
+  }
 }
