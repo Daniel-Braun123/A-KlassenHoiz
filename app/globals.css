@@ -466,15 +466,28 @@ input::placeholder {
   margin: 0 auto;
 }
 
+.admin-page-header {
+  display: grid;
+  max-width: 780px;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.admin-page-header p {
+  margin: 0;
+}
+
 .admin-actions {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  align-items: start;
   gap: 16px;
   margin-top: 24px;
 }
 
 .admin-action-card {
   display: grid;
+  align-self: start;
   align-content: start;
   gap: 14px;
   padding: 18px;
@@ -491,6 +504,47 @@ input::placeholder {
 .primary-card {
   border-color: rgba(15, 118, 110, 0.38);
   background: #f6fffb;
+}
+
+.tipprunde-admin-actions {
+  grid-template-columns: minmax(0, 1.16fr) minmax(320px, 0.84fr);
+  gap: 18px;
+}
+
+.tipprunde-admin-actions .admin-card-feature {
+  min-height: 0;
+  padding: 24px;
+}
+
+.tipprunde-admin-actions .admin-card-feature h2 {
+  font-size: clamp(1.45rem, 2.6vw, 2rem);
+}
+
+.tipprunde-admin-actions .admin-card-feature .button-link {
+  width: fit-content;
+  min-width: 240px;
+}
+
+.tipprunde-admin-actions .admin-card-invite {
+  grid-column: 2;
+  grid-row: span 3;
+}
+
+.tipprunde-admin-actions .admin-card-side {
+  grid-column: 1;
+}
+
+.tipprunde-admin-actions .admin-card-basic {
+  grid-column: 1;
+}
+
+.tipprunde-admin-actions .admin-card-archive {
+  grid-column: 1;
+}
+
+.tipprunde-admin-actions .danger-card {
+  grid-column: 1;
+  max-width: 620px;
 }
 
 .danger-card {
@@ -510,10 +564,47 @@ input::placeholder {
 }
 
 .qr-panel img {
+  width: min(180px, 100%);
+  height: auto;
   border: 1px solid var(--color-line);
   border-radius: 7px;
   background: #ffffff;
   padding: 8px;
+}
+
+.create-tipprunde-page {
+  display: grid;
+  width: min(100%, 980px);
+  justify-items: start;
+  margin: 0 auto;
+}
+
+.create-tipprunde-card {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  padding: clamp(20px, 4vw, 30px);
+}
+
+.create-tipprunde-card {
+  width: min(100%, 560px);
+}
+
+.create-tipprunde-card h1,
+.create-tipprunde-card p {
+  margin: 0;
+}
+
+.create-tipprunde-form {
+  margin-top: 8px;
+  gap: 16px;
+}
+
+.create-tipprunde-form button {
+  margin-top: 4px;
 }
 
 .compact-form,
@@ -709,6 +800,25 @@ input::placeholder {
   }
 
   .admin-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .tipprunde-admin-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .tipprunde-admin-actions .admin-action-card {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .tipprunde-admin-actions .danger-card,
+  .tipprunde-admin-actions .admin-card-feature .button-link {
+    width: 100%;
+    max-width: none;
+  }
+
+  .create-tipprunde-page {
     grid-template-columns: 1fr;
   }
 

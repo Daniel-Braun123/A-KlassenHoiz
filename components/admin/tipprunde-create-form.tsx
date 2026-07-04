@@ -41,14 +41,19 @@ export function TipprundeCreateForm() {
   }
 
   return (
-    <form className="stack" onSubmit={handleSubmit}>
+    <form className="stack create-tipprunde-form" onSubmit={handleSubmit}>
       <label>
         Tipprunden-Name
-        <input name="name" type="text" required />
+        <input name="name" type="text" placeholder="z. B. A-Klasse Nord 2026" required />
       </label>
       <label>
         Anzeigename in der Tipprunde
-        <input name="tipprundenNickname" type="text" autoComplete="nickname" />
+        <input
+          name="tipprundenNickname"
+          type="text"
+          autoComplete="nickname"
+          placeholder="z. B. Coach Tom"
+        />
       </label>
       <button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Erstellen..." : "Tipprunde erstellen"}

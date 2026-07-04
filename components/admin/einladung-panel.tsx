@@ -7,6 +7,7 @@ import { EinladungQrCode } from "@/components/admin/einladung-qr-code";
 
 type EinladungPanelProps = {
   tipprundeId: string;
+  className?: string;
 };
 
 type EinladungResponse =
@@ -22,7 +23,7 @@ type EinladungResponse =
       };
     };
 
-export function EinladungPanel({ tipprundeId }: EinladungPanelProps) {
+export function EinladungPanel({ tipprundeId, className }: EinladungPanelProps) {
   const [einladungslink, setEinladungslink] = useState<string | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
@@ -54,7 +55,7 @@ export function EinladungPanel({ tipprundeId }: EinladungPanelProps) {
   }
 
   return (
-    <section className="admin-action-card">
+    <section className={["admin-action-card", className].filter(Boolean).join(" ")}>
       <div className="admin-card-icon">
         <Link2 aria-hidden="true" size={22} />
       </div>

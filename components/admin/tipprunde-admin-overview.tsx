@@ -71,29 +71,38 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
 
   return (
     <section className="admin-panel" aria-labelledby="tipprunde-admin-heading">
-      <p className="eyebrow">Tipprunde {tipprundeId}</p>
-      <h1 id="tipprunde-admin-heading">Tipprunde verwalten</h1>
+      <header className="admin-page-header">
+        <p className="eyebrow">Tipprunde {tipprundeId}</p>
+        <h1 id="tipprunde-admin-heading">Tipprunde verwalten</h1>
+        <p>
+          Alles Wichtige für deine Runde an einem Ort: Spielplan, Einladungen, Rollen und
+          Sicherheitsaktionen.
+        </p>
+      </header>
       {message ? <p role="status">{message}</p> : null}
-      <div className="admin-actions">
-        <section className="admin-action-card">
+      <div className="admin-actions tipprunde-admin-actions">
+        <section className="admin-action-card admin-card-compact admin-card-basic">
           <div className="admin-card-icon">
             <ShieldCheck aria-hidden="true" size={22} />
           </div>
           <h2>Grunddaten</h2>
           <p>Tipprunden-Name, Status und Besitzerrechte im Blick behalten.</p>
         </section>
-        <section className="admin-action-card primary-card">
+        <section className="admin-action-card primary-card admin-card-feature">
           <div className="admin-card-icon">
             <CalendarPlus aria-hidden="true" size={22} />
           </div>
           <h2>Spielplan</h2>
-          <p>Teams, Spieltage, Spiele, Logos und Ergebnisse verwalten.</p>
+          <p>
+            Teams, Spieltage, Spiele, Logos und Ergebnisse pflegen. Das ist der wichtigste
+            Arbeitsbereich für Admins.
+          </p>
           <Link className="button-link" href={`/admin/tipprunden/${tipprundeId}/spielplan`}>
             Spielplan verwalten
           </Link>
         </section>
-        <EinladungPanel tipprundeId={tipprundeId} />
-        <section className="admin-action-card">
+        <EinladungPanel tipprundeId={tipprundeId} className="admin-card-invite" />
+        <section className="admin-action-card admin-card-side">
           <div className="admin-card-icon">
             <ShieldCheck aria-hidden="true" size={22} />
           </div>
@@ -116,7 +125,7 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
             </button>
           </form>
         </section>
-        <section className="admin-action-card">
+        <section className="admin-action-card admin-card-compact admin-card-archive">
           <div className="admin-card-icon">
             <Archive aria-hidden="true" size={22} />
           </div>
@@ -126,7 +135,7 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
             Archivieren
           </button>
         </section>
-        <section className="admin-action-card danger-card">
+        <section className="admin-action-card danger-card admin-card-compact">
           <div className="admin-card-icon">
             <Trash2 aria-hidden="true" size={22} />
           </div>
