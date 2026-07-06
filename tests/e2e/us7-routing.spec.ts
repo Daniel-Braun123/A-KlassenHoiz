@@ -6,6 +6,9 @@ test.describe("US7 Login-Routing und Tipprunden-Auswahl", () => {
   }) => {
     await page.goto("/?demoTipprunden=0");
     await expect(page.getByRole("heading", { name: "Meine Tipprunden" })).toBeVisible();
+    await expect(
+      page.getByRole("banner", { name: "App Navigation" }).getByLabel("Profil"),
+    ).toBeVisible();
     await expect(page.getByText("Du bist noch in keiner Tipprunde.")).toBeVisible();
 
     await page.goto("/?demoTipprunden=1");

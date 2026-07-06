@@ -19,6 +19,13 @@ export type PunktewertungForRangliste = {
   wertungstyp: Wertungstyp;
 };
 
+export type MitgliedForRangliste = {
+  nutzerId: string;
+  tipprundeId: string;
+  tipprundenNickname: string | null;
+  anzeigename: string;
+};
+
 export type ErgebnisSpielView = {
   spielId: string;
   heimteamName: string;
@@ -42,6 +49,7 @@ export type RanglistenRepository = {
     tipprundeId: string,
     nutzerId: string,
   ): Promise<{ rolle: TipprundeRolle } | null>;
+  listAktiveMitgliederForTipprunde(tipprundeId: string): Promise<MitgliedForRangliste[]>;
   listPunktewertungenForTipprunde(tipprundeId: string): Promise<PunktewertungForRangliste[]>;
   listPunktewertungenForSpieltag(
     tipprundeId: string,
@@ -60,8 +68,25 @@ async function assertActiveMember(
   }
 }
 
-function aggregatePunktewertungen(rows: PunktewertungForRangliste[]): DerivedRanglisteEintrag[] {
+function aggregatePunktewertungen(
+  rows: PunktewertungForRangliste[],
+  mitglieder: MitgliedForRangliste[] = [],
+): DerivedRanglisteEintrag[] {
   const grouped = new Map<string, RanglisteQuelle>();
+
+  for (const mitglied of mitglieder) {
+    grouped.set(mitglied.nutzerId, {
+      nutzerId: mitglied.nutzerId,
+      tipprundeId: mitglied.tipprundeId,
+      tipprundenNickname: mitglied.tipprundenNickname,
+      anzeigename: mitglied.anzeigename,
+      punkte: 0,
+      anzahlExakteTipps: 0,
+      anzahlTordifferenzTipps: 0,
+      anzahlTendenzTipps: 0,
+      anzahlAbgegebeneTipps: 0,
+    });
+  }
 
   for (const row of rows) {
     const existing = grouped.get(row.nutzerId);
@@ -100,9 +125,12 @@ export async function getGesamtRangliste(
   input: { tipprundeId: string; nutzerId: string },
 ): Promise<DerivedRanglisteEintrag[]> {
   await assertActiveMember(repository, input);
-  return aggregatePunktewertungen(
-    await repository.listPunktewertungenForTipprunde(input.tipprundeId),
-  );
+  const [punktewertungen, mitglieder] = await Promise.all([
+    repository.listPunktewertungenForTipprunde(input.tipprundeId),
+    repository.listAktiveMitgliederForTipprunde(input.tipprundeId),
+  ]);
+
+  return aggregatePunktewertungen(punktewertungen, mitglieder);
 }
 
 export async function getSpieltagRangliste(
@@ -110,9 +138,12 @@ export async function getSpieltagRangliste(
   input: { tipprundeId: string; spieltagId: string; nutzerId: string },
 ): Promise<DerivedRanglisteEintrag[]> {
   await assertActiveMember(repository, input);
-  return aggregatePunktewertungen(
-    await repository.listPunktewertungenForSpieltag(input.tipprundeId, input.spieltagId),
-  );
+  const [punktewertungen, mitglieder] = await Promise.all([
+    repository.listPunktewertungenForSpieltag(input.tipprundeId, input.spieltagId),
+    repository.listAktiveMitgliederForTipprunde(input.tipprundeId),
+  ]);
+
+  return aggregatePunktewertungen(punktewertungen, mitglieder);
 }
 
 export async function getVergangeneSpieltagErgebnisse(
@@ -234,6 +265,30 @@ export function createSupabaseRanglistenRepository(supabase: SupabaseClient): Ra
       }
 
       return data ? { rolle: data.rolle } : null;
+    },
+    async listAktiveMitgliederForTipprunde(tipprundeId) {
+      const { data, error } = await supabase
+        .from("mitgliedschaften")
+        .select("nutzer_id, tipprunden_nickname")
+        .eq("tipprunde_id", tipprundeId)
+        .eq("status", "active");
+
+      if (error) {
+        throw new AppError("Mitglieder konnten nicht geladen werden.", "members_load_failed", 500);
+      }
+
+      const nutzerIds = [...new Set((data ?? []).map((mitglied) => mitglied.nutzer_id as string))];
+      const names = await loadNames(supabase, tipprundeId, nutzerIds);
+
+      return (data ?? []).map((mitglied) => {
+        const name = names.get(mitglied.nutzer_id as string);
+        return {
+          nutzerId: mitglied.nutzer_id as string,
+          tipprundeId,
+          tipprundenNickname: name?.tipprundenNickname ?? null,
+          anzeigename: name?.anzeigename ?? "Nutzer",
+        };
+      });
     },
     async listPunktewertungenForTipprunde(tipprundeId) {
       const { data, error } = await supabase

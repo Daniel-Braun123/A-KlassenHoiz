@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, BadgeCheck, Mail, Shield, UserRound } from "lucide-react";
+import { ArrowLeft, BadgeCheck, LogOut, Mail, Shield, UserRound } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
@@ -53,6 +53,22 @@ export default async function ProfilPage() {
 
       <section className="profile-details profile-settings" aria-label="Profileinstellungen">
         <ThemeToggle />
+      </section>
+
+      <section className="profile-details profile-settings" aria-label="Sitzung">
+        <form className="profile-logout" action="/auth/signout" method="post">
+          <div>
+            <span>
+              <LogOut aria-hidden="true" size={16} />
+              Sitzung
+            </span>
+            <strong>Du kannst dich hier von diesem Konto abmelden.</strong>
+          </div>
+          <button className="button-link danger-button" type="submit">
+            <LogOut aria-hidden="true" size={18} />
+            Abmelden
+          </button>
+        </form>
       </section>
     </main>
   );

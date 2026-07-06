@@ -5,10 +5,12 @@ test.describe("US6 Ranglisten und Ergebnisse", () => {
     await page.goto("/demo-tipprunde/rangliste");
 
     await expect(page.getByRole("heading", { name: "Gesamtrangliste" })).toBeVisible();
-    await expect(page.getByText("Platz 1")).toHaveCount(2);
-    await expect(page.getByText("Platz 3")).toBeVisible();
-    await expect(page.getByText("Exakte Tipps")).toBeVisible();
-    await expect(page.getByText("Richtige Tordifferenz")).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Platzierung" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Name" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Punkte" })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Tipps" })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "Anna" })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "6" }).first()).toBeVisible();
 
     await page.goto("/demo-tipprunde/spieltage/demo-spieltag/rangliste");
     await expect(page.getByRole("heading", { name: "Spieltagsrangliste" })).toBeVisible();

@@ -10,6 +10,9 @@ test.describe("US4 Mobile Spieltag tippen", () => {
     await expect(page.getByText("FC Hoiz")).toBeVisible();
     await expect(page.getByText("TSV Spät")).toBeVisible();
     await expect(page.getByText("LIVE")).toBeVisible();
+    await expect(page.getByText("Dein Tipp").first()).toBeVisible();
+    await expect(page.getByText("+2")).toBeVisible();
+    await expect(page.getByText("Tipp vergessen")).toBeVisible();
 
     const openCard = page.getByTestId("tipp-card-spiel-offen");
     await expect(openCard.getByLabel("Heimtore")).toBeVisible();

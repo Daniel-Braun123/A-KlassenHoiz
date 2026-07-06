@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BarChart3, CalendarDays, Home, Settings, Trophy } from "lucide-react";
+import { BarChart3, CalendarDays, Home, Settings } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { RegisterTipprundeHeaderTitle } from "@/components/navigation/global-topbar";
@@ -29,14 +29,6 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
         tipprundeId={activeTipprunde.id}
         tipprundeName={activeTipprunde.name}
       />
-      <header className="mobile-shell-header">
-        <Link className="app-brand" href="/">
-          <span className="app-brand-mark">
-            <Trophy aria-hidden="true" size={18} />
-          </span>
-          A-KlassenHoiz
-        </Link>
-      </header>
       <NoConnectionMessage />
       <div className="mobile-shell-content">{children}</div>
       <nav className="mobile-nav" aria-label="Mobile Navigation">

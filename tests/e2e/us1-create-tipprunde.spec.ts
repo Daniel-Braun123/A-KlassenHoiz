@@ -17,6 +17,12 @@ test.describe("US1 Tipprunde creation and Admin dashboard", () => {
     await page.goto("/admin/tipprunden/demo-tipprunde");
     await expect(page.getByRole("heading", { name: "Tipprunde verwalten" })).toBeVisible();
     await expect(page.locator(".global-tipprunde-title")).toHaveText("Demo Tipprunde");
+    const mobileNav = page.getByRole("navigation", { name: "Mobile Navigation" });
+    await expect(mobileNav).toBeVisible();
+    await expect(mobileNav.getByRole("link", { name: "Verwalten" })).toHaveAttribute(
+      "href",
+      "/admin/tipprunden/demo-tipprunde",
+    );
     await expect(page.getByText("Tipprunde demo-tipprunde")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Grunddaten" })).toHaveCount(0);
     await expect(page.getByText("Alles Wichtige für deine Runde")).toHaveCount(0);

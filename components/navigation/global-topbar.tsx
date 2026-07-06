@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home } from "lucide-react";
+import { Home, UserRound } from "lucide-react";
 import { useEffect, useSyncExternalStore } from "react";
 
 const TIPPRUNDE_NAME_STORAGE_KEY = "a-klassenhoiz.tipprunde-names";
@@ -82,6 +82,11 @@ export function GlobalTopbar() {
         <Home aria-hidden="true" size={22} />
       </Link>
       {title ? <span className="global-tipprunde-title">{title}</span> : null}
+      {pathname !== "/profil" ? (
+        <Link className="global-profile-link" href="/profil" aria-label="Profil">
+          <UserRound aria-hidden="true" size={21} />
+        </Link>
+      ) : null}
     </header>
   );
 }

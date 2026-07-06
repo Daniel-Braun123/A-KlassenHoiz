@@ -5,6 +5,7 @@ import { useState, type FormEvent } from "react";
 
 import { TeamLogo } from "@/components/admin/team-logo";
 import type { SpielTippView } from "@/lib/domain/spieltag-view-service";
+import { calculatePunkte } from "@/lib/scoring/calculate-punkte";
 
 type TippCardProps = {
   tipprundeId: string;
@@ -46,10 +47,36 @@ function getSpielCenter(spiel: SpielTippView) {
   return { kind: "time" as const, label: formatAnstossUhrzeit(spiel.anstosszeit) };
 }
 
+function getTippStatus(
+  spiel: SpielTippView,
+): { kind: "points" | "forgotten" | "empty"; label: string } {
+  if (spiel.eigenerTipp && spiel.ergebnis) {
+    const result = calculatePunkte(
+      {
+        heimtore: spiel.ergebnis.heimtore,
+        auswaertstore: spiel.ergebnis.auswaertstore,
+      },
+      {
+        heimtore: spiel.eigenerTipp.heimtoreTipp,
+        auswaertstore: spiel.eigenerTipp.auswaertstoreTipp,
+      },
+    );
+
+    return { kind: "points", label: `+${result.punkte}` };
+  }
+
+  if (!spiel.eigenerTipp && !spiel.istTippbar) {
+    return { kind: "forgotten", label: "Tipp vergessen" };
+  }
+
+  return { kind: "empty", label: "" };
+}
+
 export function TippCard({ tipprundeId, spiel }: TippCardProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const center = getSpielCenter(spiel);
+  const tippStatus = getTippStatus(spiel);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -126,6 +153,7 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
       </div>
 
       <form className="compact-tipp-form" onSubmit={handleSubmit}>
+        <span className="tipp-form-label">Dein Tipp</span>
         <label>
           <span className="sr-only">Heimtore</span>
           <input
@@ -155,6 +183,18 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
             aria-label="Auswärtstore"
           />
         </label>
+        <span
+          className={[
+            "tipp-status-badge",
+            tippStatus.kind === "points" ? "has-points" : "",
+            tippStatus.kind === "forgotten" ? "is-forgotten" : "",
+          ]
+            .filter(Boolean)
+            .join(" ")}
+          aria-label={tippStatus.label || undefined}
+        >
+          {tippStatus.label}
+        </span>
         <button
           type="submit"
           disabled={!spiel.istTippbar || isSubmitting}

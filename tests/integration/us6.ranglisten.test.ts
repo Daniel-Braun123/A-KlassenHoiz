@@ -3,16 +3,23 @@ import { describe, expect, it } from "vitest";
 import {
   getGesamtRangliste,
   getSpieltagRangliste,
+  type MitgliedForRangliste,
   type PunktewertungForRangliste,
   type RanglistenRepository,
 } from "@/lib/domain/ranglisten-service";
 
-function createRepository(punktewertungen: PunktewertungForRangliste[]): RanglistenRepository {
+function createRepository(
+  punktewertungen: PunktewertungForRangliste[],
+  mitglieder: MitgliedForRangliste[] = [],
+): RanglistenRepository {
   return {
     async getAktiveMitgliedschaft(tipprundeId, nutzerId) {
       return tipprundeId === "tipprunde-1" && nutzerId === "mitglied-1"
         ? { rolle: "nutzer" }
         : null;
+    },
+    async listAktiveMitgliederForTipprunde(tipprundeId) {
+      return mitglieder.filter((mitglied) => mitglied.tipprundeId === tipprundeId);
     },
     async listPunktewertungenForTipprunde(tipprundeId) {
       return punktewertungen.filter((wertung) => wertung.tipprundeId === tipprundeId);
@@ -81,9 +88,35 @@ describe("US6 Ranglisten", () => {
       wertungstyp: "exakt",
     },
   ];
+  const mitglieder: MitgliedForRangliste[] = [
+    {
+      nutzerId: "nutzer-anna",
+      tipprundeId: "tipprunde-1",
+      tipprundenNickname: "Anna",
+      anzeigename: "Anna A.",
+    },
+    {
+      nutzerId: "nutzer-berta",
+      tipprundeId: "tipprunde-1",
+      tipprundenNickname: "Berta",
+      anzeigename: "Berta B.",
+    },
+    {
+      nutzerId: "nutzer-clara",
+      tipprundeId: "tipprunde-1",
+      tipprundenNickname: null,
+      anzeigename: "Clara C.",
+    },
+    {
+      nutzerId: "nutzer-dan",
+      tipprundeId: "tipprunde-1",
+      tipprundenNickname: "Dan",
+      anzeigename: "Dan D.",
+    },
+  ];
 
   it("derives Gesamt- and Spieltagsranglisten from Punktewertungen", async () => {
-    const repository = createRepository(punktewertungen);
+    const repository = createRepository(punktewertungen, mitglieder);
 
     const gesamt = await getGesamtRangliste(repository, {
       tipprundeId: "tipprunde-1",
@@ -101,6 +134,7 @@ describe("US6 Ranglisten", () => {
       [1, "Anna", 6],
       [1, "Berta", 6],
       [3, null, 4],
+      [4, "Dan", 0],
     ]);
     expect(gesamt[0]).toMatchObject({
       anzahlExakteTipps: 1,
@@ -113,6 +147,8 @@ describe("US6 Ranglisten", () => {
     ).toEqual([
       [1, "Anna", 6],
       [1, "Berta", 6],
+      [3, null, 0],
+      [3, "Dan", 0],
     ]);
   });
 

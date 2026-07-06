@@ -20,24 +20,22 @@ export function RanglisteTable({ title, entries }: RanglisteTableProps) {
           <table className="rangliste-table">
             <thead>
               <tr>
-                <th scope="col">Platz</th>
-                <th scope="col">Anzeigename</th>
-                <th scope="col">Punkte</th>
-                <th scope="col">Exakte Tipps</th>
-                <th scope="col">Richtige Tordifferenz</th>
-                <th scope="col">Richtige Tendenz</th>
-                <th scope="col">Abgegebene Tipps</th>
+                <th scope="col" aria-label="Platzierung">
+                  #
+                </th>
+                <th scope="col">Name</th>
+                <th scope="col" aria-label="Punkte">
+                  P
+                </th>
+                <th scope="col">Tipps</th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry) => (
                 <tr key={entry.nutzerId}>
-                  <td>Platz {entry.platzierung}</td>
+                  <td>{entry.platzierung}</td>
                   <td>{nameForEntry(entry)}</td>
                   <td>{entry.punkte}</td>
-                  <td>{entry.anzahlExakteTipps}</td>
-                  <td>{entry.anzahlTordifferenzTipps}</td>
-                  <td>{entry.anzahlTendenzTipps}</td>
                   <td>{entry.anzahlAbgegebeneTipps}</td>
                 </tr>
               ))}

@@ -187,7 +187,8 @@ button:disabled {
   backdrop-filter: blur(14px);
 }
 
-.global-home-link {
+.global-home-link,
+.global-profile-link {
   display: inline-grid;
   width: 44px;
   height: 44px;
@@ -204,7 +205,12 @@ button:disabled {
     box-shadow 180ms ease;
 }
 
-.global-home-link:hover {
+.global-profile-link {
+  margin-left: auto;
+}
+
+.global-home-link:hover,
+.global-profile-link:hover {
   border-color: color-mix(in srgb, var(--color-green) 38%, transparent);
   background: var(--color-green-soft);
   color: var(--color-green);
@@ -242,6 +248,38 @@ select {
   background: var(--color-field);
   color: var(--color-ink);
   padding: 10px 12px;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--color-field);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 13px center;
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  cursor: pointer;
+  padding-right: 46px;
+}
+
+select:hover {
+  border-color: color-mix(in srgb, var(--color-green) 42%, var(--color-line));
+  background-color: var(--color-surface);
+}
+
+select option {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 800;
+}
+
+select option:checked {
+  background: var(--color-green-soft);
+  color: var(--color-brand);
+}
+
+select option:hover {
+  background: var(--color-surface-strong);
 }
 
 input::placeholder {
@@ -328,7 +366,7 @@ input::placeholder {
 
 .tipprunden-switcher select {
   min-width: 0;
-  background: var(--color-surface);
+  background-color: var(--color-surface);
 }
 
 .mobile-nav {
@@ -401,7 +439,8 @@ input::placeholder {
 }
 
 .home-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 20px;
   align-items: flex-start;
   justify-content: space-between;
@@ -418,6 +457,11 @@ input::placeholder {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.home-actions {
+  grid-column: 1 / -1;
+  justify-content: flex-end;
 }
 
 .tipprunden-list {
@@ -519,6 +563,33 @@ input::placeholder {
 
 .profile-settings {
   margin-top: 14px;
+}
+
+.profile-logout {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+}
+
+.profile-logout > div {
+  border-bottom: 0;
+  padding: 0;
+}
+
+.profile-logout .danger-button {
+  width: 100%;
+}
+
+.danger-button {
+  border-color: color-mix(in srgb, var(--color-danger) 36%, transparent);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.danger-button:hover {
+  border-color: color-mix(in srgb, var(--color-danger) 54%, transparent);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .theme-setting {
@@ -1018,6 +1089,15 @@ input::placeholder {
   text-align: left;
 }
 
+.ergebnis-spiel-trigger svg {
+  color: var(--color-green);
+  transition: transform 180ms ease;
+}
+
+.ergebnis-spiel-trigger[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+
 .ergebnis-spiel-trigger:hover,
 .ergebnis-spiel-listbox button:hover,
 .ergebnis-spiel-listbox button[aria-selected="true"] {
@@ -1236,7 +1316,7 @@ input::placeholder {
 .spieltag-select select {
   min-height: 42px;
   border-color: color-mix(in srgb, var(--color-green) 24%, transparent);
-  background: var(--color-surface);
+  background-color: var(--color-surface);
   font-weight: 900;
 }
 
@@ -1372,13 +1452,27 @@ input::placeholder {
 
 .compact-tipp-form {
   display: grid;
-  grid-template-columns: minmax(44px, 56px) auto minmax(44px, 56px) 44px;
+  grid-template-columns:
+    minmax(54px, 70px)
+    minmax(64px, 1fr)
+    minmax(40px, 48px)
+    auto
+    minmax(40px, 48px)
+    44px;
   gap: 7px;
   align-items: center;
 }
 
 .compact-tipp-form label {
   gap: 0;
+}
+
+.compact-tipp-form label:first-of-type {
+  order: 3;
+}
+
+.compact-tipp-form label:last-of-type {
+  order: 5;
 }
 
 .compact-tipp-form input {
@@ -1390,15 +1484,58 @@ input::placeholder {
 }
 
 .compact-tipp-form button {
+  order: 6;
   width: 44px;
   min-height: 40px;
   padding: 8px;
 }
 
 .tipp-separator {
+  order: 4;
   color: var(--color-brand);
   font-size: 1.2rem;
   font-weight: 950;
+}
+
+.tipp-form-label {
+  order: 1;
+  min-width: 0;
+  color: var(--color-muted);
+  font-size: 0.66rem;
+  font-weight: 950;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tipp-status-badge {
+  order: 2;
+  display: inline-flex;
+  min-height: 30px;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  color: var(--color-muted);
+  padding: 4px 6px;
+  font-size: 0.68rem;
+  font-weight: 950;
+  line-height: 1.05;
+  text-align: center;
+}
+
+.tipp-status-badge:empty {
+  padding: 0;
+}
+
+.tipp-status-badge.has-points {
+  background: var(--color-green-soft);
+  color: var(--color-green);
+  font-size: 0.88rem;
+}
+
+.tipp-status-badge.is-forgotten {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
 }
 
 .tipp-card-header {
@@ -1462,7 +1599,7 @@ input::placeholder {
 }
 
 .rangliste-table-wrap {
-  overflow-x: auto;
+  overflow: hidden;
   border: 1px solid var(--color-line);
   border-radius: var(--radius);
   background: var(--color-surface);
@@ -1471,24 +1608,64 @@ input::placeholder {
 
 .rangliste-table {
   width: 100%;
-  min-width: 720px;
+  table-layout: fixed;
   border-collapse: collapse;
 }
 
 .rangliste-table th,
 .rangliste-table td {
   border-bottom: 1px solid var(--color-line);
-  padding: 13px;
+  padding: 12px 8px;
   text-align: left;
-  white-space: nowrap;
+  vertical-align: middle;
 }
 
 .rangliste-table th {
   background: var(--color-surface-strong);
   color: var(--color-brand);
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.rangliste-table th:first-child,
+.rangliste-table td:first-child {
+  width: 42px;
+  color: var(--color-muted);
+  text-align: center;
+  font-weight: 950;
+}
+
+.rangliste-table th:nth-child(2),
+.rangliste-table td:nth-child(2) {
+  width: auto;
+  min-width: 0;
+}
+
+.rangliste-table td:nth-child(2) {
+  overflow: hidden;
+  color: var(--color-brand);
+  font-weight: 950;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rangliste-table th:nth-child(3),
+.rangliste-table td:nth-child(3),
+.rangliste-table th:nth-child(4),
+.rangliste-table td:nth-child(4) {
+  width: 54px;
+  text-align: center;
+}
+
+.rangliste-table td:nth-child(3) {
+  color: var(--color-green);
+  font-weight: 950;
+}
+
+.rangliste-table td:nth-child(4) {
+  color: var(--color-muted);
+  font-weight: 900;
 }
 
 .ergebnisse-list,
@@ -1531,7 +1708,6 @@ input::placeholder {
     grid-template-columns: 1fr;
   }
 
-  .home-header,
   .tipprunde-card {
     display: grid;
     grid-template-columns: 1fr;
@@ -1540,6 +1716,10 @@ input::placeholder {
   .home-actions,
   .tipprunde-card-actions {
     width: 100%;
+  }
+
+  .home-actions {
+    justify-content: stretch;
   }
 
   .home-actions .button-link,

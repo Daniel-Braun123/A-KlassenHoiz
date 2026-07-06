@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Plus, ShieldCheck, Trophy, UserRound } from "lucide-react";
+import { ArrowRight, Plus, ShieldCheck, Trophy } from "lucide-react";
 
 import { ActiveTipprundeLink } from "@/components/tipps/tipprunden-switcher";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
@@ -101,11 +101,9 @@ async function loadCurrentSpieltagId(tipprundeId: string): Promise<string | null
 function HomeOverview({
   tipprunden,
   profile,
-  showProfileLink,
 }: {
   tipprunden: ActiveTipprundeOption[];
   profile?: HomeProfile;
-  showProfileLink: boolean;
 }) {
   return (
     <main className="tipprunden-page">
@@ -116,12 +114,6 @@ function HomeOverview({
           {profile ? <p>Servus {profile.anzeigename}, hier ist deine Übersicht.</p> : null}
         </div>
         <nav className="home-actions" aria-label="Home Aktionen">
-          {showProfileLink ? (
-            <Link className="button-link secondary" href="/profil">
-              <UserRound aria-hidden="true" size={18} />
-              Profil
-            </Link>
-          ) : null}
           <Link className="button-link" href="/admin/tipprunden/neu">
             <Plus aria-hidden="true" size={18} />
             Tipprunde erstellen
@@ -209,7 +201,6 @@ export default async function HomePage({
       <HomeOverview
         tipprunden={demoTipprunden(params.demoTipprunden)}
         profile={{ anzeigename: "Demo Nutzer" }}
-        showProfileLink={false}
       />
     );
   }
@@ -230,7 +221,6 @@ export default async function HomePage({
     <HomeOverview
       tipprunden={tipprunden}
       profile={{ anzeigename: profile.anzeigename }}
-      showProfileLink
     />
   );
 }

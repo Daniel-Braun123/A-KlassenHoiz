@@ -132,6 +132,30 @@ export function createDemoSpieltagTippView(
       status: "geplant",
       ergebnis: null,
     },
+    {
+      id: "spiel-ergebnis",
+      tipprundeId: "demo-tipprunde",
+      spieltagId,
+      heimteamName: "TSV Ergebnis",
+      auswaertsteamName: "SV Punkte",
+      heimteamLogoUrl: null,
+      auswaertsteamLogoUrl: null,
+      anstosszeit: "2026-07-31T13:30:00.000Z",
+      status: "beendet",
+      ergebnis: { heimtore: 3, auswaertstore: 1 },
+    },
+    {
+      id: "spiel-vergessen",
+      tipprundeId: "demo-tipprunde",
+      spieltagId,
+      heimteamName: "FC Verpasst",
+      auswaertsteamName: "SC Frist",
+      heimteamLogoUrl: null,
+      auswaertsteamLogoUrl: null,
+      anstosszeit: "2026-07-30T13:30:00.000Z",
+      status: "beendet",
+      ergebnis: { heimtore: 1, auswaertstore: 0 },
+    },
   ];
 
   return {
@@ -164,6 +188,17 @@ export function createDemoSpieltagTippView(
               submittedAt: "2026-08-01T12:00:00.000Z",
               updatedAt: "2026-08-01T12:00:00.000Z",
             }
+          : spiel.id === "spiel-ergebnis"
+            ? {
+                id: "demo-tipp-ergebnis",
+                spielId: "spiel-ergebnis",
+                tipprundeId: "demo-tipprunde",
+                nutzerId: "demo-user",
+                heimtoreTipp: 2,
+                auswaertstoreTipp: 0,
+                submittedAt: "2026-07-31T12:00:00.000Z",
+                updatedAt: "2026-07-31T12:00:00.000Z",
+              }
           : null,
       fremdeTippsSichtbar: shouldRevealFremdeTipps({ now, anstosszeit: spiel.anstosszeit }),
       fremdeTipps: [],
