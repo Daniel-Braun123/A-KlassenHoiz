@@ -23,6 +23,7 @@ function createRepository(): TippsRepository & {
         auswaertsteamName: "SV Wald",
         anstosszeit: "2026-08-01T13:30:00.000Z",
         status: "geplant",
+        ergebnis: null,
       },
     ],
     [
@@ -31,10 +32,11 @@ function createRepository(): TippsRepository & {
         id: "spiel-2",
         tipprundeId: "tipprunde-1",
         spieltagId: "spieltag-1",
-        heimteamName: "TSV Spaet",
+        heimteamName: "TSV Spät",
         auswaertsteamName: "SC Abend",
         anstosszeit: "2026-08-01T15:00:00.000Z",
         status: "geplant",
+        ergebnis: null,
       },
     ],
   ]);
@@ -214,6 +216,8 @@ describe("US4 Tipps", () => {
       id: "spiel-1",
       eigenerTipp: { heimtoreTipp: 3, auswaertstoreTipp: 1 },
       fremdeTippsSichtbar: true,
+      istLive: true,
+      ergebnisAusstehend: false,
     });
     expect(view.spiele[0].fremdeTipps).toHaveLength(1);
     expect(view.spiele[1]).toMatchObject({
@@ -222,6 +226,78 @@ describe("US4 Tipps", () => {
       fremdeTippsSichtbar: false,
       fremdeTipps: [],
       istTippbar: true,
+      istLive: false,
+      ergebnisAusstehend: false,
+    });
+  });
+
+  it("marks a finished Spiel without Ergebnis as waiting for Ergebnis", async () => {
+    const repository = createRepository();
+
+    const view = await createSpieltagTippView(repository, {
+      tipprundeId: "tipprunde-1",
+      spieltagId: "spieltag-1",
+      nutzerId: "nutzer-1",
+      now: new Date("2026-08-01T15:01:00.000Z"),
+    });
+
+    expect(view.spiele[0]).toMatchObject({
+      id: "spiel-1",
+      istLive: false,
+      ergebnisAusstehend: true,
+    });
+  });
+
+  it("keeps a Spiel live for exactly 90 minutes after Anstoss", async () => {
+    const repository = createRepository();
+
+    const liveView = await createSpieltagTippView(repository, {
+      tipprundeId: "tipprunde-1",
+      spieltagId: "spieltag-1",
+      nutzerId: "nutzer-1",
+      now: new Date("2026-08-01T15:00:00.000Z"),
+    });
+    expect(liveView.spiele[0]).toMatchObject({
+      id: "spiel-1",
+      istLive: true,
+      ergebnisAusstehend: false,
+    });
+
+    const finishedView = await createSpieltagTippView(repository, {
+      tipprundeId: "tipprunde-1",
+      spieltagId: "spieltag-1",
+      nutzerId: "nutzer-1",
+      now: new Date("2026-08-01T15:00:01.000Z"),
+    });
+    expect(finishedView.spiele[0]).toMatchObject({
+      id: "spiel-1",
+      istLive: false,
+      ergebnisAusstehend: true,
+    });
+  });
+
+  it("shows the live state during the 90 minute window even if an Ergebnis exists", async () => {
+    const repository = createRepository();
+    const spiel = repository.spiele.get("spiel-1");
+    if (!spiel) {
+      throw new Error("missing fixture");
+    }
+    repository.spiele.set("spiel-1", {
+      ...spiel,
+      ergebnis: { heimtore: 1, auswaertstore: 0 },
+    });
+
+    const view = await createSpieltagTippView(repository, {
+      tipprundeId: "tipprunde-1",
+      spieltagId: "spieltag-1",
+      nutzerId: "nutzer-1",
+      now: new Date("2026-08-01T14:30:00.000Z"),
+    });
+
+    expect(view.spiele[0]).toMatchObject({
+      id: "spiel-1",
+      istLive: true,
+      ergebnis: { heimtore: 1, auswaertstore: 0 },
     });
   });
 

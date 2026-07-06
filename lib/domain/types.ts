@@ -79,6 +79,7 @@ export interface Spieltag {
   tipprundeId: UUID;
   name: string;
   abschnitt: SpieltagAbschnitt;
+  nummer: number;
   sortOrder: number;
   externalSource?: string | null;
   externalLeagueId?: string | null;

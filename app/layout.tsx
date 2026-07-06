@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
+import Script from "next/script";
 import type { ReactNode } from "react";
-import { Home } from "lucide-react";
 
+import { GlobalTopbar } from "@/components/navigation/global-topbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -13,25 +13,34 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     title: "A-KlassenHoiz",
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b2a3a",
+  themeColor: "#020617",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="de">
+    <html lang="de" data-theme="dark" suppressHydrationWarning>
       <body>
-        <header className="global-topbar" aria-label="App Navigation">
-          <Link className="global-home-link" href="/" aria-label="Zur Home-Übersicht">
-            <Home aria-hidden="true" size={22} />
-          </Link>
-        </header>
+        <Script id="theme-initializer" strategy="beforeInteractive">
+          {`
+            try {
+              var theme = window.localStorage.getItem("a-klassenhoiz.theme");
+              var nextTheme = theme === "light" ? "light" : "dark";
+              document.documentElement.dataset.theme = nextTheme;
+              document.documentElement.style.colorScheme = nextTheme;
+            } catch (_) {
+              document.documentElement.dataset.theme = "dark";
+              document.documentElement.style.colorScheme = "dark";
+            }
+          `}
+        </Script>
+        <GlobalTopbar />
         {children}
       </body>
     </html>

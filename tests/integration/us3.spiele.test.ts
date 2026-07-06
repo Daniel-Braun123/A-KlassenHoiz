@@ -45,6 +45,7 @@ function createSpieltagRepository(): SpieltageRepository & {
         tipprundeId: input.tipprundeId,
         name: input.name,
         abschnitt: input.abschnitt,
+        nummer: input.nummer,
         sortOrder: input.sortOrder,
       };
       spieltage.set(spieltag.id, spieltag);
@@ -63,6 +64,17 @@ function createSpieltagRepository(): SpieltageRepository & {
     async deleteSpieltag(spieltagId) {
       spieltage.delete(spieltagId);
     },
+    async listSpieltage(tipprundeId) {
+      return [...spieltage.values()].filter((spieltag) => spieltag.tipprundeId === tipprundeId);
+    },
+    async getNextSpieltagNummer(tipprundeId, abschnitt) {
+      const highest = [...spieltage.values()]
+        .filter(
+          (spieltag) => spieltag.tipprundeId === tipprundeId && spieltag.abschnitt === abschnitt,
+        )
+        .reduce((max, spieltag) => Math.max(max, spieltag.nummer), 0);
+      return highest + 1;
+    },
   };
 }
 
@@ -73,6 +85,12 @@ function createSpielRepository(): SpieleRepository & { spiele: Map<string, Spiel
   return {
     spiele,
     getAktiveMitgliedschaft,
+    async listSpiele(tipprundeId, spieltagId) {
+      return [...spiele.values()].filter(
+        (spiel) =>
+          spiel.tipprundeId === tipprundeId && (!spieltagId || spiel.spieltagId === spieltagId),
+      );
+    },
     async insertSpiel(input) {
       const spiel: SpielRecord = {
         id: `spiel-${spiele.size + 1}`,
@@ -83,6 +101,7 @@ function createSpielRepository(): SpieleRepository & { spiele: Map<string, Spiel
         anstosszeit: input.anstosszeit,
         timezone: "Europe/Berlin",
         status: input.status,
+        ergebnis: null,
       };
       spiele.set(spiel.id, spiel);
       return spiel;
@@ -104,34 +123,57 @@ function createSpielRepository(): SpieleRepository & { spiele: Map<string, Spiel
 }
 
 describe("US3 Spieltage und Spiele", () => {
-  it("manages Spieltage with Abschnitt and sorting for Admins and Co-Admins", async () => {
+  it("creates Spieltage with automatic numbers per Hinrunde and Rückrunde", async () => {
     const repository = createSpieltagRepository();
 
-    const spieltag = await createSpieltag(repository, {
+    const hinrunde1 = await createSpieltag(repository, {
       tipprundeId: "tipprunde-1",
       callerNutzerId: "admin-1",
-      name: "Spieltag 1",
       abschnitt: "hinrunde",
+    });
+    expect(hinrunde1).toMatchObject({
+      name: "Hinrunde Spieltag 1",
+      abschnitt: "hinrunde",
+      nummer: 1,
       sortOrder: 1,
     });
-    expect(spieltag).toMatchObject({ name: "Spieltag 1", abschnitt: "hinrunde", sortOrder: 1 });
+
+    const hinrunde2 = await createSpieltag(repository, {
+      tipprundeId: "tipprunde-1",
+      callerNutzerId: "coadmin-1",
+      abschnitt: "hinrunde",
+    });
+    expect(hinrunde2).toMatchObject({ name: "Hinrunde Spieltag 2", nummer: 2 });
+
+    const rueckrunde1 = await createSpieltag(repository, {
+      tipprundeId: "tipprunde-1",
+      callerNutzerId: "admin-1",
+      abschnitt: "rueckrunde",
+    });
+    expect(rueckrunde1).toMatchObject({ name: "Rückrunde Spieltag 1", nummer: 1 });
+
+    await expect(
+      createSpieltag(repository, {
+        tipprundeId: "tipprunde-1",
+        callerNutzerId: "admin-1",
+        abschnitt: "nachholspiele",
+      }),
+    ).rejects.toMatchObject({ code: "spieltag_abschnitt_invalid" });
 
     const updated = await updateSpieltag(repository, {
       tipprundeId: "tipprunde-1",
-      spieltagId: spieltag.id,
+      spieltagId: hinrunde1.id,
       callerNutzerId: "coadmin-1",
-      name: "Nachholspieltag",
-      abschnitt: "nachholspiele",
-      sortOrder: 99,
+      name: "Hinrunde Spieltag 1 - aktualisiert",
     });
-    expect(updated).toMatchObject({ name: "Nachholspieltag", abschnitt: "nachholspiele" });
+    expect(updated).toMatchObject({ name: "Hinrunde Spieltag 1 - aktualisiert" });
 
     await deleteSpieltag(repository, {
       tipprundeId: "tipprunde-1",
-      spieltagId: spieltag.id,
+      spieltagId: hinrunde1.id,
       callerNutzerId: "coadmin-1",
     });
-    expect(repository.spieltage.has(spieltag.id)).toBe(false);
+    expect(repository.spieltage.has(hinrunde1.id)).toBe(false);
   });
 
   it("manages Spiele with German status values and Europe/Berlin Anstosszeit", async () => {
@@ -204,7 +246,7 @@ describe("US3 Spieltage und Spiele", () => {
         anstossUhrzeit: "15:30",
         status: "geplant",
       }),
-    ).rejects.toMatchObject({ code: "spiel_teams_must_differ" });
+    ).rejects.toMatchObject({ code: "spiel_vereine_must_differ" });
 
     await expect(
       createSpiel(repository, {

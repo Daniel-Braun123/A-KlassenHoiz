@@ -122,6 +122,30 @@ describe("US5 Ergebnis-Historie", () => {
     ]);
   });
 
+  it("requires a reason when an existing Ergebnis is changed", async () => {
+    const repository = createRepository();
+
+    await enterErgebnis(repository, {
+      tipprundeId: "tipprunde-1",
+      spielId: "spiel-1",
+      callerNutzerId: "admin-1",
+      heimtore: 2,
+      auswaertstore: 1,
+      now: new Date("2026-08-01T16:00:00.000Z"),
+    });
+
+    await expect(
+      enterErgebnis(repository, {
+        tipprundeId: "tipprunde-1",
+        spielId: "spiel-1",
+        callerNutzerId: "coadmin-1",
+        heimtore: 3,
+        auswaertstore: 1,
+        now: new Date("2026-08-01T17:00:00.000Z"),
+      }),
+    ).rejects.toMatchObject({ code: "ergebnis_reason_required" });
+  });
+
   it("rejects normal Nutzer and invalid scores", async () => {
     const repository = createRepository();
 

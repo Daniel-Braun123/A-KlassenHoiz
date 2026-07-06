@@ -108,7 +108,25 @@ remain equivalent.
 - Updates membership role.
 - Owner Admin role cannot be removed through this operation.
 
-### Create/Update Team/Verein
+### Create/Update Liga
+
+`POST /tipprunden/{tipprundeId}/liga`
+
+`PATCH /tipprunden/{tipprundeId}/liga`
+
+**Actor**: Admin or Co-Admin
+
+**Input**
+
+- `name`
+
+**Outcome**
+
+- Creates or updates the single Liga for the Tipprunde.
+- Rejects creating a second Liga for the same Tipprunde.
+- Unlocks Verein, Spieltag, Spiel and Ergebnis management after the Liga exists.
+
+### Create/Update Verein
 
 `POST /tipprunden/{tipprundeId}/teams`
 
@@ -124,26 +142,42 @@ remain equivalent.
 
 **Outcome**
 
-- Stores team data.
+- Stores Verein data.
+- Rejects duplicate Verein names within the same Tipprunde.
 - UI must use Fallback-Logo if Logo-URL is missing or invalid.
 
-### Create/Update Spieltag
+### Create Spieltag
 
 `POST /tipprunden/{tipprundeId}/spieltage`
-
-`PATCH /tipprunden/{tipprundeId}/spieltage/{spieltagId}`
 
 **Actor**: Admin or Co-Admin
 
 **Input**
 
-- `name`
-- `abschnitt`
-- `sortOrder`
+- `abschnitt`: `hinrunde` or `rueckrunde`
 
 **Outcome**
 
-- Creates or updates a freely named Spieltag.
+- Requires an existing Liga.
+- Creates the next numbered Spieltag for the chosen Abschnitt.
+- Generates display name from Abschnitt and Nummer.
+- Rejects duplicate `(tipprundeId, abschnitt, nummer)` states.
+
+### Update/Delete Spieltag
+
+`PATCH /tipprunden/{tipprundeId}/spieltage/{spieltagId}`
+
+`DELETE /tipprunden/{tipprundeId}/spieltage/{spieltagId}`
+
+**Actor**: Admin or Co-Admin
+
+**Input**
+
+- optional `abschnitt` when supported by implementation
+
+**Outcome**
+
+- Keeps Spieltag uniqueness and generated naming rules intact.
 
 ### Create/Update Spiel
 
@@ -156,15 +190,18 @@ remain equivalent.
 **Input**
 
 - `spieltagId`
-- `heimteamId`
-- `auswaertsteamId`
-- `anstosszeit`
-- `status`
+- `heimvereinId`
+- `auswaertsvereinId`
+- `anstossDatum`
+- `anstossUhrzeit`
+- optional `status`: `geplant`, `verschoben` or `abgesagt` in creation UI
 - optional future external metadata
 
 **Outcome**
 
 - Creates or updates Spiel.
+- Requires existing Liga, Spieltag and Vereine.
+- Rejects identical Heimverein and Auswaertsverein.
 - Verschobene Spiele keep existing Tipps and receive new Tippfrist from
   updated Anstosszeit.
 
@@ -211,7 +248,7 @@ remain equivalent.
 
 **Outcome**
 
-- Returns Spieltag, Spiele, Teams/Vereine, own Tipps, Ergebnisse where
+- Returns Spieltag, Spiele, Vereine, own Tipps, Ergebnisse where
   available and Tipp visibility flags.
 - Returns Tipps anderer Nutzer only after each Spiel's Tippfrist.
 
@@ -233,6 +270,10 @@ remain equivalent.
 - Non-members cannot read Tipprunde resources.
 - Normal Nutzer cannot access Admin/Co-Admin operations.
 - Co-Admins cannot permanently delete Tipprunden or transfer Besitzerrechte.
+- Liga must exist before Verein, Spieltag, Spiel or Ergebnis management.
+- Duplicate Verein names in one Tipprunde are rejected.
+- Spieltag numbering is automatic and unique per Abschnitt.
+- Heimverein and Auswaertsverein cannot be identical.
 - Tipps lock independently at Anstosszeit.
 - Einladungslink rotation invalidates previous link.
 - Ergebnis changes are historized and scoring remains idempotent.

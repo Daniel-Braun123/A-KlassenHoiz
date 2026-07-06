@@ -1,15 +1,23 @@
 import { TippCard } from "@/components/tipps/tipp-card";
+import { SpieltagSelect, type SpieltagOption } from "@/components/tipps/spieltag-select";
 import type { SpieltagTippView } from "@/lib/domain/spieltag-view-service";
 
 type SpieltagTippsProps = {
   view: SpieltagTippView;
+  spieltage: SpieltagOption[];
 };
 
-export function SpieltagTipps({ view }: SpieltagTippsProps) {
+export function SpieltagTipps({ view, spieltage }: SpieltagTippsProps) {
   return (
     <section className="tipps-page" aria-labelledby="spieltag-tippen-heading">
-      <p className="eyebrow">Spieltag {view.spieltagId}</p>
-      <h1 id="spieltag-tippen-heading">Spieltag tippen</h1>
+      <h1 id="spieltag-tippen-heading" className="sr-only">
+        Spieltag tippen
+      </h1>
+      <SpieltagSelect
+        tipprundeId={view.tipprundeId}
+        spieltagId={view.spieltagId}
+        spieltage={spieltage}
+      />
       {view.spiele.length === 0 ? (
         <div className="empty-state">
           <h2>Noch keine Spiele</h2>

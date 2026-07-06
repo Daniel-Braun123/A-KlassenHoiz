@@ -4,7 +4,7 @@
 
 The domain model centers on private Tipprunden. A Nutzer can be a member of
 multiple Tipprunden, and each membership carries a Tipprunden-Nickname and role.
-Admins and Co-Admins manage Spieltage, Spiele, Teams/Vereine, Ergebnisse and
+Admins and Co-Admins manage the Liga, Vereine, Spieltage, Spiele, Ergebnisse and
 Einladungen. Normal Nutzer submit Tipps until each Spiel's Anstosszeit.
 Punktewertungen and Ranglisten are derived idempotently from Ergebnisse and
 Tipps.
@@ -41,7 +41,8 @@ Tipps.
 **Relationships**
 
 - Has many Tipprunden-Mitgliedschaften.
-- Has many Spieltage, Teams/Vereine, Einladungen and Spiele through Spieltage.
+- Has exactly one Liga in the revised V1 Spielplan flow.
+- Has many Spieltage, Vereine, Einladungen and Spiele through Spieltage.
 - Owner is a Nutzer and has final Besitzerrechte.
 
 **Validation**
@@ -60,6 +61,28 @@ active -> deleted
 archived -> deleted
 deleted -> terminal
 ```
+
+### Liga
+
+**Fields**
+
+- `id`
+- `tipprunde_id`
+- `name`
+- `created_at`, `updated_at`
+
+**Relationships**
+
+- Belongs to exactly one Tipprunde.
+- A Tipprunde has at most one Liga in V1.
+- Vereine, Spieltage, Spiele and Ergebnisse are managed only after this Liga
+  exists.
+
+**Validation**
+
+- Name is required.
+- `tipprunde_id` is unique so only one Liga can exist per Tipprunde.
+- Only Admins and Co-Admins can create or update the Liga.
 
 ### Tipprunden-Mitgliedschaft
 
@@ -101,7 +124,7 @@ deleted -> terminal
   used without complex extra infrastructure. The Einladungslink remains the
   mandatory V1 path.
 
-### Team/Verein
+### Verein
 
 **Fields**
 
@@ -116,7 +139,7 @@ deleted -> terminal
 
 **Validation**
 
-- Name is required inside a Tipprunde.
+- Name is required and unique inside a Tipprunde.
 - Missing, invalid or non-loadable Logo-URL must fall back to neutral logo.
 - External fields are optional and reserved for future import.
 
@@ -126,8 +149,9 @@ deleted -> terminal
 
 - `id`
 - `tipprunde_id`
-- `name`
-- `abschnitt`: `hinrunde`, `rueckrunde`, `nachholspiele`, `frei`
+- `name`: generated display name such as `Hinrunde 1`
+- `abschnitt`: `hinrunde`, `rueckrunde`
+- `nummer`: automatically assigned positive integer per Tipprunde and Abschnitt
 - `sort_order`
 - `external_source`
 - `external_league_id`
@@ -139,7 +163,10 @@ deleted -> terminal
 
 **Validation**
 
-- Name is required and can be freely chosen.
+- Liga must exist before creating Spieltage.
+- Name is generated from Abschnitt and Nummer.
+- `(tipprunde_id, abschnitt, nummer)` is unique.
+- Nummer is assigned as the next available integer for the chosen Abschnitt.
 - A Spieltag can contain Spiele across multiple calendar dates.
 
 ### Spiel
@@ -149,8 +176,8 @@ deleted -> terminal
 - `id`
 - `tipprunde_id`
 - `spieltag_id`
-- `heimteam_id`
-- `auswaertsteam_id`
+- `heimverein_id`
+- `auswaertsverein_id`
 - `anstosszeit`
 - `timezone`: fixed to `Europe/Berlin` in V1
 - `status`: `geplant`, `beendet`, `verschoben`, `abgesagt`, `abgebrochen`
@@ -163,8 +190,11 @@ deleted -> terminal
 
 **Validation**
 
-- Heimteam and Auswaertsteam are required and must differ.
+- Liga and Spieltag must exist before creating Spiele.
+- Heimverein and Auswaertsverein are required and must differ.
 - Anstosszeit is interpreted in Europe/Berlin.
+- Spiel creation defaults to `geplant`; creation UI exposes `verschoben` and
+  `abgesagt` as optional alternatives.
 - Planned Spiele are tippable until their own Anstosszeit.
 - Verschobene Spiele keep existing Tipps and use the new Anstosszeit as
   Tippfrist.
@@ -295,7 +325,7 @@ abgebrochen -> abgesagt
 
 - Normal Nutzer can read only Tipprunden where they have active membership.
 - Normal Nutzer can create/update only their own Tipps before Tippfrist.
-- Admins and Co-Admins can manage Spieltage, Spiele, Teams/Vereine, Logos and
+- Admins and Co-Admins can manage Liga, Spieltage, Spiele, Vereine, Logos and
   Ergebnisse inside their Tipprunde.
 - Only owner Admin and global App-Admin can perform endgueltiges Loeschen.
 - Global App-Admin is minimally prepared for operational intervention.

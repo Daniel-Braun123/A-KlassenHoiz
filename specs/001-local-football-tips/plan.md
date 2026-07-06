@@ -8,7 +8,7 @@
 
 A-KlassenHoiz will be implemented as a mobile-first private Tippspiel web app
 for local Bavarian football rounds. V1 covers email/password login, private
-Tipprunden, invitations, manual Spieltag/Spiel/Team/Ergebnis management,
+Tipprunden, invitations, manual Liga/Verein/Spieltag/Spiel/Ergebnis management,
 Tippabgabe until each Anstosszeit, idempotent Punkteberechnung, Ranglisten and
 PWA basics. BFV import, scraping, push notifications, offline Tippabgabe and
 real-money betting features remain out of scope.
@@ -143,3 +143,69 @@ authorization and future BFV import work.
 ## Complexity Tracking
 
 No constitution violations require complexity justification.
+
+## Change Plan 2026-07-04: Liga-first Spielplanverwaltung
+
+### Summary
+
+The existing US3 Spielplan admin flow will be redesigned from a generic manual
+form surface into a Liga-first workflow. Each Tipprunde has exactly one Liga.
+Admins and Co-Admins must create that Liga first. Only after that can they
+manage Vereine, Spieltage, Spiele and Ergebnisse. User-facing terminology moves
+from Team/Team-Verein wording to Verein.
+
+### Data and Migration Plan
+
+- Add a `ligen` table with a unique `tipprunde_id` constraint.
+- Add/confirm unique Verein name enforcement per Tipprunde.
+- Add a numeric Spieltag field such as `nummer` and constrain
+  `(tipprunde_id, abschnitt, nummer)` to be unique.
+- Restrict revised Spieltag Abschnitt values for the creation flow to
+  `hinrunde` and `rueckrunde`.
+- Keep existing tables and data non-destructively where possible. Existing
+  early/test data may be tolerated, but migrations must not drop user data
+  without explicit approval.
+- Preserve RLS and service-role isolation for the new Liga table and changed
+  constraints.
+
+### Domain and API Plan
+
+- Introduce Liga repository/service operations with Admin/Co-Admin checks.
+- Rename user-facing Team operations to Verein while allowing existing internal
+  table names if that keeps the migration low-risk.
+- Add validation for duplicate Verein names within a Tipprunde.
+- Add Spieltag creation logic that calculates the next available Nummer per
+  Tipprunde and Abschnitt.
+- Add Spiel validation that blocks identical Heimverein/Auswaertsverein.
+- Keep Europe/Berlin handling for Anpfiff/Anstosszeit.
+- Keep full Spiel status support in the domain, but creation UI should expose
+  `geplant` by default and optionally `verschoben`/`abgesagt`.
+
+### UX Plan
+
+- Spielplan-Verwaltung first shows a focused Liga creation step when no Liga
+  exists.
+- After Liga exists, the admin UI becomes a dashboard/tabbed workspace:
+  `Vereine`, `Spieltage & Spiele`, `Ergebnisse`.
+- Verein selection for Spiele uses dropdowns with logo/fallback logo and name.
+- Spiele are created from inside a selected Spieltag, because this is clearer
+  than forcing all Spiele during Spieltag creation.
+- Ergebnis management stays reachable as its own area to separate structure
+  maintenance from matchday result work.
+- Use toast/status notifications for success and validation errors without
+  adding betting terminology.
+
+### Testing Plan
+
+- Write tests before implementation for Liga creation gate, duplicate Verein
+  rejection, automatic Spieltag numbering and Heim/Auswaerts validation.
+- Add e2e coverage for the revised admin Spielplan flow.
+- Re-run lint, typecheck, unit tests, integration tests, e2e tests and build
+  after implementation.
+
+### Non-Goals
+
+- No BFV import.
+- No logo upload; Logo-URL remains V1.
+- No multi-Liga Tipprunden.
+- No destructive cleanup of existing early/test data without explicit approval.

@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { SPIELTAG_ABSCHNITT } from "@/lib/domain/constants";
 import {
   assertCanManageContent,
   requireNonBlank,
@@ -14,14 +13,18 @@ export type SpieltagRecord = {
   tipprundeId: string;
   name: string;
   abschnitt: SpieltagAbschnitt;
+  nummer: number;
   sortOrder: number;
 };
 
 export type SpieltageRepository = ContentManagerRepositoryPart & {
+  listSpieltage(tipprundeId: string): Promise<SpieltagRecord[]>;
+  getNextSpieltagNummer(tipprundeId: string, abschnitt: SpieltagAbschnitt): Promise<number>;
   insertSpieltag(input: {
     tipprundeId: string;
     name: string;
     abschnitt: SpieltagAbschnitt;
+    nummer: number;
     sortOrder: number;
   }): Promise<SpieltagRecord>;
   updateSpieltag(
@@ -36,6 +39,7 @@ function mapSpieltag(row: {
   tipprunde_id: string;
   name: string;
   abschnitt: SpieltagAbschnitt;
+  nummer: number;
   sort_order: number;
 }): SpieltagRecord {
   return {
@@ -43,16 +47,22 @@ function mapSpieltag(row: {
     tipprundeId: row.tipprunde_id,
     name: row.name,
     abschnitt: row.abschnitt,
+    nummer: row.nummer,
     sortOrder: row.sort_order,
   };
 }
 
 function requireAbschnitt(value: unknown): SpieltagAbschnitt {
-  if (typeof value === "string" && SPIELTAG_ABSCHNITT.includes(value as SpieltagAbschnitt)) {
+  if (value === "hinrunde" || value === "rueckrunde") {
     return value as SpieltagAbschnitt;
   }
 
-  throw new AppError("Ungueltiger Spieltag-Abschnitt.", "spieltag_abschnitt_invalid", 400);
+  throw new AppError("Ungültiger Spieltag-Abschnitt.", "spieltag_abschnitt_invalid", 400);
+}
+
+function formatSpieltagName(abschnitt: SpieltagAbschnitt, nummer: number): string {
+  const label = abschnitt === "rueckrunde" ? "Rückrunde" : "Hinrunde";
+  return `${label} Spieltag ${nummer}`;
 }
 
 function normalizeSortOrder(value: unknown): number {
@@ -73,23 +83,32 @@ export async function createSpieltag(
   input: {
     tipprundeId: string;
     callerNutzerId: string;
-    name: string;
     abschnitt: unknown;
-    sortOrder: unknown;
+    name?: string;
+    nummer?: number;
+    sortOrder?: unknown;
     isGlobalAdmin?: boolean;
   },
 ): Promise<SpieltagRecord> {
   await assertCanManageContent(repository, input);
+  const abschnitt = requireAbschnitt(input.abschnitt);
+  const nummer =
+    input.nummer ?? (await repository.getNextSpieltagNummer(input.tipprundeId, abschnitt));
+  const name =
+    input.name === undefined || input.name.trim() === ""
+      ? formatSpieltagName(abschnitt, nummer)
+      : requireNonBlank(
+          input.name,
+          "Bitte gib einen Spieltag-Namen ein.",
+          "spieltag_name_required",
+        );
 
   return repository.insertSpieltag({
     tipprundeId: input.tipprundeId,
-    name: requireNonBlank(
-      input.name,
-      "Bitte gib einen Spieltag-Namen ein.",
-      "spieltag_name_required",
-    ),
-    abschnitt: requireAbschnitt(input.abschnitt),
-    sortOrder: normalizeSortOrder(input.sortOrder),
+    name,
+    abschnitt,
+    nummer,
+    sortOrder: nummer,
   });
 }
 
@@ -155,6 +174,41 @@ export function createSupabaseSpieltageRepository(supabase: SupabaseClient): Spi
 
       return data ? { rolle: data.rolle } : null;
     },
+    async listSpieltage(tipprundeId) {
+      const { data, error } = await supabase
+        .from("spieltage")
+        .select("id, tipprunde_id, name, abschnitt, nummer, sort_order")
+        .eq("tipprunde_id", tipprundeId)
+        .order("abschnitt", { ascending: true })
+        .order("nummer", { ascending: true })
+        .order("sort_order", { ascending: true });
+
+      if (error) {
+        throw new AppError("Spieltage konnten nicht geladen werden.", "spieltage_load_failed", 500);
+      }
+
+      return (data ?? []).map(mapSpieltag);
+    },
+    async getNextSpieltagNummer(tipprundeId, abschnitt) {
+      const { data, error } = await supabase
+        .from("spieltage")
+        .select("nummer")
+        .eq("tipprunde_id", tipprundeId)
+        .eq("abschnitt", abschnitt)
+        .order("nummer", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (error) {
+        throw new AppError(
+          "Nächste Spieltag-Nummer konnte nicht ermittelt werden.",
+          "spieltag_nummer_load_failed",
+          500,
+        );
+      }
+
+      return Number(data?.nummer ?? 0) + 1;
+    },
     async insertSpieltag(input) {
       const { data, error } = await supabase
         .from("spieltage")
@@ -162,12 +216,21 @@ export function createSupabaseSpieltageRepository(supabase: SupabaseClient): Spi
           tipprunde_id: input.tipprundeId,
           name: input.name,
           abschnitt: input.abschnitt,
+          nummer: input.nummer,
           sort_order: input.sortOrder,
         })
-        .select("id, tipprunde_id, name, abschnitt, sort_order")
+        .select("id, tipprunde_id, name, abschnitt, nummer, sort_order")
         .single();
 
       if (error || !data) {
+        if (error?.code === "23505") {
+          throw new AppError(
+            "Diesen Spieltag gibt es in diesem Abschnitt bereits.",
+            "spieltag_duplicate",
+            409,
+          );
+        }
+
         throw new AppError("Spieltag konnte nicht erstellt werden.", "spieltag_create_failed", 500);
       }
 
@@ -189,10 +252,18 @@ export function createSupabaseSpieltageRepository(supabase: SupabaseClient): Spi
         .from("spieltage")
         .update(updatePayload)
         .eq("id", spieltagId)
-        .select("id, tipprunde_id, name, abschnitt, sort_order")
+        .select("id, tipprunde_id, name, abschnitt, nummer, sort_order")
         .single();
 
       if (error || !data) {
+        if (error?.code === "23505") {
+          throw new AppError(
+            "Diesen Spieltag gibt es in diesem Abschnitt bereits.",
+            "spieltag_duplicate",
+            409,
+          );
+        }
+
         throw new AppError(
           "Spieltag konnte nicht aktualisiert werden.",
           "spieltag_update_failed",

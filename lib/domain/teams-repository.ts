@@ -16,6 +16,7 @@ export type TeamRecord = {
 };
 
 export type TeamsRepository = ContentManagerRepositoryPart & {
+  listTeams(tipprundeId: string): Promise<TeamRecord[]>;
   insertTeam(input: {
     tipprundeId: string;
     name: string;
@@ -56,7 +57,7 @@ export async function createTeam(
 
   return repository.insertTeam({
     tipprundeId: input.tipprundeId,
-    name: requireNonBlank(input.name, "Bitte gib einen Teamnamen ein.", "team_name_required"),
+    name: requireNonBlank(input.name, "Bitte gib einen Vereinsnamen ein.", "verein_name_required"),
     logoUrl: normalizeOptionalUrl(input.logoUrl),
   });
 }
@@ -78,7 +79,7 @@ export async function updateTeam(
     name:
       input.name === undefined
         ? undefined
-        : requireNonBlank(input.name, "Bitte gib einen Teamnamen ein.", "team_name_required"),
+        : requireNonBlank(input.name, "Bitte gib einen Vereinsnamen ein.", "verein_name_required"),
     logoUrl: input.logoUrl === undefined ? undefined : normalizeOptionalUrl(input.logoUrl),
   });
 }
@@ -117,6 +118,19 @@ export function createSupabaseTeamsRepository(supabase: SupabaseClient): TeamsRe
 
       return data ? { rolle: data.rolle } : null;
     },
+    async listTeams(tipprundeId) {
+      const { data, error } = await supabase
+        .from("teams")
+        .select("id, tipprunde_id, name, logo_url")
+        .eq("tipprunde_id", tipprundeId)
+        .order("name", { ascending: true });
+
+      if (error) {
+        throw new AppError("Vereine konnten nicht geladen werden.", "vereine_load_failed", 500);
+      }
+
+      return (data ?? []).map(mapTeam);
+    },
     async insertTeam(input) {
       const { data, error } = await supabase
         .from("teams")
@@ -129,7 +143,15 @@ export function createSupabaseTeamsRepository(supabase: SupabaseClient): TeamsRe
         .single();
 
       if (error || !data) {
-        throw new AppError("Team/Verein konnte nicht erstellt werden.", "team_create_failed", 500);
+        if (error?.code === "23505") {
+          throw new AppError(
+            "Diesen Vereinsnamen gibt es in der Tipprunde bereits.",
+            "verein_name_duplicate",
+            409,
+          );
+        }
+
+        throw new AppError("Verein konnte nicht erstellt werden.", "verein_create_failed", 500);
       }
 
       return mapTeam(data);
@@ -151,11 +173,15 @@ export function createSupabaseTeamsRepository(supabase: SupabaseClient): TeamsRe
         .single();
 
       if (error || !data) {
-        throw new AppError(
-          "Team/Verein konnte nicht aktualisiert werden.",
-          "team_update_failed",
-          500,
-        );
+        if (error?.code === "23505") {
+          throw new AppError(
+            "Diesen Vereinsnamen gibt es in der Tipprunde bereits.",
+            "verein_name_duplicate",
+            409,
+          );
+        }
+
+        throw new AppError("Verein konnte nicht aktualisiert werden.", "verein_update_failed", 500);
       }
 
       return mapTeam(data);
@@ -163,7 +189,7 @@ export function createSupabaseTeamsRepository(supabase: SupabaseClient): TeamsRe
     async deleteTeam(teamId) {
       const { error } = await supabase.from("teams").delete().eq("id", teamId);
       if (error) {
-        throw new AppError("Team/Verein konnte nicht geloescht werden.", "team_delete_failed", 500);
+        throw new AppError("Verein konnte nicht gelöscht werden.", "verein_delete_failed", 500);
       }
     },
   };

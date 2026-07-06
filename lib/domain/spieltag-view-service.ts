@@ -9,10 +9,44 @@ export type SpieltagTippView = {
 
 export type SpielTippView = SpielForTipp & {
   istTippbar: boolean;
+  istLive: boolean;
+  ergebnisAusstehend: boolean;
   eigenerTipp: TippRecord | null;
   fremdeTippsSichtbar: boolean;
   fremdeTipps: TippRecord[];
 };
+
+function isSpielLive({
+  now,
+  anstosszeit,
+  status,
+}: {
+  now: Date;
+  anstosszeit: string;
+  status: string;
+}): boolean {
+  const anstoss = new Date(anstosszeit).getTime();
+  const liveUntil = anstoss + 90 * 60 * 1000;
+  const current = now.getTime();
+
+  return status === "geplant" && current >= anstoss && current <= liveUntil;
+}
+
+function isErgebnisAusstehend({
+  now,
+  anstosszeit,
+  status,
+  hasErgebnis,
+}: {
+  now: Date;
+  anstosszeit: string;
+  status: string;
+  hasErgebnis: boolean;
+}): boolean {
+  const liveUntil = new Date(anstosszeit).getTime() + 90 * 60 * 1000;
+
+  return status === "geplant" && !hasErgebnis && now.getTime() > liveUntil;
+}
 
 export async function createSpieltagTippView(
   repository: Pick<TippsRepository, "listSpieleForSpieltag" | "listTippsForSpieltag">,
@@ -48,6 +82,17 @@ export async function createSpieltagTippView(
         ...spiel,
         istTippbar:
           spiel.status === "geplant" && now.getTime() < new Date(spiel.anstosszeit).getTime(),
+        istLive: isSpielLive({
+          now,
+          anstosszeit: spiel.anstosszeit,
+          status: spiel.status,
+        }),
+        ergebnisAusstehend: isErgebnisAusstehend({
+          now,
+          anstosszeit: spiel.anstosszeit,
+          status: spiel.status,
+          hasErgebnis: Boolean(spiel.ergebnis),
+        }),
         eigenerTipp,
         fremdeTippsSichtbar,
         fremdeTipps: fremdeTippsSichtbar
@@ -60,35 +105,53 @@ export async function createSpieltagTippView(
 
 export function createDemoSpieltagTippView(
   now = new Date("2026-08-01T14:00:00.000Z"),
+  spieltagId = "demo-spieltag",
 ): SpieltagTippView {
   const spiele: SpielForTipp[] = [
     {
       id: "spiel-gesperrt",
       tipprundeId: "demo-tipprunde",
-      spieltagId: "demo-spieltag",
+      spieltagId,
       heimteamName: "FC Hoiz",
       auswaertsteamName: "SV Wald",
+      heimteamLogoUrl: null,
+      auswaertsteamLogoUrl: null,
       anstosszeit: "2026-08-01T13:30:00.000Z",
       status: "geplant",
+      ergebnis: null,
     },
     {
       id: "spiel-offen",
       tipprundeId: "demo-tipprunde",
-      spieltagId: "demo-spieltag",
-      heimteamName: "TSV Spaet",
+      spieltagId,
+      heimteamName: "TSV Spät",
       auswaertsteamName: "SC Abend",
+      heimteamLogoUrl: null,
+      auswaertsteamLogoUrl: null,
       anstosszeit: "2026-08-01T15:00:00.000Z",
       status: "geplant",
+      ergebnis: null,
     },
   ];
 
   return {
     tipprundeId: "demo-tipprunde",
-    spieltagId: "demo-spieltag",
+    spieltagId,
     spiele: spiele.map((spiel) => ({
       ...spiel,
       istTippbar:
         spiel.status === "geplant" && now.getTime() < new Date(spiel.anstosszeit).getTime(),
+      istLive: isSpielLive({
+        now,
+        anstosszeit: spiel.anstosszeit,
+        status: spiel.status,
+      }),
+      ergebnisAusstehend: isErgebnisAusstehend({
+        now,
+        anstosszeit: spiel.anstosszeit,
+        status: spiel.status,
+        hasErgebnis: Boolean(spiel.ergebnis),
+      }),
       eigenerTipp:
         spiel.id === "spiel-gesperrt"
           ? {

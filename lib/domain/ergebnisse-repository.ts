@@ -161,6 +161,11 @@ export async function enterErgebnis(
     return existing;
   }
 
+  const reason = normalizeReason(input.reason);
+  if (!reason) {
+    throw new AppError("Bitte gib einen Änderungsgrund ein.", "ergebnis_reason_required", 400);
+  }
+
   await repository.insertErgebnisAenderung({
     spielId: input.spielId,
     oldHeimtore: existing.heimtore,
@@ -169,7 +174,7 @@ export async function enterErgebnis(
     newAuswaertstore: auswaertstore,
     changedBy: input.callerNutzerId,
     changedAt: now,
-    reason: normalizeReason(input.reason),
+    reason,
   });
 
   return repository.updateErgebnis({

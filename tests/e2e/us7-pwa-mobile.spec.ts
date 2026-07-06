@@ -18,7 +18,7 @@ test.describe("US7 PWA und mobile Navigation", () => {
       name: "A-KlassenHoiz",
       short_name: "KlassenHoiz",
       display: "standalone",
-      theme_color: "#0b2a3a",
+      theme_color: "#020617",
     });
     expect(manifest.icons.some((icon) => icon.src.includes("icon"))).toBe(true);
 
@@ -28,9 +28,10 @@ test.describe("US7 PWA und mobile Navigation", () => {
     await expect(page.getByRole("link", { name: "Tippen" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Rangliste" })).toBeVisible();
 
-    await page.evaluate(() => window.dispatchEvent(new Event("offline")));
+    await page.context().setOffline(true);
     await expect(
       page.getByText("Keine Verbindung. Tipps können nur online gespeichert werden."),
     ).toBeVisible();
+    await page.context().setOffline(false);
   });
 });

@@ -14,6 +14,7 @@ export type SpielForTipp = {
   auswaertsteamLogoUrl?: string | null;
   anstosszeit: string;
   status: SpielStatus;
+  ergebnis: { heimtore: number; auswaertstore: number } | null;
 };
 
 export type TippRecord = {
@@ -89,9 +90,14 @@ function mapSpiel(row: {
     | { name: string; logo_url?: string | null }
     | Array<{ name: string; logo_url?: string | null }>
     | null;
+  ergebnisse?:
+    | { heimtore: number; auswaertstore: number }
+    | { heimtore: number; auswaertstore: number }[]
+    | null;
 }): SpielForTipp {
   const heimteam = Array.isArray(row.heimteam) ? row.heimteam[0] : row.heimteam;
   const auswaertsteam = Array.isArray(row.auswaertsteam) ? row.auswaertsteam[0] : row.auswaertsteam;
+  const ergebnis = Array.isArray(row.ergebnisse) ? row.ergebnisse[0] : row.ergebnisse;
 
   return {
     id: row.id,
@@ -103,6 +109,9 @@ function mapSpiel(row: {
     auswaertsteamLogoUrl: auswaertsteam?.logo_url ?? null,
     anstosszeit: row.anstosszeit,
     status: row.status,
+    ergebnis: ergebnis
+      ? { heimtore: ergebnis.heimtore, auswaertstore: ergebnis.auswaertstore }
+      : null,
   };
 }
 
@@ -171,7 +180,7 @@ export function createSupabaseTippsRepository(supabase: SupabaseClient): TippsRe
       const { data, error } = await supabase
         .from("spiele")
         .select(
-          "id, tipprunde_id, spieltag_id, anstosszeit, status, heimteam:heimteam_id(name, logo_url), auswaertsteam:auswaertsteam_id(name, logo_url)",
+          "id, tipprunde_id, spieltag_id, anstosszeit, status, heimteam:heimteam_id(name, logo_url), auswaertsteam:auswaertsteam_id(name, logo_url), ergebnisse(heimtore, auswaertstore)",
         )
         .eq("tipprunde_id", tipprundeId)
         .eq("id", spielId)
@@ -214,7 +223,7 @@ export function createSupabaseTippsRepository(supabase: SupabaseClient): TippsRe
       const { data, error } = await supabase
         .from("spiele")
         .select(
-          "id, tipprunde_id, spieltag_id, anstosszeit, status, heimteam:heimteam_id(name, logo_url), auswaertsteam:auswaertsteam_id(name, logo_url)",
+          "id, tipprunde_id, spieltag_id, anstosszeit, status, heimteam:heimteam_id(name, logo_url), auswaertsteam:auswaertsteam_id(name, logo_url), ergebnisse(heimtore, auswaertstore)",
         )
         .eq("tipprunde_id", tipprundeId)
         .eq("spieltag_id", spieltagId)

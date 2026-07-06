@@ -8,6 +8,22 @@ import {
 } from "@/lib/domain/spieltage-repository";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ tipprundeId: string }> },
+) {
+  try {
+    const { tipprundeId } = await context.params;
+    await requireAuthenticatedProfile();
+    const supabase = await createSupabaseServerClient();
+    const spieltage = await createSupabaseSpieltageRepository(supabase).listSpieltage(tipprundeId);
+
+    return NextResponse.json({ spieltage });
+  } catch (error) {
+    return jsonError(error);
+  }
+}
+
 export async function POST(
   request: Request,
   context: { params: Promise<{ tipprundeId: string }> },
@@ -24,9 +40,9 @@ export async function POST(
     const spieltag = await createSpieltag(createSupabaseSpieltageRepository(supabase), {
       tipprundeId,
       callerNutzerId: user.id,
-      name: body.name ?? "",
+      name: body.name,
       abschnitt: body.abschnitt ?? "frei",
-      sortOrder: body.sortOrder ?? 0,
+      sortOrder: body.sortOrder,
       isGlobalAdmin: profile.isGlobalAdmin,
     });
 

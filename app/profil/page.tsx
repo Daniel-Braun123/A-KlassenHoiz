@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, BadgeCheck, Mail, Shield, UserRound } from "lucide-react";
 
+import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
 
 export default async function ProfilPage() {
@@ -48,6 +49,10 @@ export default async function ProfilPage() {
           </span>
           <strong>{profile.isGlobalAdmin ? "Ja" : "Nein"}</strong>
         </div>
+      </section>
+
+      <section className="profile-details profile-settings" aria-label="Profileinstellungen">
+        <ThemeToggle />
       </section>
     </main>
   );

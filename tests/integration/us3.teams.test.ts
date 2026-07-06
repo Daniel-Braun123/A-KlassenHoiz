@@ -30,6 +30,17 @@ function createRepository(): TeamsRepository & { teams: Map<string, TeamRecord> 
       return null;
     },
     async insertTeam(input) {
+      const normalizedName = input.name.trim().toLowerCase();
+      if (
+        [...teams.values()].some(
+          (team) =>
+            team.tipprundeId === input.tipprundeId &&
+            team.name.trim().toLowerCase() === normalizedName,
+        )
+      ) {
+        throw Object.assign(new Error("duplicate"), { code: "verein_name_duplicate" });
+      }
+
       const team: TeamRecord = {
         id: `team-${teams.size + 1}`,
         tipprundeId: input.tipprundeId,
@@ -52,11 +63,14 @@ function createRepository(): TeamsRepository & { teams: Map<string, TeamRecord> 
     async deleteTeam(teamId) {
       teams.delete(teamId);
     },
+    async listTeams(tipprundeId) {
+      return [...teams.values()].filter((team) => team.tipprundeId === tipprundeId);
+    },
   };
 }
 
 describe("US3 Teams/Vereine", () => {
-  it("allows Admins and Co-Admins to create, edit and delete Teams/Vereine", async () => {
+  it("allows Admins and Co-Admins to create, edit and delete Vereine", async () => {
     const repository = createRepository();
 
     const team = await createTeam(repository, {
@@ -87,7 +101,7 @@ describe("US3 Teams/Vereine", () => {
     expect(repository.teams.has(team.id)).toBe(false);
   });
 
-  it("rejects normal Nutzer and blank team names", async () => {
+  it("rejects normal Nutzer, blank Vereinsnamen and duplicate names per Tipprunde", async () => {
     const repository = createRepository();
 
     await expect(
@@ -106,7 +120,31 @@ describe("US3 Teams/Vereine", () => {
         name: "   ",
         logoUrl: null,
       }),
-    ).rejects.toMatchObject({ code: "team_name_required" });
+    ).rejects.toMatchObject({ code: "verein_name_required" });
+
+    await createTeam(repository, {
+      tipprundeId: "tipprunde-1",
+      callerNutzerId: "admin-1",
+      name: "FC Hoiz",
+      logoUrl: null,
+    });
+    await expect(
+      createTeam(repository, {
+        tipprundeId: "tipprunde-1",
+        callerNutzerId: "admin-1",
+        name: " fc hoiz ",
+        logoUrl: null,
+      }),
+    ).rejects.toMatchObject({ code: "verein_name_duplicate" });
+
+    await expect(
+      createTeam(repository, {
+        tipprundeId: "tipprunde-2",
+        callerNutzerId: "admin-1",
+        name: "FC Hoiz",
+        logoUrl: null,
+      }),
+    ).resolves.toMatchObject({ name: "FC Hoiz" });
   });
 
   it("uses a neutral fallback logo when Logo-URL is missing, invalid or failed", () => {
@@ -118,6 +156,18 @@ describe("US3 Teams/Vereine", () => {
     expect(resolveTeamLogo("https://example.com/logo.png", false)).toMatchObject({
       shouldUseFallback: false,
       src: "https://example.com/logo.png",
+    });
+  });
+
+  it("extracts the direct image URL from Bing image result links", () => {
+    const logo = resolveTeamLogo(
+      "https://www.bing.com/images/search?view=detailV2&mediaurl=https%3a%2f%2fcdn.fupa.net%2fclub%2fpng%2f200x200%2fUvoE2jwD86Gx1BwW1rlk2RI7UMhD3RMAfzquGWwv",
+      false,
+    );
+
+    expect(logo).toMatchObject({
+      shouldUseFallback: false,
+      src: "https://cdn.fupa.net/club/png/200x200/UvoE2jwD86Gx1BwW1rlk2RI7UMhD3RMAfzquGWwv",
     });
   });
 });

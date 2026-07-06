@@ -34,7 +34,7 @@ Tipprunde in seiner eigenen Tipprunden-Auswahl.
    Link ist 7 Tage gueltig und ein QR-Code kann auf denselben Link verweisen.
 3. **Given** ein Tipprunden-Admin und ein Mitglied, **When** der Admin das
    Mitglied zum Co-Admin macht, **Then** darf dieses Mitglied Spieltage, Spiele,
-   Teams/Vereine, Logos und Ergebnisse verwalten, ohne Besitzerrechte zu
+   Vereine, Logos und Ergebnisse verwalten, ohne Besitzerrechte zu
    erhalten.
 4. **Given** ein Tipprunden-Admin, **When** er eine Tipprunde archiviert oder
    per Sicherheitsabfrage endgueltig loescht, **Then** ist sie fuer normale
@@ -68,30 +68,67 @@ als Mitglied der Tipprunde.
 
 ---
 
-### User Story 3 - Spieltage, Spiele und Teams/Vereine manuell pflegen (Priority: P1)
+### User Story 3 - Liga, Vereine, Spieltage und Spiele manuell pflegen (Priority: P1)
 
-Als Tipprunden-Admin oder Co-Admin moechte ich Spieltage, Spiele, Teams/Vereine und
-Vereinslogos manuell pflegen, damit lokale Spielplaene ohne BFV-Import genutzt
-werden koennen.
+Als Tipprunden-Admin oder Co-Admin moechte ich zuerst eine Liga erstellen und
+danach Vereine, Spieltage, Spiele und Vereinslogos manuell pflegen, damit lokale
+Spielplaene ohne BFV-Import genutzt werden koennen.
 
 **Why this priority**: V1 soll ohne externe Datenquelle nutzbar sein. Manuelle
 Pflege macht die App fuer lokale bayerische Ligen sofort einsetzbar.
 
-**Independent Test**: Ein Admin erstellt Teams/Vereine, hinterlegt Logo-URLs,
-erstellt einen Spieltag mit Hinrunde/Rueckrunde-Zuordnung und fuegt mehrere
-Spiele mit Anstosszeiten hinzu.
+**Independent Test**: Ein Admin erstellt eine Liga, pflegt Vereine mit
+Logo-URLs, erstellt automatisch nummerierte Spieltage fuer Hinrunde und
+Rueckrunde und fuegt mehrere Spiele mit Anstosszeiten hinzu.
 
 **Acceptance Scenarios**:
 
-1. **Given** ein Admin in einer Tipprunde, **When** er einen frei benannten
-   Spieltag erstellt, **Then** kann dieser mehrere Spiele mit unterschiedlichen
-   Kalendertagen und Uhrzeiten enthalten.
+1. **Given** ein Admin in einer Tipprunde ohne Liga, **When** er die
+   Spielplan-Verwaltung oeffnet, **Then** muss er zuerst eine Liga mit Namen
+   erstellen.
 2. **Given** ein Spiel ist geplant, **When** der Admin es verschiebt, **Then**
    bleiben vorhandene Tipps erhalten und die neue Anstosszeit in der Zeitzone
    Europe/Berlin bestimmt die neue Tippfrist.
-3. **Given** ein Team/Verein hat keine, eine ungueltige oder nicht ladbare
+3. **Given** ein Verein hat keine, eine ungueltige oder nicht ladbare
    Logo-URL, **When** es in Spielplan oder Tippmaske angezeigt wird, **Then**
    erscheint automatisch ein neutrales Fallback-Logo.
+
+#### Change 2026-07-04 - Liga-first Spielplanverwaltung
+
+Der bisherige freie Spielplan-Admin wird fachlich ersetzt durch einen
+Liga-geführten Flow. In der Nutzeroberflaeche wird durchgehend der Begriff
+**Verein** verwendet; technische Altbezeichnungen duerfen intern bestehen
+bleiben, solange die UI und fachlichen Fehlermeldungen konsistent sind.
+
+**Acceptance Scenarios**:
+
+1. **Given** eine Tipprunde hat noch keine Liga, **When** ein Admin oder
+   Co-Admin die Spielplan-Verwaltung oeffnet, **Then** sieht er zuerst nur den
+   Schritt zum Erstellen einer Liga mit Namen.
+2. **Given** eine Liga wurde fuer die Tipprunde erstellt, **When** der Admin
+   weitere Spielplanbereiche nutzt, **Then** kann er Vereine, Spieltage, Spiele
+   und Ergebnisse verwalten.
+3. **Given** ein Admin erstellt einen Verein, **When** der Vereinsname innerhalb
+   derselben Tipprunde bereits existiert, **Then** wird die Anlage mit einer
+   verstaendlichen Meldung verhindert.
+4. **Given** ein Admin erstellt einen Spieltag, **When** er Hinrunde oder
+   Rueckrunde waehlt, **Then** vergibt das System automatisch die naechste freie
+   Nummer fuer diesen Abschnitt.
+5. **Given** `Hinrunde 1` existiert bereits, **When** ein weiterer Hinrunde-
+   Spieltag erstellt wird, **Then** entsteht `Hinrunde 2`; `Rueckrunde 1` ist
+   weiterhin erlaubt.
+6. **Given** ein Admin fuegt einem Spieltag ein Spiel hinzu, **When** er Heim-
+   und Auswaertsverein auswaehlt, **Then** werden Vereine als Dropdown-Optionen
+   mit Logo/Fallback-Logo und Name angezeigt.
+7. **Given** Heimverein und Auswaertsverein sind identisch, **When** ein Admin
+   das Spiel speichern will, **Then** wird die Aktion serverseitig und in der UI
+   verstaendlich abgelehnt.
+8. **Given** ein Spiel wird erstellt, **When** kein optionaler Status gewaehlt
+   wird, **Then** wird es als `geplant` gespeichert; optional koennen Admins
+   `verschoben` oder `abgesagt` waehlen.
+9. **Given** Ergebnisse werden gepflegt, **When** ein Admin in der Verwaltung
+   arbeitet, **Then** sind Ergebnisse in einem eigenen Bereich erreichbar, damit
+   Spielplan-Struktur und Ergebnisarbeit getrennt bleiben.
 
 ---
 
@@ -219,7 +256,7 @@ passendem Namen zum Homescreen hinzufuegen.
   oder aus der Wertung genommen werden.
 - Ein Ergebnis wird nachtraeglich geaendert, nachdem Punkte und Ranglisten
   bereits berechnet wurden.
-- Ein Team/Verein hat keine, eine ungueltige oder eine nicht ladbare Logo-URL.
+- Ein Verein hat keine, eine ungueltige oder eine nicht ladbare Logo-URL.
 - Zwei oder mehr Mitglieder haben dieselbe Punktzahl in einer Rangliste.
 - Ein Nutzer gehoert mehreren Tipprunden an und wechselt zwischen ihnen.
 - Fremde Tipps duerfen vor Ablauf der jeweiligen Tippfrist nicht sichtbar sein.
@@ -244,8 +281,8 @@ passendem Namen zum Homescreen hinzufuegen.
 - **FR-008**: Tipprunden-Admins MUST be able to appoint and remove Co-Admins.
 - **FR-009**: Tipprunden-Admins MUST retain final Besitzerrechte that Co-Admins do
   not have.
-- **FR-010**: Co-Admins MUST be able to manage Spieltage, Spiele,
-  Teams/Vereine, Logos und Ergebnisse within their Tipprunde.
+- **FR-010**: Co-Admins MUST be able to manage Liga, Spieltage, Spiele,
+  Vereine, Logos und Ergebnisse within their Tipprunde.
 - **FR-011**: Co-Admins MUST NOT be able to endgueltig loeschen a Tipprunde,
   transfer Besitzerrechte or change global settings.
 - **FR-012**: Endgueltiges Loeschen of a Tipprunde MUST require an explicit
@@ -274,17 +311,18 @@ passendem Namen zum Homescreen hinzufuegen.
   Tipprunde that may differ from the global Anzeigename.
 - **FR-024**: The system MUST allow Admins and Co-Admins to create, edit and
   delete Spieltage.
-- **FR-025**: A Spieltag MUST be a freely named league round or section, not
-  necessarily a single calendar date.
-- **FR-026**: The system MUST allow a Spieltag to be assigned to Hinrunde,
-  Rueckrunde or a comparable free section such as Nachholspiele.
+- **FR-025**: For the revised V1 Spielplan flow, each Tipprunde MUST have
+  exactly one Liga before Vereine, Spieltage or Spiele can be managed.
+- **FR-026**: In the revised V1 Spielplan flow, a Spieltag MUST belong to
+  either Hinrunde or Rueckrunde and MUST receive its number automatically per
+  Tipprunde and Abschnitt.
 - **FR-027**: The system MUST allow a Spieltag to contain multiple Spiele with
   different calendar dates and Anstosszeiten.
 - **FR-028**: The system MUST interpret all Anstosszeiten and Tippfristen in V1
   in the Europe/Berlin time zone.
 - **FR-029**: The system MUST allow Admins and Co-Admins to create, edit and
   delete Spiele manually in V1.
-- **FR-030**: Each Spiel MUST have Heimteam, Auswaertsteam, Anstosszeit,
+- **FR-030**: Each Spiel MUST have Heimverein, Auswaertsverein, Anstosszeit,
   Spieltag and Status.
 - **FR-031**: The system MUST support Spiel statuses planned, finished,
   postponed, cancelled and abandoned in V1.
@@ -296,15 +334,15 @@ passendem Namen zum Homescreen hinzufuegen.
   Co-Admins decide whether an official Ergebnis is entered or the Spiel is not
   scored.
 - **FR-036**: Finished Spiele MUST be scored after an Ergebnis has been entered.
-- **FR-037**: The system MUST allow Admins and Co-Admins to manage Teams/Vereine
-  manually.
+- **FR-037**: The system MUST allow Admins and Co-Admins to manage Vereine
+  manually, with user-facing terminology using Verein instead of Team.
 - **FR-038**: The system MUST allow a Vereinslogo to be stored as an image URL
   in V1.
 - **FR-039**: The system MUST automatically show a neutral Fallback-Logo when a
   Vereinslogo-URL is missing, invalid or cannot be loaded.
 - **FR-040**: The system SHOULD preserve fields or concepts that allow future
   logo uploads or external logo sources without changing the user-facing
-  meaning of Teams/Vereine.
+  meaning of Vereine.
 - **FR-041**: The system MUST allow members to submit or update a numeric Tipp
   for each planned Spiel until that Spiel's Anstosszeit.
 - **FR-042**: The system MUST lock each Spiel's Tipp independently once its
@@ -389,6 +427,28 @@ passendem Namen zum Homescreen hinzufuegen.
   project named "A-KlassenHoiz" as the preferred option for authentication,
   data storage, file storage and server-side logic, while this feature
   specification remains focused on business behavior.
+- **FR-083**: The system MUST allow exactly one Liga per Tipprunde in V1, with
+  `name` as the only required Liga field.
+- **FR-084**: The system MUST block Verein, Spieltag, Spiel and Ergebnis
+  management until a Liga exists for the Tipprunde.
+- **FR-085**: Vereinsnamen MUST be unique within a Tipprunde and MAY repeat in
+  other Tipprunden.
+- **FR-086**: Spieltag uniqueness MUST be enforced by Tipprunde, Abschnitt and
+  automatically assigned Nummer.
+- **FR-087**: When creating a Spieltag, the Admin or Co-Admin MUST select only
+  Hinrunde or Rueckrunde; the system MUST assign the next number for the chosen
+  Abschnitt.
+- **FR-088**: Spiel creation UI MUST present Heimverein and Auswaertsverein as
+  dropdowns populated from the Tipprunde's Vereine, including Logo/Fallback-Logo
+  and Verein name.
+- **FR-089**: The system MUST reject Spiele where Heimverein and
+  Auswaertsverein are the same Verein.
+- **FR-090**: The Spiel creation UI SHOULD default Status to `geplant` and
+  expose only the optional choices `verschoben` and `abgesagt` during creation.
+- **FR-091**: The Spielplan admin UI MUST separate the Ergebnis workflow from
+  structural Spielplan management.
+- **FR-092**: Admin write operations SHOULD return user-friendly messages that
+  can be shown as modern toast/status notifications.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -397,19 +457,23 @@ passendem Namen zum Homescreen hinzufuegen.
 - **Tipprunde**: Private Tippspiel-Gruppe mit Name, Besitzer/Admin,
   Mitgliedern, Einladungen, Spieltagen, Spielen, Ranglisten und Lebenszyklus
   wie aktiv, archiviert oder endgueltig geloescht.
+- **Liga**: Genau eine Liga innerhalb einer Tipprunde mit Name. Sie ist der
+  erste Pflichtschritt der Spielplan-Verwaltung und Voraussetzung fuer Vereine,
+  Spieltage, Spiele und Ergebnisse.
 - **Tipprunden-Mitgliedschaft**: Beziehung zwischen Nutzer und Tipprunde mit
   Rolle, Tipprunden-Nickname, Mitgliedsstatus und Beitrittsdatum.
 - **Rolle**: Berechtigungsstufe wie normaler Nutzer, Tipprunden-Admin, Co-Admin
   oder minimaler globaler App-Admin.
 - **Einladung**: Zeitlich begrenzter Beitritt ueber den aktiven
   Einladungslink und optional einen QR-Code fuer genau eine Tipprunde.
-- **Spieltag**: Frei benannte Ligarunde oder Abschnitt, optional gruppiert nach
-  Hinrunde, Rueckrunde oder Nachholspiele, mit mehreren Spielen.
+- **Spieltag**: Automatisch nummerierter Abschnitt innerhalb der Liga einer
+  Tipprunde, gruppiert nach Hinrunde oder Rueckrunde, mit mehreren Spielen.
 - **Spiel**: Begegnung innerhalb eines Spieltags mit Heimteam, Auswaertsteam,
   Anstosszeit in Europe/Berlin, Status, optionalem Ergebnis und optionalen
   externen Herkunftsdaten.
-- **Team/Verein**: Manuell gepflegtes lokales Fussballteam oder lokaler Verein
-  mit Name, optionaler Logo-URL und optionalen spaeteren externen IDs.
+- **Verein**: Manuell gepflegter lokaler Fussballverein innerhalb einer
+  Tipprunde mit eindeutigem Namen, optionaler Logo-URL und optionalen spaeteren
+  externen IDs.
 - **Tipp**: Vorhersage eines Nutzers fuer Heim- und Auswaertstore eines Spiels,
   aenderbar bis zur Anstosszeit dieses Spiels und sichtbar nach Tippregeln.
 - **Ergebnis**: Offizielles oder von Admins eingetragenes Spielergebnis, das
@@ -430,8 +494,9 @@ passendem Namen zum Homescreen hinzufuegen.
   an Einladungslink in under 5 minutes.
 - **SC-002**: A Nutzer invited by Einladungslink or QR-Code can join a Tipprunde and set a
   Tipprunden-Nickname in under 2 minutes.
-- **SC-003**: A Tipprunden-Admin can create one Spieltag with at least 8 Spiele,
-  Teams/Vereine and Anstosszeiten in under 15 minutes after Teams/Vereine are known.
+- **SC-003**: A Tipprunden-Admin can create a Liga, enough Vereine and one
+  Spieltag with at least 8 Spiele and Anstosszeiten in under 15 minutes after
+  the Vereinsdaten are known.
 - **SC-004**: A Mitglied can submit Tipps for a Spieltag with at least 8 Spiele on a
   smartphone in under 3 minutes.
 - **SC-005**: 100% of Spiele become locked for Tipp changes at their own
@@ -463,7 +528,7 @@ passendem Namen zum Homescreen hinzufuegen.
 - QR-code support is part of V1 when it is achievable with reasonable effort; if
   it proves disproportionate during planning, the Einladungslink remains the
   mandatory V1 path.
-- V1 uses manually entered Spieltage, Spiele, Teams/Vereine, Logo-URLs and
+- V1 uses one manually entered Liga plus Spieltage, Spiele, Vereine, Logo-URLs and
   Ergebnisse.
 - BFV import, scraping and synchronization are explicitly outside V1 scope, but
   future external-source metadata may be represented in the domain.

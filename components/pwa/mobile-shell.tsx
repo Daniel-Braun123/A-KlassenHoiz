@@ -2,8 +2,8 @@ import Link from "next/link";
 import { BarChart3, CalendarDays, Home, Settings, Trophy } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { RegisterTipprundeHeaderTitle } from "@/components/navigation/global-topbar";
 import { NoConnectionMessage } from "@/components/pwa/no-connection-message";
-import { TipprundenSwitcher } from "@/components/tipps/tipprunden-switcher";
 import { getTipprundeStartPath, type ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
 
 type MobileShellProps = {
@@ -25,6 +25,10 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
 
   return (
     <div className="mobile-shell">
+      <RegisterTipprundeHeaderTitle
+        tipprundeId={activeTipprunde.id}
+        tipprundeName={activeTipprunde.name}
+      />
       <header className="mobile-shell-header">
         <Link className="app-brand" href="/">
           <span className="app-brand-mark">
@@ -32,7 +36,6 @@ export function MobileShell({ activeTipprundeId, tipprunden, children }: MobileS
           </span>
           A-KlassenHoiz
         </Link>
-        <TipprundenSwitcher activeTipprundeId={activeTipprunde.id} tipprunden={tipprunden} />
       </header>
       <NoConnectionMessage />
       <div className="mobile-shell-content">{children}</div>

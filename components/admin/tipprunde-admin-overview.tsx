@@ -5,12 +5,17 @@ import { Archive, CalendarPlus, ShieldCheck, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { EinladungPanel } from "@/components/admin/einladung-panel";
+import { RegisterTipprundeHeaderTitle } from "@/components/navigation/global-topbar";
 
 type TipprundeAdminOverviewProps = {
   tipprundeId: string;
+  tipprundeName: string;
 };
 
-export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewProps) {
+export function TipprundeAdminOverview({
+  tipprundeId,
+  tipprundeName,
+}: TipprundeAdminOverviewProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,23 +76,12 @@ export function TipprundeAdminOverview({ tipprundeId }: TipprundeAdminOverviewPr
 
   return (
     <section className="admin-panel" aria-labelledby="tipprunde-admin-heading">
+      <RegisterTipprundeHeaderTitle tipprundeId={tipprundeId} tipprundeName={tipprundeName} />
       <header className="admin-page-header">
-        <p className="eyebrow">Tipprunde {tipprundeId}</p>
         <h1 id="tipprunde-admin-heading">Tipprunde verwalten</h1>
-        <p>
-          Alles Wichtige für deine Runde an einem Ort: Spielplan, Einladungen, Rollen und
-          Sicherheitsaktionen.
-        </p>
       </header>
       {message ? <p role="status">{message}</p> : null}
       <div className="admin-actions tipprunde-admin-actions">
-        <section className="admin-action-card admin-card-compact admin-card-basic">
-          <div className="admin-card-icon">
-            <ShieldCheck aria-hidden="true" size={22} />
-          </div>
-          <h2>Grunddaten</h2>
-          <p>Tipprunden-Name, Status und Besitzerrechte im Blick behalten.</p>
-        </section>
         <section className="admin-action-card primary-card admin-card-feature">
           <div className="admin-card-icon">
             <CalendarPlus aria-hidden="true" size={22} />

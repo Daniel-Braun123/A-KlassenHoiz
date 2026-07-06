@@ -1,7 +1,9 @@
 "use client";
 
+import { Save } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
+import { TeamLogo } from "@/components/admin/team-logo";
 import type { SpielTippView } from "@/lib/domain/spieltag-view-service";
 
 type TippCardProps = {
@@ -9,17 +11,45 @@ type TippCardProps = {
   spiel: SpielTippView;
 };
 
-function formatAnstosszeit(value: string): string {
+function formatAnstossUhrzeit(value: string): string {
   return new Intl.DateTimeFormat("de-DE", {
     timeZone: "Europe/Berlin",
-    dateStyle: "short",
-    timeStyle: "short",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(new Date(value));
+}
+
+function formatAnstossDatum(value: string): string {
+  return new Intl.DateTimeFormat("de-DE", {
+    timeZone: "Europe/Berlin",
+    day: "2-digit",
+    month: "2-digit",
+  }).format(new Date(value));
+}
+
+function getSpielCenter(spiel: SpielTippView) {
+  if (spiel.istLive) {
+    return { kind: "live" as const, label: "LIVE" };
+  }
+
+  if (spiel.ergebnis) {
+    return {
+      kind: "score" as const,
+      label: `${spiel.ergebnis.heimtore} : ${spiel.ergebnis.auswaertstore}`,
+    };
+  }
+
+  if (spiel.ergebnisAusstehend) {
+    return { kind: "pending" as const, label: "Spiel vorbei", detail: "Ergebnis lädt" };
+  }
+
+  return { kind: "time" as const, label: formatAnstossUhrzeit(spiel.anstosszeit) };
 }
 
 export function TippCard({ tipprundeId, spiel }: TippCardProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const center = getSpielCenter(spiel);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -46,61 +76,95 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
       return;
     }
 
-    setMessage("Tipp gespeichert.");
+    setMessage("Gespeichert.");
   }
 
   return (
-    <article className="tipp-card" data-testid={`tipp-card-${spiel.id}`}>
-      <header className="tipp-card-header">
-        <div>
-          <p className="eyebrow">{formatAnstosszeit(spiel.anstosszeit)}</p>
-          <h2>
-            {spiel.heimteamName} gegen {spiel.auswaertsteamName}
-          </h2>
-        </div>
-        <span className={spiel.istTippbar ? "status-open" : "status-locked"}>
-          {spiel.istTippbar ? "Offen" : "Gesperrt"}
+    <article className="tipp-card compact-tipp-card" data-testid={`tipp-card-${spiel.id}`}>
+      <div
+        className="tipp-matchup"
+        aria-label={`${spiel.heimteamName} gegen ${spiel.auswaertsteamName}`}
+      >
+        <span className="tipp-team tipp-team-home">
+          <span className="tipp-team-name">{spiel.heimteamName}</span>
+          <span className="tipp-team-logo" aria-hidden="true">
+            <TeamLogo name={spiel.heimteamName} logoUrl={spiel.heimteamLogoUrl} />
+          </span>
         </span>
-      </header>
+        <span className="tipp-center-wrap">
+          <span
+            className={[
+              "tipp-center",
+              center.kind === "score" ? "has-score" : "",
+              center.kind === "live" ? "is-live" : "",
+              center.kind === "pending" ? "is-pending" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            aria-label={
+              center.kind === "live"
+                ? "Live"
+                : center.kind === "pending"
+                  ? `${center.label}, ${center.detail}`
+                  : center.label
+            }
+          >
+            <span>{center.label}</span>
+            {center.kind === "live" ? <span className="live-dot" aria-hidden="true" /> : null}
+            {center.kind === "pending" ? (
+              <span className="tipp-center-detail">{center.detail}</span>
+            ) : null}
+          </span>
+          <span className="tipp-date">{formatAnstossDatum(spiel.anstosszeit)}</span>
+        </span>
+        <span className="tipp-team tipp-team-away">
+          <span className="tipp-team-logo" aria-hidden="true">
+            <TeamLogo name={spiel.auswaertsteamName} logoUrl={spiel.auswaertsteamLogoUrl} />
+          </span>
+          <span className="tipp-team-name">{spiel.auswaertsteamName}</span>
+        </span>
+      </div>
 
-      <form className="tipp-form" onSubmit={handleSubmit}>
+      <form className="compact-tipp-form" onSubmit={handleSubmit}>
         <label>
-          Heimtore
+          <span className="sr-only">Heimtore</span>
           <input
             name="heimtoreTipp"
             type="number"
             min={0}
+            placeholder="0"
             defaultValue={spiel.eigenerTipp?.heimtoreTipp ?? ""}
             disabled={!spiel.istTippbar || isSubmitting}
             inputMode="numeric"
+            aria-label="Heimtore"
           />
         </label>
+        <span aria-hidden="true" className="tipp-separator">
+          :
+        </span>
         <label>
-          Auswärtstore
+          <span className="sr-only">Auswärtstore</span>
           <input
             name="auswaertstoreTipp"
             type="number"
             min={0}
+            placeholder="0"
             defaultValue={spiel.eigenerTipp?.auswaertstoreTipp ?? ""}
             disabled={!spiel.istTippbar || isSubmitting}
             inputMode="numeric"
+            aria-label="Auswärtstore"
           />
         </label>
-        <button type="submit" disabled={!spiel.istTippbar || isSubmitting}>
-          Tipp speichern
+        <button
+          type="submit"
+          disabled={!spiel.istTippbar || isSubmitting}
+          aria-label="Tipp speichern"
+        >
+          <Save aria-hidden="true" size={17} />
+          <span className="sr-only">Speichern</span>
         </button>
       </form>
 
-      {spiel.eigenerTipp ? (
-        <p>
-          Dein Tipp: {spiel.eigenerTipp.heimtoreTipp}:{spiel.eigenerTipp.auswaertstoreTipp}
-        </p>
-      ) : null}
-      {spiel.fremdeTippsSichtbar ? (
-        <p>{spiel.fremdeTipps.length} fremde Tipps sichtbar.</p>
-      ) : (
-        <p>Fremde Tipps bis zur Tippfrist verborgen.</p>
-      )}
       {message ? <p role="status">{message}</p> : null}
     </article>
   );

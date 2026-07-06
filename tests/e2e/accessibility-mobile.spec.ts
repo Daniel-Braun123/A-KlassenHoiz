@@ -14,7 +14,7 @@ test.describe("Mobile Accessibility", () => {
       "/manifest.webmanifest",
     );
     await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
-    await expect(page.getByLabel("Tipprunde wechseln")).toBeVisible();
+    await expect(page.getByLabel("Spieltag auswählen")).toBeVisible();
 
     const openCard = page.getByTestId("tipp-card-spiel-offen");
     await expect(openCard.getByLabel("Heimtore")).toBeVisible();

@@ -320,3 +320,62 @@ Task: "Create e2e admin Ergebnis entry test in tests/e2e/us5-ergebnisse.spec.ts"
 - Supabase project identifiers stay in environment/configuration, not committed docs or client code.
 - Ranglisten are derived from Punktewertungen and must not be manually edited.
 - QR-Code is optional in V1 only when a simple library works without complex extra infrastructure; Einladungslink is required.
+
+---
+
+## Change Phase: Liga-first Spielplanverwaltung (2026-07-04)
+
+**Purpose**: Replace the generic US3 Spielplan admin surface with a Liga-first
+flow: one Liga per Tipprunde, Vereine with unique names, automatic Spieltag
+numbering for Hinrunde/Rueckrunde, Spiel creation from selected Spieltag, and a
+separate Ergebnis area.
+
+**Important**: Do not implement this block before the updated spec, plan and
+tasks are reviewed. Write tests first. Use `.env.local` without exposing
+secrets. Do not perform destructive database changes without stopping and
+explaining the impact.
+
+### Tests First
+
+- [ ] T094 [P] [US3-CHANGE] Add Liga gate and one-Liga-per-Tipprunde integration tests in `tests/integration/us3.liga-flow.test.ts`
+- [ ] T095 [P] [US3-CHANGE] Add Verein uniqueness and Fallback-Logo integration tests in `tests/integration/us3.vereine-flow.test.ts`
+- [ ] T096 [P] [US3-CHANGE] Add automatic Spieltag numbering tests for Hinrunde/Rueckrunde in `tests/integration/us3.spieltage-numbering.test.ts`
+- [ ] T097 [P] [US3-CHANGE] Add Spiel creation validation tests for Verein dropdown inputs and Heim/Auswaerts inequality in `tests/integration/us3.spiele-flow.test.ts`
+- [ ] T098 [P] [US3-CHANGE] Update e2e admin Spielplan flow test for Liga -> Vereine -> Spieltage -> Spiele -> Ergebnisse in `tests/e2e/us3-admin-spielplan.spec.ts`
+- [ ] T099 [P] [US3-CHANGE] Update copy terminology test to cover Liga/Verein admin components in `tests/unit/copy.terminology.test.ts`
+
+### Database and RLS
+
+- [ ] T100 [US3-CHANGE] Create a new non-destructive Supabase migration for `ligen`, unique Liga per Tipprunde, Verein-name uniqueness per Tipprunde, Spieltag `nummer`, and Spieltag uniqueness in `supabase/migrations/`
+- [ ] T101 [US3-CHANGE] Add or update RLS policies/grants for Liga access so only active members can read and Admins/Co-Admins can write in `supabase/migrations/`
+- [ ] T102 [US3-CHANGE] Add Supabase policy/security tests for Liga and revised Spielplan writes in `supabase/tests/rls_policies.test.sql`
+
+### Domain and API
+
+- [ ] T103 [US3-CHANGE] Add Liga domain types/constants and repository/service operations in `lib/domain/ligen-repository.ts`
+- [ ] T104 [US3-CHANGE] Update Verein repository naming and validation for unique Verein names in `lib/domain/teams-repository.ts`
+- [ ] T105 [US3-CHANGE] Update Spieltag repository/service to assign next Nummer per Abschnitt and generate Spieltag display names in `lib/domain/spieltage-repository.ts`
+- [ ] T106 [US3-CHANGE] Update Spiel repository/service validation to reject identical Heimverein/Auswaertsverein in `lib/domain/spiele-repository.ts`
+- [ ] T107 [US3-CHANGE] Add Liga API route in `app/api/tipprunden/[tipprundeId]/liga/route.ts`
+- [ ] T108 [US3-CHANGE] Update Verein, Spieltag and Spiel API routes to use revised request/response fields and user-facing messages in `app/api/tipprunden/[tipprundeId]/teams/route.ts`, `app/api/tipprunden/[tipprundeId]/spieltage/route.ts` and `app/api/tipprunden/[tipprundeId]/spiele/route.ts`
+
+### Admin UI/UX
+
+- [ ] T109 [US3-CHANGE] Create Liga-first admin gate component in `components/admin/liga-admin.tsx`
+- [ ] T110 [US3-CHANGE] Replace Team wording with Verein wording and create Verein management UI in `components/admin/vereine-admin.tsx`
+- [ ] T111 [US3-CHANGE] Create Spieltage & Spiele workspace with Hinrunde/Rueckrunde creation and selected Spieltag details in `components/admin/spieltage-spiele-admin.tsx`
+- [ ] T112 [US3-CHANGE] Implement Heimverein/Auswaertsverein dropdowns with Logo/Fallback-Logo and Verein name in `components/admin/verein-select.tsx`
+- [ ] T113 [US3-CHANGE] Move Ergebnis management into a separate admin area within Spielplan Verwaltung in `components/admin/ergebnisse-admin.tsx`
+- [ ] T114 [US3-CHANGE] Replace the current generic Spielplan admin component with the revised dashboard/tabs in `components/admin/spielplan-admin.tsx`
+- [ ] T115 [US3-CHANGE] Add lightweight toast/status notification component for admin success/error messages in `components/admin/admin-toast.tsx`
+- [ ] T116 [US3-CHANGE] Update admin styling for the revised Liga/Verein/Spieltag/Spiel flow in `app/globals.css`
+
+### Validation and Documentation
+
+- [ ] T117 [US3-CHANGE] Update quickstart scenarios for the new Liga-first Spielplan flow in `specs/001-local-football-tips/quickstart.md`
+- [ ] T118 [US3-CHANGE] Run Supabase migration dry-run/push only after reviewing non-destructive SQL; if CLI prompts for secrets or destructive changes, stop and ask
+- [ ] T119 [US3-CHANGE] Run `npm run lint`, `npm run typecheck`, `npm run test`, `npm run test:integration`, `npm run test:e2e` and `npm run build`
+
+**Checkpoint**: Revised Spielplan management is independently functional and
+testable without BFV import and without changing Tippabgabe, Punktewertung or
+Ranglisten business rules.

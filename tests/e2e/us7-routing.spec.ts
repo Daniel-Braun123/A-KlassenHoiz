@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("US7 Login-Routing und Tipprunden-Wechsel", () => {
-  test("shows 0/1/multiple Tipprunden states and remembers the active Tipprunde", async ({
+test.describe("US7 Login-Routing und Tipprunden-Auswahl", () => {
+  test("shows 0/1/multiple Tipprunden states and remembers the selected Tipprunde", async ({
     page,
   }) => {
     await page.goto("/?demoTipprunden=0");
@@ -31,7 +31,6 @@ test.describe("US7 Login-Routing und Tipprunden-Wechsel", () => {
 
     await page.goto("/demo-tipprunde/rangliste");
     await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
-    await page.getByLabel("Tipprunde wechseln").selectOption("zweite-tipprunde");
-    await expect(page).toHaveURL(/\/zweite-tipprunde\/spieltage\/demo-spieltag$/);
+    await expect(page.getByLabel("Tipprunde wechseln")).toHaveCount(0);
   });
 });

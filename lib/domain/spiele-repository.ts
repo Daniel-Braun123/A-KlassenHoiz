@@ -18,9 +18,11 @@ export type SpielRecord = {
   anstosszeit: string;
   timezone: "Europe/Berlin";
   status: SpielStatus;
+  ergebnis: { heimtore: number; auswaertstore: number } | null;
 };
 
 export type SpieleRepository = ContentManagerRepositoryPart & {
+  listSpiele(tipprundeId: string, spieltagId?: string): Promise<SpielRecord[]>;
   insertSpiel(input: {
     tipprundeId: string;
     spieltagId: string;
@@ -51,7 +53,13 @@ function mapSpiel(row: {
   anstosszeit: string;
   timezone: "Europe/Berlin";
   status: SpielStatus;
+  ergebnisse?:
+    | { heimtore: number; auswaertstore: number }
+    | { heimtore: number; auswaertstore: number }[]
+    | null;
 }): SpielRecord {
+  const ergebnis = Array.isArray(row.ergebnisse) ? row.ergebnisse[0] : row.ergebnisse;
+
   return {
     id: row.id,
     tipprundeId: row.tipprunde_id,
@@ -61,6 +69,9 @@ function mapSpiel(row: {
     anstosszeit: row.anstosszeit,
     timezone: row.timezone,
     status: row.status,
+    ergebnis: ergebnis
+      ? { heimtore: ergebnis.heimtore, auswaertstore: ergebnis.auswaertstore }
+      : null,
   };
 }
 
@@ -88,8 +99,8 @@ function toBerlinIso(date: string, time: string): string {
 function validateTeamsDiffer(heimteamId: string, auswaertsteamId: string): void {
   if (heimteamId === auswaertsteamId) {
     throw new AppError(
-      "Heimteam und Auswaertsteam muessen unterschiedlich sein.",
-      "spiel_teams_must_differ",
+      "Heimverein und Auswärtsverein müssen unterschiedlich sein.",
+      "spiel_vereine_must_differ",
       400,
     );
   }
@@ -111,10 +122,10 @@ export async function createSpiel(
 ): Promise<SpielRecord> {
   await assertCanManageContent(repository, input);
 
-  const heimteamId = requireId(input.heimteamId, "Heimteam", "spiel_heimteam_required");
+  const heimteamId = requireId(input.heimteamId, "Heimverein", "spiel_heimteam_required");
   const auswaertsteamId = requireId(
     input.auswaertsteamId,
-    "Auswaertsteam",
+    "Auswärtsverein",
     "spiel_auswaertsteam_required",
   );
   validateTeamsDiffer(heimteamId, auswaertsteamId);
@@ -147,10 +158,10 @@ export async function updateSpiel(
   await assertCanManageContent(repository, input);
 
   const heimteamId = input.heimteamId
-    ? requireId(input.heimteamId, "Heimteam", "spiel_heimteam_required")
+    ? requireId(input.heimteamId, "Heimverein", "spiel_heimteam_required")
     : undefined;
   const auswaertsteamId = input.auswaertsteamId
-    ? requireId(input.auswaertsteamId, "Auswaertsteam", "spiel_auswaertsteam_required")
+    ? requireId(input.auswaertsteamId, "Auswärtsverein", "spiel_auswaertsteam_required")
     : undefined;
   if (heimteamId && auswaertsteamId) {
     validateTeamsDiffer(heimteamId, auswaertsteamId);
@@ -203,6 +214,27 @@ export function createSupabaseSpieleRepository(supabase: SupabaseClient): Spiele
       }
 
       return data ? { rolle: data.rolle } : null;
+    },
+    async listSpiele(tipprundeId, spieltagId) {
+      let query = supabase
+        .from("spiele")
+        .select(
+          "id, tipprunde_id, spieltag_id, heimteam_id, auswaertsteam_id, anstosszeit, timezone, status, ergebnisse(heimtore, auswaertstore)",
+        )
+        .eq("tipprunde_id", tipprundeId)
+        .order("anstosszeit", { ascending: true });
+
+      if (spieltagId) {
+        query = query.eq("spieltag_id", spieltagId);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        throw new AppError("Spiele konnten nicht geladen werden.", "spiele_load_failed", 500);
+      }
+
+      return (data ?? []).map(mapSpiel);
     },
     async insertSpiel(input) {
       const { data, error } = await supabase
