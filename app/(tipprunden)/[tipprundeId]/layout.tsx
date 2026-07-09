@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
+import { redirect } from "next/navigation";
 
 import { MobileShell } from "@/components/pwa/mobile-shell";
 import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
+import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 function demoOptions(): ActiveTipprundeOption[] {
@@ -9,25 +11,6 @@ function demoOptions(): ActiveTipprundeOption[] {
     { id: "demo-tipprunde", name: "Demo Tipprunde", currentSpieltagId: "demo-spieltag" },
     { id: "zweite-tipprunde", name: "Zweite Tipprunde", currentSpieltagId: "demo-spieltag" },
   ];
-}
-
-function readTipprundeMembership(row: {
-  rolle?: unknown;
-  tipprunden?: unknown;
-}): ActiveTipprundeOption | null {
-  const relation = Array.isArray(row.tipprunden) ? row.tipprunden[0] : row.tipprunden;
-  if (!relation || typeof relation !== "object" || !("id" in relation) || !("name" in relation)) {
-    return null;
-  }
-
-  return {
-    id: String((relation as { id: string }).id),
-    name: String((relation as { name: string }).name),
-    rolle:
-      row.rolle === "admin" || row.rolle === "co_admin" || row.rolle === "nutzer"
-        ? row.rolle
-        : null,
-  };
 }
 
 async function loadCurrentSpieltagId(tipprundeId: string): Promise<string | null> {
@@ -43,35 +26,47 @@ async function loadCurrentSpieltagId(tipprundeId: string): Promise<string | null
   return data?.id ?? null;
 }
 
-async function loadUserTipprunden(tipprundeId: string): Promise<ActiveTipprundeOption[]> {
+async function loadUserTipprunden(
+  tipprundeId: string,
+): Promise<{ tipprunden: ActiveTipprundeOption[]; hasActiveRequestedTipprunde: boolean }> {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return [{ id: tipprundeId, name: "Tipprunde", currentSpieltagId: null }];
+    return {
+      tipprunden: [{ id: tipprundeId, name: "Tipprunde", currentSpieltagId: null }],
+      hasActiveRequestedTipprunde: true,
+    };
   }
 
   const { data } = await supabase
     .from("mitgliedschaften")
-    .select("rolle, tipprunden:tipprunde_id(id, name)")
+    .select("rolle, tipprunden:tipprunde_id(id, name, status)")
     .eq("nutzer_id", user.id)
     .eq("status", "active");
   const tipprunden = (data ?? [])
-    .map((row) => readTipprundeMembership(row))
+    .map((row) => readActiveTipprundeMembership(row))
     .filter((tipprunde): tipprunde is ActiveTipprundeOption => Boolean(tipprunde));
 
   if (tipprunden.length === 0) {
-    return [{ id: tipprundeId, name: "Tipprunde", currentSpieltagId: null }];
+    return { tipprunden: [], hasActiveRequestedTipprunde: false };
   }
 
-  return Promise.all(
+  const hydratedTipprunden = await Promise.all(
     tipprunden.map(async (tipprunde) => ({
       ...tipprunde,
       currentSpieltagId: await loadCurrentSpieltagId(tipprunde.id),
     })),
   );
+
+  return {
+    tipprunden: hydratedTipprunden,
+    hasActiveRequestedTipprunde: hydratedTipprunden.some(
+      (tipprunde) => tipprunde.id === tipprundeId,
+    ),
+  };
 }
 
 export default async function TipprundeLayout({
@@ -82,10 +77,14 @@ export default async function TipprundeLayout({
   params: Promise<{ tipprundeId: string }>;
 }) {
   const { tipprundeId } = await params;
-  const tipprunden =
+  const { tipprunden, hasActiveRequestedTipprunde } =
     tipprundeId === "demo-tipprunde" || tipprundeId === "zweite-tipprunde"
-      ? demoOptions()
+      ? { tipprunden: demoOptions(), hasActiveRequestedTipprunde: true }
       : await loadUserTipprunden(tipprundeId);
+
+  if (!hasActiveRequestedTipprunde) {
+    redirect("/");
+  }
 
   return (
     <MobileShell activeTipprundeId={tipprundeId} tipprunden={tipprunden}>

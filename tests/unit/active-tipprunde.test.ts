@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getTipprundeStartPath } from "@/lib/domain/active-tipprunde";
+import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
 
 describe("active Tipprunde routing", () => {
   it("routes to the current Spieltag when one exists", () => {
@@ -19,5 +20,28 @@ describe("active Tipprunde routing", () => {
         currentSpieltagId: null,
       }),
     ).toBe("/tipprunde-ohne-spieltag/rangliste");
+  });
+
+  it("maps only active Tipprunden from membership rows", () => {
+    expect(
+      readActiveTipprundeMembership({
+        rolle: "admin",
+        tipprunden: { id: "tipprunde-1", name: "A-Klasse", status: "active" },
+      }),
+    ).toEqual({ id: "tipprunde-1", name: "A-Klasse", rolle: "admin" });
+
+    expect(
+      readActiveTipprundeMembership({
+        rolle: "admin",
+        tipprunden: { id: "tipprunde-2", name: "Archiv", status: "archived" },
+      }),
+    ).toBeNull();
+
+    expect(
+      readActiveTipprundeMembership({
+        rolle: "admin",
+        tipprunden: { id: "tipprunde-3", name: "Papierkorb", status: "deleted" },
+      }),
+    ).toBeNull();
   });
 });

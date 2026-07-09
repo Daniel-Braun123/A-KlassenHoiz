@@ -4,6 +4,7 @@ import { ArrowRight, Plus, ShieldCheck, Trophy } from "lucide-react";
 import { ActiveTipprundeLink } from "@/components/tipps/tipprunden-switcher";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
 import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
+import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
 import { AppError } from "@/lib/domain/errors";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -42,30 +43,11 @@ function demoTipprunden(kind?: string): ActiveTipprundeOption[] {
   return [];
 }
 
-function readTipprundeMembership(row: {
-  rolle?: unknown;
-  tipprunden?: unknown;
-}): ActiveTipprundeOption | null {
-  const relation = Array.isArray(row.tipprunden) ? row.tipprunden[0] : row.tipprunden;
-  if (!relation || typeof relation !== "object" || !("id" in relation) || !("name" in relation)) {
-    return null;
-  }
-
-  return {
-    id: String((relation as { id: string }).id),
-    name: String((relation as { name: string }).name),
-    rolle:
-      row.rolle === "admin" || row.rolle === "co_admin" || row.rolle === "nutzer"
-        ? row.rolle
-        : null,
-  };
-}
-
 async function listActiveTipprundenForUser(nutzerId: string): Promise<ActiveTipprundeOption[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("mitgliedschaften")
-    .select("rolle, tipprunden:tipprunde_id(id, name)")
+    .select("rolle, tipprunden:tipprunde_id(id, name, status)")
     .eq("nutzer_id", nutzerId)
     .eq("status", "active");
 
@@ -74,7 +56,7 @@ async function listActiveTipprundenForUser(nutzerId: string): Promise<ActiveTipp
   }
 
   const tipprunden = (data ?? [])
-    .map((row) => readTipprundeMembership(row))
+    .map((row) => readActiveTipprundeMembership(row))
     .filter((tipprunde): tipprunde is ActiveTipprundeOption => Boolean(tipprunde));
 
   return Promise.all(
@@ -217,10 +199,5 @@ export default async function HomePage({
   const { profile } = await requireAuthenticatedProfile();
   const tipprunden = await listActiveTipprundenForUser(user.id);
 
-  return (
-    <HomeOverview
-      tipprunden={tipprunden}
-      profile={{ anzeigename: profile.anzeigename }}
-    />
-  );
+  return <HomeOverview tipprunden={tipprunden} profile={{ anzeigename: profile.anzeigename }} />;
 }

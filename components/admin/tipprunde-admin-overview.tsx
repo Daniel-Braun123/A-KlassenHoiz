@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Archive, CalendarPlus, ShieldCheck, Trash2 } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { EinladungPanel } from "@/components/admin/einladung-panel";
 import { RegisterTipprundeHeaderTitle } from "@/components/navigation/global-topbar";
+import { clearActiveTipprundeId } from "@/lib/domain/active-tipprunde";
 
 type TipprundeAdminOverviewProps = {
   tipprundeId: string;
@@ -16,6 +18,7 @@ export function TipprundeAdminOverview({
   tipprundeId,
   tipprundeName,
 }: TipprundeAdminOverviewProps) {
+  const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -53,10 +56,16 @@ export function TipprundeAdminOverview({
   async function handleDelete(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    await submitJson(`/api/tipprunden/${tipprundeId}`, {
+    const success = await submitJson(`/api/tipprunden/${tipprundeId}`, {
       method: "DELETE",
       body: { confirmation: String(formData.get("confirmation") ?? "") },
     });
+
+    if (success) {
+      clearActiveTipprundeId();
+      router.push("/");
+      router.refresh();
+    }
   }
 
   async function handleRoleChange(event: FormEvent<HTMLFormElement>) {

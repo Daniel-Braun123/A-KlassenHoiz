@@ -74,13 +74,20 @@ export async function requireTipprundeMembership(tipprundeId: string) {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("mitgliedschaften")
-    .select("id, rolle, status")
+    .select("id, rolle, status, tipprunden:tipprunde_id(status)")
     .eq("tipprunde_id", tipprundeId)
     .eq("nutzer_id", user.id)
     .eq("status", "active")
     .single();
 
-  if (error || !data) {
+  const relation = Array.isArray(data?.tipprunden) ? data.tipprunden[0] : data?.tipprunden;
+  const isActiveTipprunde =
+    relation &&
+    typeof relation === "object" &&
+    "status" in relation &&
+    relation.status === "active";
+
+  if (error || !data || !isActiveTipprunde) {
     throw new AppError("Du bist kein Mitglied dieser Tipprunde.", "membership_required", 403);
   }
 

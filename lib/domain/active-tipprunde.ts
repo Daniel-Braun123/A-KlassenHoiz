@@ -38,3 +38,12 @@ export function writeActiveTipprundeId(tipprundeId: string): void {
     tipprundeId,
   )}; path=/; max-age=31536000; samesite=lax`;
 }
+
+export function clearActiveTipprundeId(): void {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  window.localStorage.removeItem(ACTIVE_TIPPRUNDE_STORAGE_KEY);
+  document.cookie = `${ACTIVE_TIPPRUNDE_COOKIE}=; path=/; max-age=0; samesite=lax`;
+}

@@ -1,21 +1,32 @@
+import { redirect } from "next/navigation";
+
 import { TipprundeAdminOverview } from "@/components/admin/tipprunde-admin-overview";
 import { MobileShell } from "@/components/pwa/mobile-shell";
 import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
+import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-async function loadTipprundeName(tipprundeId: string): Promise<string> {
+async function loadTipprundeName(tipprundeId: string): Promise<string | null> {
   if (tipprundeId === "demo-tipprunde") {
     return "Demo Tipprunde";
+  }
+
+  if (tipprundeId === "zweite-tipprunde") {
+    return "Zweite Tipprunde";
   }
 
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("tipprunden")
-    .select("name")
+    .select("name, status")
     .eq("id", tipprundeId)
     .maybeSingle();
 
-  return data?.name ? String(data.name) : "Tipprunde";
+  if (!data || data.status !== "active") {
+    return null;
+  }
+
+  return data.name ? String(data.name) : "Tipprunde";
 }
 
 function demoOptions(): ActiveTipprundeOption[] {
@@ -33,25 +44,6 @@ function demoOptions(): ActiveTipprundeOption[] {
       rolle: "admin",
     },
   ];
-}
-
-function readTipprundeMembership(row: {
-  rolle?: unknown;
-  tipprunden?: unknown;
-}): ActiveTipprundeOption | null {
-  const relation = Array.isArray(row.tipprunden) ? row.tipprunden[0] : row.tipprunden;
-  if (!relation || typeof relation !== "object" || !("id" in relation) || !("name" in relation)) {
-    return null;
-  }
-
-  return {
-    id: String((relation as { id: string }).id),
-    name: String((relation as { name: string }).name),
-    rolle:
-      row.rolle === "admin" || row.rolle === "co_admin" || row.rolle === "nutzer"
-        ? row.rolle
-        : null,
-  };
 }
 
 async function loadCurrentSpieltagId(tipprundeId: string): Promise<string | null> {
@@ -74,20 +66,22 @@ async function loadUserTipprunden(tipprundeId: string): Promise<ActiveTipprundeO
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return [{ id: tipprundeId, name: await loadTipprundeName(tipprundeId), currentSpieltagId: null }];
+    const name = await loadTipprundeName(tipprundeId);
+    return name ? [{ id: tipprundeId, name, currentSpieltagId: null }] : [];
   }
 
   const { data } = await supabase
     .from("mitgliedschaften")
-    .select("rolle, tipprunden:tipprunde_id(id, name)")
+    .select("rolle, tipprunden:tipprunde_id(id, name, status)")
     .eq("nutzer_id", user.id)
     .eq("status", "active");
   const tipprunden = (data ?? [])
-    .map((row) => readTipprundeMembership(row))
+    .map((row) => readActiveTipprundeMembership(row))
     .filter((tipprunde): tipprunde is ActiveTipprundeOption => Boolean(tipprunde));
 
   if (tipprunden.length === 0) {
-    return [{ id: tipprundeId, name: await loadTipprundeName(tipprundeId), currentSpieltagId: null }];
+    const name = await loadTipprundeName(tipprundeId);
+    return name ? [{ id: tipprundeId, name, currentSpieltagId: null }] : [];
   }
 
   return Promise.all(
@@ -105,6 +99,10 @@ export default async function TipprundeAdminPage({
 }) {
   const { tipprundeId } = await params;
   const tipprundeName = await loadTipprundeName(tipprundeId);
+  if (!tipprundeName) {
+    redirect("/");
+  }
+
   const tipprunden =
     tipprundeId === "demo-tipprunde" || tipprundeId === "zweite-tipprunde"
       ? demoOptions()
