@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { canSubmitTipp, shouldRevealFremdeTipps } from "@/lib/domain/tippfristen";
+import {
+  canSubmitTipp,
+  getAutomatischerSpielStatus,
+  shouldRevealFremdeTipps,
+} from "@/lib/domain/tippfristen";
 
 describe("US4 Tippfristen", () => {
   it("allows Tipp submission before the Spiel-Anstosszeit in Europe/Berlin", () => {
@@ -62,5 +66,41 @@ describe("US4 Tippfristen", () => {
         anstosszeit: "2026-08-01T13:30:00.000Z",
       }),
     ).toBe(true);
+  });
+
+  it("marks planned Spiele as beendet only after the 90 minute window", () => {
+    expect(
+      getAutomatischerSpielStatus({
+        now: new Date("2026-08-01T15:00:00.000Z"),
+        anstosszeit: "2026-08-01T13:30:00.000Z",
+        spielStatus: "geplant",
+      }),
+    ).toBe("geplant");
+
+    expect(
+      getAutomatischerSpielStatus({
+        now: new Date("2026-08-01T15:00:01.000Z"),
+        anstosszeit: "2026-08-01T13:30:00.000Z",
+        spielStatus: "geplant",
+      }),
+    ).toBe("beendet");
+  });
+
+  it("keeps manual Sonderstatus unchanged after the 90 minute window", () => {
+    expect(
+      getAutomatischerSpielStatus({
+        now: new Date("2026-08-01T15:00:01.000Z"),
+        anstosszeit: "2026-08-01T13:30:00.000Z",
+        spielStatus: "verschoben",
+      }),
+    ).toBe("verschoben");
+
+    expect(
+      getAutomatischerSpielStatus({
+        now: new Date("2026-08-01T15:00:01.000Z"),
+        anstosszeit: "2026-08-01T13:30:00.000Z",
+        spielStatus: "abgesagt",
+      }),
+    ).toBe("abgesagt");
   });
 });

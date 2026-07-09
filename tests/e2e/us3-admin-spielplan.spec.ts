@@ -75,4 +75,15 @@ test.describe("US3 Admin Spielplanpflege", () => {
     await expect(firstSpiel.locator(".spiel-center")).toContainText("LIVE");
     await expect(firstSpiel.locator(".live-dot")).toBeVisible();
   });
+
+  test("shows planned Spiele as beendet after the 90 minute window", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-08-01T15:00:01.000Z"));
+
+    await page.goto("/admin/tipprunden/demo-tipprunde/spielplan");
+    await page.getByRole("tab", { name: "Spieltage & Spiele" }).click();
+
+    const firstSpiel = page.locator(".spiel-list .spiel-row").first();
+    await expect(firstSpiel.locator(".spiel-center")).toContainText("Beendet");
+    await expect(firstSpiel.locator(".live-dot")).toHaveCount(0);
+  });
 });

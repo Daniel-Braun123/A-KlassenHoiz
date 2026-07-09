@@ -2,14 +2,17 @@ import { expect, test } from "@playwright/test";
 
 test.describe("US5 Ergebnisverwaltung", () => {
   test("uses Spieltag and Spiel selection before Ergebnis entry", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-08-02T15:01:00.000Z"));
     await page.goto("/admin/tipprunden/demo-tipprunde/spielplan");
 
     await page.getByRole("tab", { name: "Ergebnisse" }).click();
 
     await expect(page.getByRole("heading", { name: "Ergebnisse" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Eintragen möglich" })).toBeVisible();
+    await expect(page.getByLabel("1 offene Ergebnisse")).toBeVisible();
+    await expect(page.getByRole("button", { name: /FC Hoiz.*SV Bretterbach/ })).toBeVisible();
     await expect(page.getByLabel("Spieltag")).toBeVisible();
     await expect(page.getByRole("button", { name: "Spiel auswählen" })).toBeVisible();
-    await expect(page.getByText("FC Hoiz")).toHaveCount(0);
     await expect(page.getByLabel("Heimtore")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Spiel auswählen" }).click();

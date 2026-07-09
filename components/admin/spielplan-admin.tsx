@@ -16,6 +16,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { ErgebnisForm } from "@/components/admin/ergebnis-form";
 import { TeamLogo } from "@/components/admin/team-logo";
 import { RegisterTipprundeHeaderTitle } from "@/components/navigation/global-topbar";
+import { getAutomatischerSpielStatus, isSpielVorbei } from "@/lib/domain/tippfristen";
 
 type SpielplanAdminProps = {
   tipprundeId: string;
@@ -104,7 +105,6 @@ const DEMO_SPIELE: Spiel[] = [
 ];
 
 const STATUS_OPTIONS = ["geplant", "verschoben", "abgesagt"] as const;
-const LIVE_WINDOW_MS = 90 * 60 * 1000;
 
 function abschnittLabel(abschnitt: Spieltag["abschnitt"]) {
   return abschnitt === "rueckrunde" ? "Rückrunde" : "Hinrunde";
@@ -130,10 +130,20 @@ function isSpielLive(spiel: Spiel, now = new Date()) {
   const anstoss = new Date(spiel.anstosszeit).getTime();
   const current = now.getTime();
 
-  return spiel.status === "geplant" && current >= anstoss && current <= anstoss + LIVE_WINDOW_MS;
+  return (
+    spiel.status === "geplant" &&
+    current >= anstoss &&
+    !isSpielVorbei({ now, anstosszeit: spiel.anstosszeit })
+  );
 }
 
 function getSpielMitte(spiel: Spiel, now = new Date()) {
+  const automatischerStatus = getAutomatischerSpielStatus({
+    now,
+    anstosszeit: spiel.anstosszeit,
+    spielStatus: spiel.status,
+  });
+
   if (isSpielLive(spiel, now)) {
     return { kind: "live" as const, label: "LIVE" };
   }
@@ -143,6 +153,10 @@ function getSpielMitte(spiel: Spiel, now = new Date()) {
       kind: "score" as const,
       label: `${spiel.ergebnis.heimtore} : ${spiel.ergebnis.auswaertstore}`,
     };
+  }
+
+  if (automatischerStatus === "beendet") {
+    return { kind: "finished" as const, label: "Beendet" };
   }
 
   return { kind: "time" as const, label: formatAnpfiffUhrzeit(spiel.anstosszeit) };
@@ -239,6 +253,7 @@ export function SpielplanAdmin({ tipprundeId, tipprundeName }: SpielplanAdminPro
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(!isDemo);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [now, setNow] = useState(() => new Date());
 
   const selectedSpieltag = useMemo(
     () => spieltage.find((spieltag) => spieltag.id === selectedSpieltagId) ?? spieltage[0] ?? null,
@@ -297,6 +312,12 @@ export function SpielplanAdmin({ tipprundeId, tipprundeName }: SpielplanAdminPro
       ),
     );
   }
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setNow(new Date()), 1_000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   useEffect(() => {
     if (isDemo) {
@@ -828,10 +849,16 @@ export function SpielplanAdmin({ tipprundeId, tipprundeName }: SpielplanAdminPro
                 {selectedSpieltag ? <p>{selectedSpieltag.name}</p> : null}
                 {spieleForSelectedSpieltag.length ? (
                   <div className="spiel-list">
-                    {spieleForSelectedSpieltag.map((spiel) => {
+                    {spieleForSelectedSpieltag.map((rawSpiel) => {
+                      const automatischerStatus = getAutomatischerSpielStatus({
+                        now,
+                        anstosszeit: rawSpiel.anstosszeit,
+                        spielStatus: rawSpiel.status,
+                      });
+                      const spiel = { ...rawSpiel, status: automatischerStatus };
                       const heimverein = findVerein(vereine, spiel.heimteamId);
                       const auswaertsverein = findVerein(vereine, spiel.auswaertsteamId);
-                      const spielMitte = getSpielMitte(spiel);
+                      const spielMitte = getSpielMitte(spiel, now);
                       return (
                         <div key={spiel.id} className="spiel-row">
                           <div
@@ -855,6 +882,7 @@ export function SpielplanAdmin({ tipprundeId, tipprundeName }: SpielplanAdminPro
                                 "spiel-center",
                                 spielMitte.kind === "score" ? "has-score" : "",
                                 spielMitte.kind === "live" ? "is-live" : "",
+                                spielMitte.kind === "finished" ? "is-finished" : "",
                               ]
                                 .filter(Boolean)
                                 .join(" ")}

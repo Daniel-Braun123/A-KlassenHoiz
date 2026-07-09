@@ -259,6 +259,7 @@ describe("US4 Tipps", () => {
     });
     expect(liveView.spiele[0]).toMatchObject({
       id: "spiel-1",
+      status: "geplant",
       istLive: true,
       ergebnisAusstehend: false,
     });
@@ -271,6 +272,7 @@ describe("US4 Tipps", () => {
     });
     expect(finishedView.spiele[0]).toMatchObject({
       id: "spiel-1",
+      status: "beendet",
       istLive: false,
       ergebnisAusstehend: true,
     });

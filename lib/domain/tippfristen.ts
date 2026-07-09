@@ -33,3 +33,19 @@ export function isSpielVorbei({
 }): boolean {
   return now.getTime() > new Date(anstosszeit).getTime() + SPIEL_LIVE_WINDOW_MS;
 }
+
+export function getAutomatischerSpielStatus({
+  now,
+  anstosszeit,
+  spielStatus,
+}: {
+  now: Date;
+  anstosszeit: string | Date;
+  spielStatus: SpielStatus;
+}): SpielStatus {
+  if (spielStatus === "geplant" && isSpielVorbei({ now, anstosszeit })) {
+    return "beendet";
+  }
+
+  return spielStatus;
+}

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { TeamLogo } from "@/components/admin/team-logo";
 import { ErgebnisStatus } from "@/components/tipps/ergebnis-status";
 import { isSpielVorbei } from "@/lib/domain/tippfristen";
+import type { SpielStatus } from "@/lib/domain/types";
 
 type ErgebnisSpieltag = {
   id: string;
@@ -24,6 +25,7 @@ type ErgebnisSpiel = {
   heimteamId: string;
   auswaertsteamId: string;
   anstosszeit: string;
+  status: SpielStatus;
   ergebnis: { heimtore: number; auswaertstore: number } | null;
 };
 
@@ -45,6 +47,10 @@ type ApiResponse = {
 
 function findVerein(vereine: ErgebnisVerein[], vereinId: string) {
   return vereine.find((verein) => verein.id === vereinId) ?? null;
+}
+
+function findSpieltag(spieltage: ErgebnisSpieltag[], spieltagId: string) {
+  return spieltage.find((spieltag) => spieltag.id === spieltagId) ?? null;
 }
 
 function formatAnpfiff(value: string) {
@@ -75,6 +81,52 @@ function SpielOption({ spiel, vereine }: { spiel: ErgebnisSpiel; vereine: Ergebn
       </span>
       <time dateTime={spiel.anstosszeit}>{formatAnpfiff(spiel.anstosszeit)}</time>
     </span>
+  );
+}
+
+function OffenesErgebnisItem({
+  spiel,
+  spieltage,
+  vereine,
+  isSelected,
+  onSelect,
+}: {
+  spiel: ErgebnisSpiel;
+  spieltage: ErgebnisSpieltag[];
+  vereine: ErgebnisVerein[];
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const heimverein = findVerein(vereine, spiel.heimteamId);
+  const auswaertsverein = findVerein(vereine, spiel.auswaertsteamId);
+  const spieltag = findSpieltag(spieltage, spiel.spieltagId);
+
+  return (
+    <button
+      type="button"
+      className="offenes-ergebnis-item"
+      aria-current={isSelected ? "true" : undefined}
+      onClick={onSelect}
+    >
+      <span className="offenes-ergebnis-matchup">
+        <span className="ergebnis-spiel-team">
+          <TeamLogo name={heimverein?.name ?? "Heimverein"} logoUrl={heimverein?.logoUrl} />
+          <span>{heimverein?.name ?? "Heimverein"}</span>
+        </span>
+        <span className="ergebnis-spiel-separator">-</span>
+        <span className="ergebnis-spiel-team">
+          <TeamLogo
+            name={auswaertsverein?.name ?? "Auswärtsverein"}
+            logoUrl={auswaertsverein?.logoUrl}
+          />
+          <span>{auswaertsverein?.name ?? "Auswärtsverein"}</span>
+        </span>
+      </span>
+      <span className="offenes-ergebnis-meta">
+        <span>{spieltag?.name ?? "Spieltag"}</span>
+        <time dateTime={spiel.anstosszeit}>{formatAnpfiff(spiel.anstosszeit)}</time>
+      </span>
+    </button>
   );
 }
 
@@ -192,6 +244,19 @@ export function ErgebnisForm({
   const selectedSpielIstVorbei = selectedSpiel
     ? isSpielVorbei({ now, anstosszeit: selectedSpiel.anstosszeit })
     : false;
+  const offeneErgebnisSpiele = useMemo(
+    () =>
+      spiele
+        .filter(
+          (spiel) =>
+            !spiel.ergebnis &&
+            spiel.status !== "verschoben" &&
+            spiel.status !== "abgesagt" &&
+            isSpielVorbei({ now, anstosszeit: spiel.anstosszeit }),
+        )
+        .sort((a, b) => new Date(a.anstosszeit).getTime() - new Date(b.anstosszeit).getTime()),
+    [now, spiele],
+  );
 
   useEffect(() => {
     const intervalId = window.setInterval(() => setNow(new Date()), 1_000);
@@ -261,6 +326,44 @@ export function ErgebnisForm({
 
   return (
     <div className="ergebnis-flow">
+      <section className="offene-ergebnisse" aria-labelledby="offene-ergebnisse-heading">
+        <div className="offene-ergebnisse-heading">
+          <div>
+            <p className="eyebrow">Offene Ergebnisse</p>
+            <h3 id="offene-ergebnisse-heading">Eintragen möglich</h3>
+          </div>
+          <span
+            className="offene-ergebnisse-count"
+            aria-label={`${offeneErgebnisSpiele.length} offene Ergebnisse`}
+          >
+            {offeneErgebnisSpiele.length}
+          </span>
+        </div>
+
+        {offeneErgebnisSpiele.length ? (
+          <div className="offene-ergebnisse-list">
+            {offeneErgebnisSpiele.map((spiel) => (
+              <OffenesErgebnisItem
+                key={spiel.id}
+                spiel={spiel}
+                spieltage={spieltage}
+                vereine={vereine}
+                isSelected={spiel.id === effectiveSpielId}
+                onSelect={() => {
+                  setSelectedSpieltagId(spiel.spieltagId);
+                  setSelectedSpielId(spiel.id);
+                  setEditingErgebnisSpielId(null);
+                  setIsSpielDropdownOpen(false);
+                  setMessage(null);
+                }}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="offene-ergebnisse-empty">Keine offenen Ergebnisse.</p>
+        )}
+      </section>
+
       <label>
         Spieltag
         <select

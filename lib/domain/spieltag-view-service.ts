@@ -1,4 +1,9 @@
-import { shouldRevealFremdeTipps } from "@/lib/domain/tippfristen";
+import {
+  getAutomatischerSpielStatus,
+  isSpielVorbei,
+  shouldRevealFremdeTipps,
+} from "@/lib/domain/tippfristen";
+import type { SpielStatus } from "@/lib/domain/types";
 import type { SpielForTipp, TippRecord, TippsRepository } from "@/lib/domain/tipps-repository";
 
 export type SpieltagTippView = {
@@ -23,29 +28,23 @@ function isSpielLive({
 }: {
   now: Date;
   anstosszeit: string;
-  status: string;
+  status: SpielStatus;
 }): boolean {
-  const anstoss = new Date(anstosszeit).getTime();
-  const liveUntil = anstoss + 90 * 60 * 1000;
-  const current = now.getTime();
-
-  return status === "geplant" && current >= anstoss && current <= liveUntil;
+  return (
+    status === "geplant" &&
+    now.getTime() >= new Date(anstosszeit).getTime() &&
+    !isSpielVorbei({ now, anstosszeit })
+  );
 }
 
 function isErgebnisAusstehend({
-  now,
-  anstosszeit,
   status,
   hasErgebnis,
 }: {
-  now: Date;
-  anstosszeit: string;
-  status: string;
+  status: SpielStatus;
   hasErgebnis: boolean;
 }): boolean {
-  const liveUntil = new Date(anstosszeit).getTime() + 90 * 60 * 1000;
-
-  return status === "geplant" && !hasErgebnis && now.getTime() > liveUntil;
+  return status === "beendet" && !hasErgebnis;
 }
 
 export async function createSpieltagTippView(
@@ -77,20 +76,25 @@ export async function createSpieltagTippView(
       const spielTipps = tipps.filter((tipp) => tipp.spielId === spiel.id);
       const eigenerTipp = spielTipps.find((tipp) => tipp.nutzerId === input.nutzerId) ?? null;
       const fremdeTippsSichtbar = shouldRevealFremdeTipps({ now, anstosszeit: spiel.anstosszeit });
+      const automatischerStatus = getAutomatischerSpielStatus({
+        now,
+        anstosszeit: spiel.anstosszeit,
+        spielStatus: spiel.status,
+      });
 
       return {
         ...spiel,
+        status: automatischerStatus,
         istTippbar:
-          spiel.status === "geplant" && now.getTime() < new Date(spiel.anstosszeit).getTime(),
+          automatischerStatus === "geplant" &&
+          now.getTime() < new Date(spiel.anstosszeit).getTime(),
         istLive: isSpielLive({
           now,
           anstosszeit: spiel.anstosszeit,
-          status: spiel.status,
+          status: automatischerStatus,
         }),
         ergebnisAusstehend: isErgebnisAusstehend({
-          now,
-          anstosszeit: spiel.anstosszeit,
-          status: spiel.status,
+          status: automatischerStatus,
           hasErgebnis: Boolean(spiel.ergebnis),
         }),
         eigenerTipp,
@@ -161,47 +165,55 @@ export function createDemoSpieltagTippView(
   return {
     tipprundeId: "demo-tipprunde",
     spieltagId,
-    spiele: spiele.map((spiel) => ({
-      ...spiel,
-      istTippbar:
-        spiel.status === "geplant" && now.getTime() < new Date(spiel.anstosszeit).getTime(),
-      istLive: isSpielLive({
+    spiele: spiele.map((spiel) => {
+      const automatischerStatus = getAutomatischerSpielStatus({
         now,
         anstosszeit: spiel.anstosszeit,
-        status: spiel.status,
-      }),
-      ergebnisAusstehend: isErgebnisAusstehend({
-        now,
-        anstosszeit: spiel.anstosszeit,
-        status: spiel.status,
-        hasErgebnis: Boolean(spiel.ergebnis),
-      }),
-      eigenerTipp:
-        spiel.id === "spiel-gesperrt"
-          ? {
-              id: "demo-tipp",
-              spielId: "spiel-gesperrt",
-              tipprundeId: "demo-tipprunde",
-              nutzerId: "demo-user",
-              heimtoreTipp: 2,
-              auswaertstoreTipp: 1,
-              submittedAt: "2026-08-01T12:00:00.000Z",
-              updatedAt: "2026-08-01T12:00:00.000Z",
-            }
-          : spiel.id === "spiel-ergebnis"
+        spielStatus: spiel.status,
+      });
+
+      return {
+        ...spiel,
+        status: automatischerStatus,
+        istTippbar:
+          automatischerStatus === "geplant" &&
+          now.getTime() < new Date(spiel.anstosszeit).getTime(),
+        istLive: isSpielLive({
+          now,
+          anstosszeit: spiel.anstosszeit,
+          status: automatischerStatus,
+        }),
+        ergebnisAusstehend: isErgebnisAusstehend({
+          status: automatischerStatus,
+          hasErgebnis: Boolean(spiel.ergebnis),
+        }),
+        eigenerTipp:
+          spiel.id === "spiel-gesperrt"
             ? {
-                id: "demo-tipp-ergebnis",
-                spielId: "spiel-ergebnis",
+                id: "demo-tipp",
+                spielId: "spiel-gesperrt",
                 tipprundeId: "demo-tipprunde",
                 nutzerId: "demo-user",
                 heimtoreTipp: 2,
-                auswaertstoreTipp: 0,
-                submittedAt: "2026-07-31T12:00:00.000Z",
-                updatedAt: "2026-07-31T12:00:00.000Z",
+                auswaertstoreTipp: 1,
+                submittedAt: "2026-08-01T12:00:00.000Z",
+                updatedAt: "2026-08-01T12:00:00.000Z",
               }
-          : null,
-      fremdeTippsSichtbar: shouldRevealFremdeTipps({ now, anstosszeit: spiel.anstosszeit }),
-      fremdeTipps: [],
-    })),
+            : spiel.id === "spiel-ergebnis"
+              ? {
+                  id: "demo-tipp-ergebnis",
+                  spielId: "spiel-ergebnis",
+                  tipprundeId: "demo-tipprunde",
+                  nutzerId: "demo-user",
+                  heimtoreTipp: 2,
+                  auswaertstoreTipp: 0,
+                  submittedAt: "2026-07-31T12:00:00.000Z",
+                  updatedAt: "2026-07-31T12:00:00.000Z",
+                }
+              : null,
+        fremdeTippsSichtbar: shouldRevealFremdeTipps({ now, anstosszeit: spiel.anstosszeit }),
+        fremdeTipps: [],
+      };
+    }),
   };
 }
