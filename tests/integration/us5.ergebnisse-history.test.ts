@@ -30,7 +30,13 @@ function createRepository(): ErgebnisseRepository & {
       return null;
     },
     async getSpiel(spielId) {
-      return spielId === "spiel-1" ? { id: "spiel-1", tipprundeId: "tipprunde-1" } : null;
+      return spielId === "spiel-1"
+        ? {
+            id: "spiel-1",
+            tipprundeId: "tipprunde-1",
+            anstosszeit: "2026-08-01T13:30:00.000Z",
+          }
+        : null;
     },
     async getErgebnisBySpiel(spielId) {
       return ergebnisse.get(spielId) ?? null;
@@ -166,8 +172,46 @@ describe("US5 Ergebnis-Historie", () => {
         callerNutzerId: "admin-1",
         heimtore: -1,
         auswaertstore: 0,
+        now: new Date("2026-08-01T16:00:00.000Z"),
       }),
     ).rejects.toMatchObject({ code: "ergebnis_score_invalid" });
+  });
+
+  it("rejects Ergebnis entries until the Spiel is past the 90 minute window", async () => {
+    const repository = createRepository();
+
+    await expect(
+      enterErgebnis(repository, {
+        tipprundeId: "tipprunde-1",
+        spielId: "spiel-1",
+        callerNutzerId: "admin-1",
+        heimtore: 1,
+        auswaertstore: 0,
+        now: new Date("2026-08-01T14:59:59.000Z"),
+      }),
+    ).rejects.toMatchObject({ code: "ergebnis_spiel_not_finished" });
+
+    await expect(
+      enterErgebnis(repository, {
+        tipprundeId: "tipprunde-1",
+        spielId: "spiel-1",
+        callerNutzerId: "admin-1",
+        heimtore: 1,
+        auswaertstore: 0,
+        now: new Date("2026-08-01T15:00:00.000Z"),
+      }),
+    ).rejects.toMatchObject({ code: "ergebnis_spiel_not_finished" });
+
+    const ergebnis = await enterErgebnis(repository, {
+      tipprundeId: "tipprunde-1",
+      spielId: "spiel-1",
+      callerNutzerId: "admin-1",
+      heimtore: 1,
+      auswaertstore: 0,
+      now: new Date("2026-08-01T15:00:01.000Z"),
+    });
+
+    expect(ergebnis).toMatchObject({ heimtore: 1, auswaertstore: 0 });
   });
 
   it("does not create history or changed markers when the Ergebnis is unchanged", async () => {

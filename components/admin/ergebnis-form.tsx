@@ -1,10 +1,11 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 import { TeamLogo } from "@/components/admin/team-logo";
 import { ErgebnisStatus } from "@/components/tipps/ergebnis-status";
+import { isSpielVorbei } from "@/lib/domain/tippfristen";
 
 type ErgebnisSpieltag = {
   id: string;
@@ -81,10 +82,12 @@ function ErgebnisMatchup({
   spiel,
   vereine,
   mode,
+  disabled = false,
 }: {
   spiel: ErgebnisSpiel;
   vereine: ErgebnisVerein[];
   mode: "display" | "input";
+  disabled?: boolean;
 }) {
   const heimverein = findVerein(vereine, spiel.heimteamId);
   const auswaertsverein = findVerein(vereine, spiel.auswaertsteamId);
@@ -118,6 +121,7 @@ function ErgebnisMatchup({
                 placeholder="0"
                 defaultValue={spiel.ergebnis?.heimtore ?? ""}
                 required
+                disabled={disabled}
                 aria-label="Heimtore"
               />
             </label>
@@ -132,6 +136,7 @@ function ErgebnisMatchup({
                 placeholder="0"
                 defaultValue={spiel.ergebnis?.auswaertstore ?? ""}
                 required
+                disabled={disabled}
                 aria-label="Auswärtstore"
               />
             </label>
@@ -168,6 +173,7 @@ export function ErgebnisForm({
   const [isSpielDropdownOpen, setIsSpielDropdownOpen] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [now, setNow] = useState(() => new Date());
   const effectiveSpieltagId = selectedSpieltagId || spieltage[0]?.id || "";
 
   const spieleForSelectedSpieltag = useMemo(
@@ -183,6 +189,15 @@ export function ErgebnisForm({
   const isAenderungsmodus = Boolean(
     selectedSpiel && hasExistingErgebnis && editingErgebnisSpielId === selectedSpiel.id,
   );
+  const selectedSpielIstVorbei = selectedSpiel
+    ? isSpielVorbei({ now, anstosszeit: selectedSpiel.anstosszeit })
+    : false;
+
+  useEffect(() => {
+    const intervalId = window.setInterval(() => setNow(new Date()), 1_000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -190,6 +205,11 @@ export function ErgebnisForm({
 
     if (!selectedSpiel) {
       setMessage("Bitte wähle ein Spiel aus.");
+      return;
+    }
+
+    if (!isSpielVorbei({ now: new Date(), anstosszeit: selectedSpiel.anstosszeit })) {
+      setMessage("Ergebnisse können erst nach Spielende eingetragen werden.");
       return;
     }
 
@@ -318,9 +338,14 @@ export function ErgebnisForm({
               spiel={selectedSpiel}
               vereine={vereine}
               mode={hasExistingErgebnis && !isAenderungsmodus ? "display" : "input"}
+              disabled={!selectedSpielIstVorbei}
             />
             {isAenderungsmodus ? <ErgebnisStatus isChanged /> : null}
           </div>
+
+          {!selectedSpielIstVorbei ? (
+            <p className="ergebnis-lock-hint">Ergebnis erst nach Spielende möglich.</p>
+          ) : null}
 
           {isAenderungsmodus ? (
             <label>
@@ -338,6 +363,7 @@ export function ErgebnisForm({
             <button
               type="button"
               className="secondary-button"
+              disabled={!selectedSpielIstVorbei}
               onClick={() => {
                 setEditingErgebnisSpielId(selectedSpiel.id);
                 setMessage(null);
@@ -346,7 +372,7 @@ export function ErgebnisForm({
               Ergebnis ändern
             </button>
           ) : (
-            <button type="submit" disabled={isSubmitting}>
+            <button type="submit" disabled={isSubmitting || !selectedSpielIstVorbei}>
               Ergebnis speichern
             </button>
           )}

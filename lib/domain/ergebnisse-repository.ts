@@ -5,6 +5,7 @@ import {
   type ContentManagerRepositoryPart,
 } from "@/lib/domain/content-management";
 import { AppError } from "@/lib/domain/errors";
+import { isSpielVorbei } from "@/lib/domain/tippfristen";
 
 export type ErgebnisRecord = {
   id: string;
@@ -30,7 +31,7 @@ export type ErgebnisAenderungRecord = {
 };
 
 export type ErgebnisseRepository = ContentManagerRepositoryPart & {
-  getSpiel(spielId: string): Promise<{ id: string; tipprundeId: string } | null>;
+  getSpiel(spielId: string): Promise<{ id: string; tipprundeId: string; anstosszeit: string } | null>;
   getErgebnisBySpiel(spielId: string): Promise<ErgebnisRecord | null>;
   insertErgebnis(input: {
     spielId: string;
@@ -141,9 +142,18 @@ export async function enterErgebnis(
     throw new AppError("Spiel nicht gefunden.", "spiel_not_found", 404);
   }
 
+  const nowDate = input.now ?? new Date();
+  if (!isSpielVorbei({ now: nowDate, anstosszeit: spiel.anstosszeit })) {
+    throw new AppError(
+      "Ergebnisse können erst nach Spielende eingetragen werden.",
+      "ergebnis_spiel_not_finished",
+      400,
+    );
+  }
+
   const heimtore = requireScore(input.heimtore);
   const auswaertstore = requireScore(input.auswaertstore);
-  const now = (input.now ?? new Date()).toISOString();
+  const now = nowDate.toISOString();
   const existing = await repository.getErgebnisBySpiel(input.spielId);
 
   if (!existing) {
@@ -210,7 +220,7 @@ export function createSupabaseErgebnisseRepository(supabase: SupabaseClient): Er
     async getSpiel(spielId) {
       const { data, error } = await supabase
         .from("spiele")
-        .select("id, tipprunde_id")
+        .select("id, tipprunde_id, anstosszeit")
         .eq("id", spielId)
         .maybeSingle();
 
@@ -218,7 +228,9 @@ export function createSupabaseErgebnisseRepository(supabase: SupabaseClient): Er
         throw new AppError("Spiel konnte nicht geladen werden.", "spiel_load_failed", 500);
       }
 
-      return data ? { id: data.id, tipprundeId: data.tipprunde_id } : null;
+      return data
+        ? { id: data.id, tipprundeId: data.tipprunde_id, anstosszeit: data.anstosszeit }
+        : null;
     },
     async getErgebnisBySpiel(spielId) {
       const { data, error } = await supabase
