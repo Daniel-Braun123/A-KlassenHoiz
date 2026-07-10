@@ -18,7 +18,7 @@ test.describe("US7 PWA und mobile Navigation", () => {
       name: "A-KlassenHoiz",
       short_name: "KlassenHoiz",
       display: "standalone",
-      theme_color: "#020617",
+      theme_color: "#07111f",
     });
     expect(manifest.icons.some((icon) => icon.src.includes("icon"))).toBe(true);
 

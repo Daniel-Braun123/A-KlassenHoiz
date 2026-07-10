@@ -34,6 +34,6 @@ test.describe("US7 Login-Routing und Tipprunden-Auswahl", () => {
 
     await page.goto("/demo-tipprunde/rangliste");
     await expect(page.getByRole("navigation", { name: "Mobile Navigation" })).toBeVisible();
-    await expect(page.getByLabel("Tipprunde wechseln")).toHaveCount(0);
+    await expect(page.getByLabel("Tipprunde wechseln")).toBeVisible();
   });
 });

@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { Feedback } from "@/components/ui/primitives";
+
 type EinladungJoinFormProps = {
   token: string;
 };
@@ -60,10 +62,10 @@ export function EinladungJoinForm({ token }: EinladungJoinFormProps) {
         Tipprunden-Nickname
         <input name="tipprundenNickname" type="text" autoComplete="nickname" required />
       </label>
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
         {isSubmitting ? "Beitreten..." : "Beitreten"}
       </button>
-      {message ? <p role="alert">{message}</p> : null}
+      {message ? <Feedback kind="error">{message}</Feedback> : null}
     </form>
   );
 }

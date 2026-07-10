@@ -3,6 +3,8 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
+import { Feedback } from "@/components/ui/primitives";
+
 export function TipprundeCreateForm() {
   const router = useRouter();
   const [message, setMessage] = useState<string | null>(null);
@@ -55,10 +57,10 @@ export function TipprundeCreateForm() {
           placeholder="z. B. Coach Tom"
         />
       </label>
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
         {isSubmitting ? "Erstellen..." : "Tipprunde erstellen"}
       </button>
-      {message ? <p role="alert">{message}</p> : null}
+      {message ? <Feedback kind="error">{message}</Feedback> : null}
     </form>
   );
 }

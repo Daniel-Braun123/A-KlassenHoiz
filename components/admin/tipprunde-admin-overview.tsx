@@ -7,6 +7,7 @@ import { useState, type FormEvent } from "react";
 
 import { EinladungPanel } from "@/components/admin/einladung-panel";
 import { RegisterTipprundeHeaderTitle } from "@/components/navigation/global-topbar";
+import { Feedback, PageHeader } from "@/components/ui/primitives";
 import { clearActiveTipprundeId } from "@/lib/domain/active-tipprunde";
 
 type TipprundeAdminOverviewProps = {
@@ -14,12 +15,14 @@ type TipprundeAdminOverviewProps = {
   tipprundeName: string;
 };
 
+type AdminMessage = { kind: "success" | "error"; text: string };
+
 export function TipprundeAdminOverview({
   tipprundeId,
   tipprundeName,
 }: TipprundeAdminOverviewProps) {
   const router = useRouter();
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<AdminMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function submitJson(
@@ -41,11 +44,14 @@ export function TipprundeAdminOverview({
     setIsSubmitting(false);
 
     if (!response.ok) {
-      setMessage(payload?.error?.message ?? "Aktion konnte nicht ausgeführt werden.");
+      setMessage({
+        kind: "error",
+        text: payload?.error?.message ?? "Aktion konnte nicht ausgeführt werden.",
+      });
       return false;
     }
 
-    setMessage("Änderung gespeichert.");
+    setMessage({ kind: "success", text: "Änderung gespeichert." });
     return true;
   }
 
@@ -73,7 +79,7 @@ export function TipprundeAdminOverview({
     const formData = new FormData(event.currentTarget);
     const nutzerId = String(formData.get("nutzerId") ?? "").trim();
     if (!nutzerId) {
-      setMessage("Bitte gib die Nutzer-ID des Mitglieds ein.");
+      setMessage({ kind: "error", text: "Bitte gib die Nutzer-ID des Mitglieds ein." });
       return;
     }
 
@@ -86,10 +92,13 @@ export function TipprundeAdminOverview({
   return (
     <section className="admin-panel" aria-labelledby="tipprunde-admin-heading">
       <RegisterTipprundeHeaderTitle tipprundeId={tipprundeId} tipprundeName={tipprundeName} />
-      <header className="admin-page-header">
-        <h1 id="tipprunde-admin-heading">Tipprunde verwalten</h1>
-      </header>
-      {message ? <p role="status">{message}</p> : null}
+      <PageHeader
+        eyebrow={tipprundeName}
+        title="Tipprunde verwalten"
+        description="Spielbetrieb, Mitglieder und Einladungen an einem Ort organisieren."
+        headingId="tipprunde-admin-heading"
+      />
+      {message ? <Feedback kind={message.kind}>{message.text}</Feedback> : null}
       <div className="admin-actions tipprunde-admin-actions">
         <section className="admin-action-card primary-card admin-card-feature">
           <div className="admin-card-icon">
@@ -128,31 +137,44 @@ export function TipprundeAdminOverview({
             </button>
           </form>
         </section>
-        <section className="admin-action-card admin-card-compact admin-card-archive">
-          <div className="admin-card-icon">
-            <Archive aria-hidden="true" size={22} />
+        <section className="admin-danger-zone" aria-labelledby="danger-zone-heading">
+          <header>
+            <p className="eyebrow">Sensible Aktionen</p>
+            <h2 id="danger-zone-heading">Deaktivieren oder löschen</h2>
+          </header>
+          <div className="admin-danger-actions">
+            <section className="admin-action-card admin-card-compact admin-card-archive">
+              <div className="admin-card-icon">
+                <Archive aria-hidden="true" size={22} />
+              </div>
+              <h2>Archivieren</h2>
+              <p>Tipprunde für normale Nutzung deaktivieren.</p>
+              <button
+                type="button"
+                onClick={handleArchive}
+                disabled={isSubmitting}
+                aria-busy={isSubmitting}
+              >
+                Archivieren
+              </button>
+            </section>
+            <section className="admin-action-card danger-card admin-card-compact">
+              <div className="admin-card-icon">
+                <Trash2 aria-hidden="true" size={22} />
+              </div>
+              <h2>Endgültig löschen</h2>
+              <p>Nur mit Sicherheitsprüfung und Besitzer/Admin-Rechten.</p>
+              <form className="stack" onSubmit={handleDelete}>
+                <label>
+                  Tipprunden-Namen zur Sicherheitsprüfung
+                  <input name="confirmation" type="text" required />
+                </label>
+                <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+                  Endgültig löschen
+                </button>
+              </form>
+            </section>
           </div>
-          <h2>Archivieren</h2>
-          <p>Tipprunde für normale Nutzung deaktivieren.</p>
-          <button type="button" onClick={handleArchive} disabled={isSubmitting}>
-            Archivieren
-          </button>
-        </section>
-        <section className="admin-action-card danger-card admin-card-compact">
-          <div className="admin-card-icon">
-            <Trash2 aria-hidden="true" size={22} />
-          </div>
-          <h2>Endgültig löschen</h2>
-          <p>Nur mit Sicherheitsprüfung und Besitzer/Admin-Rechten.</p>
-          <form className="stack" onSubmit={handleDelete}>
-            <label>
-              Tipprunden-Namen zur Sicherheitsprüfung
-              <input name="confirmation" type="text" required />
-            </label>
-            <button type="submit" disabled={isSubmitting}>
-              Endgültig löschen
-            </button>
-          </form>
         </section>
       </div>
     </section>

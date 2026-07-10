@@ -4,6 +4,7 @@ import { Save } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { TeamLogo } from "@/components/admin/team-logo";
+import { Feedback } from "@/components/ui/primitives";
 import type { SpielTippView } from "@/lib/domain/spieltag-view-service";
 import { calculatePunkte } from "@/lib/scoring/calculate-punkte";
 
@@ -11,6 +12,8 @@ type TippCardProps = {
   tipprundeId: string;
   spiel: SpielTippView;
 };
+
+type TippMessage = { kind: "success" | "error"; text: string };
 
 function formatAnstossUhrzeit(value: string): string {
   return new Intl.DateTimeFormat("de-DE", {
@@ -47,9 +50,10 @@ function getSpielCenter(spiel: SpielTippView) {
   return { kind: "time" as const, label: formatAnstossUhrzeit(spiel.anstosszeit) };
 }
 
-function getTippStatus(
-  spiel: SpielTippView,
-): { kind: "points" | "forgotten" | "empty"; label: string } {
+function getTippStatus(spiel: SpielTippView): {
+  kind: "points" | "forgotten" | "empty";
+  label: string;
+} {
   if (spiel.eigenerTipp && spiel.ergebnis) {
     const result = calculatePunkte(
       {
@@ -73,7 +77,7 @@ function getTippStatus(
 }
 
 export function TippCard({ tipprundeId, spiel }: TippCardProps) {
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<TippMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const center = getSpielCenter(spiel);
   const tippStatus = getTippStatus(spiel);
@@ -99,11 +103,14 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
     setIsSubmitting(false);
 
     if (!response.ok) {
-      setMessage(payload?.error?.message ?? "Tipp konnte nicht gespeichert werden.");
+      setMessage({
+        kind: "error",
+        text: payload?.error?.message ?? "Tipp konnte nicht gespeichert werden.",
+      });
       return;
     }
 
-    setMessage("Gespeichert.");
+    setMessage({ kind: "success", text: "Tipp gespeichert." });
   }
 
   return (
@@ -198,6 +205,7 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
         <button
           type="submit"
           disabled={!spiel.istTippbar || isSubmitting}
+          aria-busy={isSubmitting}
           aria-label="Tipp speichern"
         >
           <Save aria-hidden="true" size={17} />
@@ -205,7 +213,7 @@ export function TippCard({ tipprundeId, spiel }: TippCardProps) {
         </button>
       </form>
 
-      {message ? <p role="status">{message}</p> : null}
+      {message ? <Feedback kind={message.kind}>{message.text}</Feedback> : null}
     </article>
   );
 }

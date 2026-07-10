@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { TipprundeAdminOverview } from "@/components/admin/tipprunde-admin-overview";
-import { MobileShell } from "@/components/pwa/mobile-shell";
+import { AppShell } from "@/components/pwa/mobile-shell";
 import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
 import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -109,10 +109,10 @@ export default async function TipprundeAdminPage({
       : await loadUserTipprunden(tipprundeId);
 
   return (
-    <MobileShell activeTipprundeId={tipprundeId} tipprunden={tipprunden}>
+    <AppShell activeTipprundeId={tipprundeId} tipprunden={tipprunden}>
       <main>
         <TipprundeAdminOverview tipprundeId={tipprundeId} tipprundeName={tipprundeName} />
       </main>
-    </MobileShell>
+    </AppShell>
   );
 }

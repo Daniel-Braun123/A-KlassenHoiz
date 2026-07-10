@@ -1,4 +1,5 @@
 import type { DerivedRanglisteEintrag } from "@/lib/scoring/derive-ranglisten";
+import { EmptyState } from "@/components/ui/primitives";
 
 type RanglisteTableProps = {
   title: string;
@@ -14,7 +15,9 @@ export function RanglisteTable({ title, entries }: RanglisteTableProps) {
     <section className="rangliste-section" aria-labelledby={`${title}-heading`}>
       <h1 id={`${title}-heading`}>{title}</h1>
       {entries.length === 0 ? (
-        <p>Noch keine Punkte vorhanden.</p>
+        <EmptyState title="Noch keine Punkte">
+          <p>Sobald Ergebnisse gewertet sind, erscheint hier die Rangliste.</p>
+        </EmptyState>
       ) : (
         <div className="rangliste-table-wrap">
           <table className="rangliste-table">

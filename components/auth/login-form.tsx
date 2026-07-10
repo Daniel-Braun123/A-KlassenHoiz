@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Feedback } from "@/components/ui/primitives";
 
 export function LoginForm() {
   const router = useRouter();
@@ -42,10 +43,10 @@ export function LoginForm() {
         Passwort
         <input name="password" type="password" autoComplete="current-password" required />
       </label>
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
         {isSubmitting ? "Anmelden..." : "Anmelden"}
       </button>
-      {message ? <p role="alert">{message}</p> : null}
+      {message ? <Feedback kind="error">{message}</Feedback> : null}
     </form>
   );
 }

@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Feedback } from "@/components/ui/primitives";
+
+type FormMessage = { kind: "success" | "error"; text: string };
 
 export function RegisterForm() {
   const router = useRouter();
-  const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<FormMessage | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -31,12 +34,18 @@ export function RegisterForm() {
     setIsSubmitting(false);
 
     if (error) {
-      setMessage("Registrierung fehlgeschlagen. Bitte prüfe deine Angaben.");
+      setMessage({
+        kind: "error",
+        text: "Registrierung fehlgeschlagen. Bitte prüfe deine Angaben.",
+      });
       return;
     }
 
     if (!data.session) {
-      setMessage("Registrierung erstellt. Bitte prüfe deine E-Mail zur Bestätigung.");
+      setMessage({
+        kind: "success",
+        text: "Registrierung erstellt. Bitte prüfe deine E-Mail zur Bestätigung.",
+      });
       return;
     }
 
@@ -58,10 +67,10 @@ export function RegisterForm() {
         Passwort
         <input name="password" type="password" autoComplete="new-password" required minLength={8} />
       </label>
-      <button type="submit" disabled={isSubmitting}>
+      <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
         {isSubmitting ? "Konto erstellen..." : "Konto erstellen"}
       </button>
-      {message ? <p role="alert">{message}</p> : null}
+      {message ? <Feedback kind={message.kind}>{message.text}</Feedback> : null}
     </form>
   );
 }

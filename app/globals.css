@@ -1,32 +1,45 @@
 :root {
   color-scheme: dark;
-  --color-page: #020617;
-  --color-surface: #0f172a;
-  --color-surface-strong: #111827;
-  --color-ink: #f8fafc;
-  --color-muted: #a7b3c7;
-  --color-brand: #f8fafc;
-  --color-brand-strong: #ffffff;
-  --color-field: #111827;
-  --color-line: #334155;
-  --color-green: #22c55e;
-  --color-green-soft: #082f1d;
-  --color-lime: #84cc16;
-  --color-sky: #38bdf8;
-  --color-warning: #fbbf24;
-  --color-warning-soft: #3b2a05;
-  --color-danger: #f87171;
-  --color-danger-soft: #3f1118;
-  --color-action: #22c55e;
-  --color-action-hover: #16a34a;
-  --color-on-action: #02130b;
-  --color-topbar: rgba(2, 6, 23, 0.9);
-  --color-mobile-nav: rgba(15, 23, 42, 0.96);
-  --color-focus: rgba(132, 204, 22, 0.72);
-  --shadow-card: 0 18px 42px rgba(0, 0, 0, 0.34);
-  --shadow-soft: 0 10px 26px rgba(0, 0, 0, 0.24);
+  --color-page: oklch(0.16 0.025 255);
+  --color-surface: oklch(0.205 0.028 255);
+  --color-surface-strong: oklch(0.245 0.03 255);
+  --color-ink: oklch(0.97 0.006 255);
+  --color-muted: oklch(0.76 0.025 255);
+  --color-brand: oklch(0.97 0.006 255);
+  --color-brand-strong: oklch(1 0 0);
+  --color-field: oklch(0.19 0.027 255);
+  --color-line: oklch(0.35 0.03 255);
+  --color-green: oklch(0.75 0.18 151);
+  --color-green-soft: oklch(0.25 0.065 151);
+  --color-lime: oklch(0.82 0.18 125);
+  --color-sky: oklch(0.76 0.13 224);
+  --color-info-soft: oklch(0.25 0.055 232);
+  --color-warning: oklch(0.82 0.15 82);
+  --color-warning-soft: oklch(0.26 0.055 75);
+  --color-danger: oklch(0.73 0.17 25);
+  --color-danger-soft: oklch(0.25 0.065 25);
+  --color-action: oklch(0.75 0.18 151);
+  --color-action-hover: oklch(0.7 0.17 151);
+  --color-on-action: oklch(0.15 0.035 151);
+  --color-topbar: oklch(0.16 0.025 255 / 0.9);
+  --color-mobile-nav: oklch(0.205 0.028 255 / 0.94);
+  --color-focus: oklch(0.82 0.18 125 / 0.72);
+  --shadow-card: 0 1px 2px oklch(0.05 0.02 255 / 0.34);
+  --shadow-soft: 0 1px 2px oklch(0.05 0.02 255 / 0.22);
   --radius: 8px;
   --content: 1120px;
+  --content-reading: 760px;
+  --sidebar-rail: 72px;
+  --sidebar-wide: 248px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
   font-family:
     Inter,
     ui-sans-serif,
@@ -41,31 +54,32 @@
 
 html[data-theme="light"] {
   color-scheme: light;
-  --color-page: #f4f8f6;
-  --color-surface: #ffffff;
-  --color-surface-strong: #eef7f1;
-  --color-ink: #071923;
-  --color-muted: #536471;
-  --color-brand: #0b2a3a;
-  --color-brand-strong: #08212f;
-  --color-field: #f8fafc;
-  --color-line: #d8e3df;
-  --color-green: #0f766e;
-  --color-green-soft: #d9f7ed;
-  --color-lime: #84cc16;
-  --color-sky: #0284c7;
-  --color-warning: #b45309;
-  --color-warning-soft: #fef3c7;
-  --color-danger: #b91c1c;
-  --color-danger-soft: #fee2e2;
-  --color-action: #0b2a3a;
-  --color-action-hover: #08212f;
-  --color-on-action: #ffffff;
-  --color-topbar: rgba(244, 248, 246, 0.96);
-  --color-mobile-nav: rgba(255, 255, 255, 0.98);
-  --color-focus: rgba(132, 204, 22, 0.55);
-  --shadow-card: 0 14px 36px rgba(7, 25, 35, 0.08);
-  --shadow-soft: 0 8px 22px rgba(7, 25, 35, 0.06);
+  --color-page: oklch(0.975 0.005 160);
+  --color-surface: oklch(1 0 0);
+  --color-surface-strong: oklch(0.95 0.012 160);
+  --color-ink: oklch(0.22 0.03 248);
+  --color-muted: oklch(0.46 0.025 248);
+  --color-brand: oklch(0.22 0.03 248);
+  --color-brand-strong: oklch(0.17 0.035 248);
+  --color-field: oklch(0.99 0.003 160);
+  --color-line: oklch(0.86 0.015 160);
+  --color-green: oklch(0.48 0.13 158);
+  --color-green-soft: oklch(0.93 0.045 158);
+  --color-lime: oklch(0.66 0.16 125);
+  --color-sky: oklch(0.48 0.13 232);
+  --color-info-soft: oklch(0.94 0.035 232);
+  --color-warning: oklch(0.52 0.13 67);
+  --color-warning-soft: oklch(0.95 0.06 82);
+  --color-danger: oklch(0.5 0.18 25);
+  --color-danger-soft: oklch(0.94 0.045 25);
+  --color-action: oklch(0.34 0.075 245);
+  --color-action-hover: oklch(0.28 0.07 245);
+  --color-on-action: oklch(1 0 0);
+  --color-topbar: oklch(0.975 0.005 160 / 0.9);
+  --color-mobile-nav: oklch(1 0 0 / 0.94);
+  --color-focus: oklch(0.66 0.16 125 / 0.62);
+  --shadow-card: 0 1px 2px oklch(0.22 0.03 248 / 0.12);
+  --shadow-soft: 0 1px 2px oklch(0.22 0.03 248 / 0.08);
 }
 
 * {
@@ -1888,5 +1902,1341 @@ input::placeholder {
   *::after {
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+/* Mobile-first product redesign */
+
+html {
+  text-size-adjust: 100%;
+}
+
+body {
+  color: var(--color-ink);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+body:has(.app-shell) > .global-topbar {
+  display: none;
+}
+
+main {
+  min-height: calc(100dvh - 64px);
+  padding: var(--space-5) var(--space-4) var(--space-7);
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-ink);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: 2rem;
+  line-height: 1.12;
+}
+
+h2 {
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+p {
+  max-width: 70ch;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-2);
+  color: var(--color-green);
+  font-size: 0.875rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+button,
+.button-link,
+.secondary-button {
+  min-height: 44px;
+  border-radius: var(--radius);
+  padding: 10px 15px;
+  font-weight: 750;
+  transition:
+    transform 120ms var(--ease-out),
+    background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    opacity 180ms var(--ease-out);
+}
+
+button:hover,
+.button-link:hover {
+  box-shadow: none;
+}
+
+button:active:not(:disabled),
+.button-link:active {
+  transform: scale(0.975);
+}
+
+.button-link.secondary,
+.secondary-button,
+.theme-toggle button,
+.ergebnis-spiel-trigger {
+  border: 1px solid var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-brand);
+  box-shadow: none;
+}
+
+.danger-button,
+.danger-card button {
+  border-color: color-mix(in oklch, var(--color-danger) 38%, var(--color-line));
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+button:disabled,
+.button-link[aria-disabled="true"] {
+  opacity: 0.5;
+  transform: none;
+}
+
+input,
+select {
+  min-height: 46px;
+  border-radius: var(--radius);
+  background-color: var(--color-field);
+  color: var(--color-ink);
+  transition:
+    background-color 180ms var(--ease-out),
+    border-color 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out);
+}
+
+input::placeholder {
+  color: color-mix(in oklch, var(--color-muted) 88%, var(--color-ink));
+  opacity: 1;
+}
+
+input:disabled,
+select:disabled {
+  color: var(--color-muted);
+  opacity: 0.72;
+}
+
+button:focus-visible,
+.button-link:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="option"]:focus-visible,
+[role="radio"]:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Global chrome outside an active Tipprunde */
+
+.global-topbar {
+  min-height: 64px;
+  border-bottom-color: color-mix(in oklch, var(--color-line) 78%, transparent);
+  padding: 8px max(16px, env(safe-area-inset-left));
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.global-home-link {
+  display: inline-flex;
+  width: auto;
+  height: 46px;
+  gap: 10px;
+  border: 0;
+  background: transparent;
+  padding: 5px;
+  font-weight: 800;
+}
+
+.global-profile-link,
+.app-mobile-home,
+.app-mobile-profile {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  color: var(--color-brand);
+  text-decoration: none;
+}
+
+.global-home-link:hover,
+.global-profile-link:hover {
+  border-color: var(--color-line);
+  background: var(--color-surface-strong);
+  color: var(--color-brand);
+  box-shadow: none;
+}
+
+.global-tipprunde-title {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.app-brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius);
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+/* Responsive app shell */
+
+.app-shell {
+  min-height: 100dvh;
+  padding-bottom: calc(68px + env(safe-area-inset-bottom));
+}
+
+.app-shell-main,
+.mobile-shell-content {
+  min-width: 0;
+}
+
+.app-mobile-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: grid;
+  min-height: calc(60px + env(safe-area-inset-top));
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  gap: var(--space-3);
+  align-items: end;
+  border-bottom: 1px solid color-mix(in oklch, var(--color-line) 76%, transparent);
+  background: var(--color-topbar);
+  padding: calc(8px + env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) 8px
+    max(14px, env(safe-area-inset-left));
+  backdrop-filter: blur(18px) saturate(140%);
+}
+
+.app-mobile-header > strong {
+  min-width: 0;
+  overflow: hidden;
+  align-self: center;
+  color: var(--color-ink);
+  font-size: 0.98rem;
+  font-weight: 800;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-sidebar,
+.app-navigation {
+  display: none;
+}
+
+.app-mobile-navigation {
+  min-height: calc(68px + env(safe-area-inset-bottom));
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  border-top-color: color-mix(in oklch, var(--color-line) 78%, transparent);
+  background: var(--color-mobile-nav);
+  padding: 0 max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom)
+    max(4px, env(safe-area-inset-left));
+  box-shadow: 0 -1px 2px color-mix(in oklch, var(--color-page) 42%, transparent);
+  backdrop-filter: blur(20px) saturate(150%);
+}
+
+.app-mobile-navigation a {
+  position: relative;
+  min-height: 68px;
+  gap: 5px;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.app-mobile-navigation a::before {
+  position: absolute;
+  top: 5px;
+  width: 28px;
+  height: 3px;
+  border-radius: 999px;
+  background: transparent;
+  content: "";
+}
+
+.app-mobile-navigation a.is-active,
+.app-mobile-navigation a[aria-current="page"] {
+  background: transparent;
+  color: var(--color-green);
+}
+
+.app-mobile-navigation a.is-active::before,
+.app-mobile-navigation a[aria-current="page"]::before {
+  background: var(--color-green);
+}
+
+.app-mobile-navigation a:hover,
+.app-mobile-navigation a:focus-visible {
+  background: color-mix(in oklch, var(--color-green-soft) 58%, transparent);
+}
+
+.app-shell .offline-message {
+  border-bottom: 1px solid color-mix(in oklch, var(--color-warning) 28%, transparent);
+}
+
+/* Shared page structure */
+
+.tipprunden-page,
+.profile-page,
+.tipps-page,
+.rangliste-section,
+.ergebnisse-page,
+.admin-panel {
+  width: min(100%, var(--content));
+}
+
+.tipps-page,
+.rangliste-section,
+.ergebnisse-page {
+  max-width: 900px;
+}
+
+.home-header,
+.admin-page-header {
+  margin-bottom: var(--space-5);
+}
+
+.page-header > div:first-child {
+  min-width: 0;
+}
+
+.page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.home-header {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+.home-header p:last-child {
+  margin-top: var(--space-2);
+}
+
+.home-actions {
+  grid-column: auto;
+  justify-content: flex-start;
+}
+
+.tipprunden-list {
+  gap: var(--space-2);
+}
+
+.tipprunde-card {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  border-color: var(--color-line);
+  padding: var(--space-4);
+  box-shadow: none;
+}
+
+.tipprunde-card > div:first-child {
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 3px var(--space-3);
+  align-items: center;
+}
+
+.tipprunde-card .card-icon {
+  grid-row: 1 / span 2;
+}
+
+.tipprunde-card h2,
+.tipprunde-card p {
+  grid-column: 2;
+}
+
+.tipprunde-card p {
+  border-radius: 999px;
+  background: var(--color-surface-strong);
+  color: var(--color-muted);
+  padding: 3px 8px;
+  font-size: 0.78rem;
+}
+
+.tipprunde-card-actions {
+  width: 100%;
+}
+
+.tipprunde-card-actions .button-link {
+  flex: 1 1 130px;
+}
+
+.card-icon,
+.empty-state-icon,
+.admin-card-icon,
+.setting-icon {
+  border-radius: var(--radius);
+  background: var(--color-info-soft);
+  color: var(--color-sky);
+}
+
+.empty-state {
+  max-width: 620px;
+  gap: var(--space-3);
+  border-style: dashed;
+  padding: var(--space-5);
+  box-shadow: none;
+}
+
+.empty-state h2,
+.empty-state p {
+  margin: 0;
+}
+
+.empty-state-copy,
+.empty-state-actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.empty-state-actions {
+  justify-items: start;
+}
+
+.logged-out-panel {
+  max-width: 620px;
+  min-height: calc(100dvh - 112px);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.logged-out-panel h1 {
+  max-width: 16ch;
+  font-size: 2.5rem;
+}
+
+.logged-out-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--color-ink);
+  font-weight: 850;
+}
+
+.auth-page,
+.create-tipprunde-page {
+  min-height: calc(100dvh - 64px);
+  align-content: center;
+}
+
+.auth-panel,
+.create-tipprunde-card {
+  border-color: var(--color-line);
+  border-radius: var(--radius);
+  padding: clamp(22px, 5vw, 36px);
+  box-shadow: var(--shadow-card);
+}
+
+.auth-panel {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.auth-panel form,
+.create-tipprunde-card form {
+  gap: var(--space-4);
+}
+
+.auth-panel > p {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.auth-panel a:not(.button-link) {
+  color: var(--color-green);
+  font-weight: 750;
+}
+
+/* Profile and theme preferences */
+
+.profile-page {
+  max-width: 840px;
+}
+
+.profile-details {
+  border-color: var(--color-line);
+  box-shadow: none;
+}
+
+.profile-details div {
+  gap: var(--space-2);
+}
+
+.profile-details span {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
+.theme-setting {
+  gap: var(--space-4);
+}
+
+.theme-setting-copy {
+  display: flex !important;
+  padding: 0 !important;
+}
+
+.theme-setting-copy .setting-icon {
+  display: inline-grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+}
+
+.theme-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface-strong);
+  padding: 3px;
+}
+
+.theme-toggle button {
+  min-height: 42px;
+  gap: 6px;
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-muted);
+  padding: 8px;
+  font-size: 0.82rem;
+}
+
+.theme-toggle button.is-active {
+  border-color: var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-brand);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Mobile-first Tipp flow */
+
+.tipps-page {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.spieltag-select {
+  position: sticky;
+  top: calc(60px + env(safe-area-inset-top));
+  z-index: 18;
+  margin: -8px 0 var(--space-1);
+  background: color-mix(in oklch, var(--color-page) 90%, transparent);
+  padding: 8px 0;
+  backdrop-filter: blur(14px) saturate(130%);
+}
+
+.spieltag-select select {
+  min-height: 46px;
+  border-color: var(--color-line);
+  font-weight: 750;
+}
+
+.tipp-list {
+  gap: var(--space-2);
+  margin-top: 0;
+}
+
+.tipp-card {
+  gap: var(--space-3);
+  border-color: var(--color-line);
+  padding: var(--space-3);
+  box-shadow: none;
+}
+
+.tipp-matchup {
+  grid-template-columns: minmax(0, 1fr) minmax(72px, 88px) minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.tipp-team {
+  grid-template-columns: minmax(0, 1fr) 40px;
+  gap: 6px;
+}
+
+.tipp-team-away {
+  grid-template-columns: 40px minmax(0, 1fr);
+}
+
+.tipp-team-name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.74rem;
+  line-height: 1.15;
+  text-overflow: clip;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.tipp-team-logo,
+.tipp-team-logo img,
+.tipp-team-logo .fallback-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.tipp-center {
+  min-height: 40px;
+  border-color: var(--color-line);
+  background: var(--color-surface-strong);
+}
+
+.tipp-center.has-score {
+  background: var(--color-green-soft);
+  color: var(--color-green);
+}
+
+.tipp-center.is-live {
+  border-color: color-mix(in oklch, var(--color-danger) 28%, var(--color-line));
+}
+
+.compact-tipp-form {
+  display: grid;
+  grid-template-columns: minmax(68px, 1fr) 48px auto 48px 44px;
+  grid-template-rows: 20px 28px;
+  gap: 0 7px;
+  align-items: center;
+}
+
+.compact-tipp-form .tipp-form-label {
+  grid-column: 1;
+  grid-row: 1;
+  order: initial;
+  font-size: 0.68rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.compact-tipp-form .tipp-status-badge {
+  grid-column: 1;
+  grid-row: 2;
+  order: initial;
+  justify-self: start;
+}
+
+.compact-tipp-form label:first-of-type {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  order: initial;
+}
+
+.compact-tipp-form .tipp-separator {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  order: initial;
+}
+
+.compact-tipp-form label:last-of-type {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+  order: initial;
+}
+
+.compact-tipp-form button {
+  grid-column: 5;
+  grid-row: 1 / span 2;
+  order: initial;
+  width: 44px;
+  min-height: 48px;
+  padding: 8px;
+}
+
+.compact-tipp-form input {
+  min-height: 48px;
+  padding: 7px;
+}
+
+.tipp-status-badge {
+  min-height: 24px;
+  border-radius: 6px;
+  padding: 3px 7px;
+  font-size: 0.68rem;
+}
+
+.tipp-card > [role="status"],
+.feedback {
+  width: 100%;
+  margin: 0;
+  border-radius: var(--radius);
+  background: var(--color-info-soft);
+  color: var(--color-sky);
+  padding: 9px 11px;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.feedback.is-success {
+  background: var(--color-green-soft);
+  color: var(--color-green);
+}
+
+.feedback.is-error {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+/* Rankings and results */
+
+.rangliste-section,
+.ergebnisse-page {
+  gap: var(--space-5);
+}
+
+.rangliste-table-wrap {
+  border-color: var(--color-line);
+  box-shadow: none;
+}
+
+.rangliste-table th,
+.rangliste-table td {
+  padding: 13px 9px;
+}
+
+.rangliste-table th {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  letter-spacing: 0;
+}
+
+.rangliste-table tbody tr:nth-child(-n + 3) td:first-child {
+  color: var(--color-green);
+}
+
+.rangliste-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.ergebnisse-spieltag {
+  gap: var(--space-3);
+}
+
+.ergebnisse-spieltag h2 {
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-line);
+}
+
+.ergebnisse-spiele {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+}
+
+.ergebnis-row {
+  border: 0;
+  border-bottom: 1px solid var(--color-line);
+  border-radius: 0;
+  background: transparent;
+  padding: var(--space-3);
+  box-shadow: none;
+}
+
+.ergebnis-row:last-child {
+  border-bottom: 0;
+}
+
+/* Admin workspaces */
+
+.admin-panel {
+  max-width: 1180px;
+}
+
+.admin-page-header {
+  max-width: 720px;
+}
+
+.admin-actions {
+  gap: var(--space-3);
+}
+
+.admin-action-card,
+.summary-tile,
+.create-tipprunde-card,
+.ergebnis-result-card {
+  border-color: var(--color-line);
+  box-shadow: none;
+}
+
+.admin-action-card {
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+
+.admin-action-card h2,
+.admin-action-card p {
+  margin: 0;
+}
+
+.primary-card {
+  border-color: color-mix(in oklch, var(--color-green) 35%, var(--color-line));
+  background: color-mix(in oklch, var(--color-green-soft) 45%, var(--color-surface));
+}
+
+.primary-card .admin-card-icon {
+  background: var(--color-green-soft);
+  color: var(--color-green);
+}
+
+.danger-card {
+  border-color: color-mix(in oklch, var(--color-danger) 34%, var(--color-line));
+  background: color-mix(in oklch, var(--color-danger-soft) 35%, var(--color-surface));
+}
+
+.danger-card .admin-card-icon {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.admin-danger-zone {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
+  padding-top: var(--space-5);
+}
+
+.admin-danger-zone > header {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.admin-danger-zone > header h2,
+.admin-danger-zone > header p {
+  margin: 0;
+}
+
+.admin-danger-actions {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.tipprunde-admin-actions .admin-danger-actions > * {
+  grid-column: auto;
+  grid-row: auto;
+  width: auto;
+  max-width: none;
+}
+
+.spielplan-summary {
+  gap: var(--space-2);
+}
+
+.summary-tile {
+  min-height: 76px;
+  padding: var(--space-3);
+}
+
+.summary-tile span {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.spielplan-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  gap: var(--space-1);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+  background: color-mix(in oklch, var(--color-page) 88%, transparent);
+  padding: 4px;
+  backdrop-filter: blur(14px) saturate(130%);
+}
+
+.spielplan-tabs button,
+.spieltag-picker button {
+  border-color: transparent;
+  background: transparent;
+  color: var(--color-muted);
+}
+
+.spielplan-tabs button.is-active,
+.spieltag-picker button.is-active {
+  border-color: var(--color-line);
+  background: var(--color-surface);
+  color: var(--color-brand);
+  box-shadow: var(--shadow-soft);
+}
+
+.spielplan-workspace {
+  gap: var(--space-3);
+}
+
+.workspace-main,
+.workspace-side {
+  border-color: var(--color-line);
+}
+
+.verein-row,
+.spiel-row,
+.offenes-ergebnis-item {
+  box-shadow: none;
+}
+
+.admin-toast {
+  border: 0;
+  background: var(--color-green-soft);
+  color: var(--color-green);
+}
+
+.link-box {
+  border-color: var(--color-line);
+  background: var(--color-surface-strong);
+}
+
+.qr-panel {
+  border-top-color: var(--color-line);
+}
+
+.ergebnis-spiel-listbox {
+  border-color: var(--color-line);
+  box-shadow: 0 8px 24px color-mix(in oklch, var(--color-page) 55%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:hover:not(:disabled),
+  .button-link:hover {
+    background-color: var(--color-action-hover);
+  }
+
+  .button-link.secondary:hover,
+  .secondary-button:hover,
+  .theme-toggle button:hover,
+  .ergebnis-spiel-trigger:hover {
+    border-color: color-mix(in oklch, var(--color-green) 36%, var(--color-line));
+    background: var(--color-surface-strong);
+    color: var(--color-brand);
+  }
+
+  .global-profile-link:hover,
+  .app-mobile-home:hover,
+  .app-mobile-profile:hover {
+    background: var(--color-surface-strong);
+  }
+}
+
+@media (min-width: 48rem) {
+  .app-shell {
+    display: grid;
+    min-height: 100dvh;
+    grid-template-columns: var(--sidebar-rail) minmax(0, 1fr);
+    padding-bottom: 0;
+  }
+
+  .app-mobile-header,
+  .app-mobile-navigation {
+    display: none;
+  }
+
+  .app-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 35;
+    display: flex;
+    width: var(--sidebar-rail);
+    height: 100dvh;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+    border-right: 1px solid var(--color-line);
+    background: var(--color-mobile-nav);
+    padding: var(--space-3) var(--space-2);
+    backdrop-filter: blur(20px) saturate(140%);
+  }
+
+  .app-sidebar-brand,
+  .app-sidebar-profile {
+    display: flex;
+    align-items: center;
+    color: var(--color-brand);
+    text-decoration: none;
+  }
+
+  .app-sidebar-label,
+  .app-sidebar-context {
+    display: none;
+  }
+
+  .app-navigation {
+    position: static;
+    display: flex;
+    width: 100%;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-2);
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .app-navigation a {
+    position: relative;
+    display: flex;
+    width: 48px;
+    min-height: 48px;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .app-navigation a > span {
+    position: absolute;
+    left: calc(100% + 12px);
+    z-index: 80;
+    width: max-content;
+    max-width: 180px;
+    border: 1px solid var(--color-line);
+    border-radius: 6px;
+    background: var(--color-surface);
+    color: var(--color-ink);
+    padding: 6px 8px;
+    box-shadow: var(--shadow-soft);
+    font-size: 0.78rem;
+    font-weight: 700;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-4px);
+    transition:
+      opacity 125ms var(--ease-out),
+      transform 125ms var(--ease-out);
+  }
+
+  .app-navigation a:hover > span,
+  .app-navigation a:focus-visible > span {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .app-navigation a.is-active,
+  .app-navigation a[aria-current="page"] {
+    background: var(--color-green-soft);
+    color: var(--color-green);
+  }
+
+  .app-sidebar-profile {
+    width: 48px;
+    height: 48px;
+    justify-content: center;
+    border-radius: var(--radius);
+    color: var(--color-muted);
+  }
+
+  .app-shell-main {
+    grid-column: 2;
+    min-height: 100dvh;
+  }
+
+  .app-shell-main main {
+    min-height: 100dvh;
+    padding: var(--space-6);
+  }
+
+  .spieltag-select {
+    top: 0;
+  }
+
+  .home-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .home-actions {
+    justify-content: flex-end;
+  }
+
+  .tipprunde-card {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+
+  .tipprunde-card-actions {
+    width: auto;
+  }
+
+  .tipprunde-card-actions .button-link {
+    flex: 0 0 auto;
+  }
+
+  .profile-settings {
+    margin-top: var(--space-3);
+  }
+
+  .theme-setting {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.8fr);
+    align-items: center;
+  }
+
+  .tipprunde-admin-actions {
+    grid-template-columns: minmax(0, 1.2fr) minmax(300px, 0.8fr);
+  }
+
+  .admin-danger-actions {
+    grid-template-columns: minmax(240px, 0.7fr) minmax(320px, 1.3fr);
+    align-items: start;
+  }
+}
+
+@media (min-width: 64rem) {
+  h1 {
+    font-size: 2.25rem;
+  }
+
+  .tipp-card {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: var(--space-5);
+    align-items: center;
+    padding: var(--space-4);
+  }
+
+  .tipp-team-name {
+    display: block;
+    overflow: visible;
+    font-size: 0.86rem;
+    text-overflow: unset;
+    white-space: normal;
+  }
+
+  .tipp-team-logo,
+  .tipp-team-logo img,
+  .tipp-team-logo .fallback-logo {
+    width: 44px;
+    height: 44px;
+  }
+
+  .tipp-team {
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
+  .tipp-team-away {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .compact-tipp-form {
+    grid-template-columns: minmax(88px, 1fr) 52px auto 52px 46px;
+  }
+
+  .rangliste-section,
+  .ergebnisse-page {
+    max-width: 860px;
+  }
+
+  .rangliste-table th,
+  .rangliste-table td {
+    padding: 14px 16px;
+  }
+
+  .ergebnis-row {
+    grid-template-columns: minmax(0, 1fr) 90px auto;
+    padding: var(--space-4);
+  }
+
+  .spielplan-workspace {
+    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 0.72fr);
+  }
+}
+
+@media (min-width: 75rem) {
+  .app-shell {
+    grid-template-columns: var(--sidebar-wide) minmax(0, 1fr);
+  }
+
+  .app-sidebar {
+    width: var(--sidebar-wide);
+    align-items: stretch;
+    gap: var(--space-5);
+    padding: var(--space-4);
+  }
+
+  .app-sidebar-brand {
+    gap: var(--space-3);
+    padding: 2px;
+    font-weight: 850;
+  }
+
+  .app-sidebar-label,
+  .app-sidebar-context {
+    display: grid;
+  }
+
+  .app-sidebar-context {
+    gap: var(--space-2);
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+    padding: var(--space-4) 0;
+  }
+
+  .app-sidebar-context > span {
+    color: var(--color-muted);
+    font-size: 0.74rem;
+    font-weight: 700;
+  }
+
+  .app-sidebar-context > strong {
+    overflow: hidden;
+    color: var(--color-ink);
+    font-size: 0.9rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-sidebar-context .tipprunden-switcher {
+    gap: 6px;
+    font-size: 0.74rem;
+  }
+
+  .app-sidebar-context select {
+    min-height: 42px;
+  }
+
+  .app-navigation a {
+    width: 100%;
+    min-height: 46px;
+    flex-basis: 46px;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding: 0 12px;
+  }
+
+  .app-navigation a > span {
+    position: static;
+    display: inline;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    padding: 0;
+    box-shadow: none;
+    font-size: 0.88rem;
+    opacity: 1;
+    transform: none;
+  }
+
+  .app-sidebar-profile {
+    width: 100%;
+    height: 46px;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding: 0 12px;
+  }
+
+  .app-shell-main main {
+    padding: var(--space-7);
+  }
+}
+
+@media (max-width: 22rem) {
+  main {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .app-mobile-header {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 8px;
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .tipp-card {
+    padding: 10px;
+  }
+
+  .tipp-matchup {
+    grid-template-columns: minmax(0, 1fr) 68px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .tipp-team,
+  .tipp-team-away {
+    gap: 3px;
+  }
+
+  .compact-tipp-form {
+    grid-template-columns: minmax(62px, 1fr) 44px auto 44px 42px;
+    gap: 0 5px;
+  }
+
+  .compact-tipp-form button {
+    width: 42px;
+  }
+
+  .theme-toggle button {
+    font-size: 0.76rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  button:active:not(:disabled),
+  .button-link:active {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .global-topbar,
+  .app-mobile-header,
+  .app-mobile-navigation,
+  .app-sidebar,
+  .spieltag-select,
+  .spielplan-tabs {
+    background: var(--color-page);
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root,
+  html[data-theme="light"] {
+    --color-line: currentColor;
+  }
+
+  .global-topbar,
+  .app-mobile-header,
+  .app-mobile-navigation,
+  .app-sidebar {
+    background: var(--color-page);
+    backdrop-filter: none;
   }
 }

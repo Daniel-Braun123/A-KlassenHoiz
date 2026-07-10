@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, BadgeCheck, LogOut, Mail, Shield, UserRound } from "lucide-react";
 
 import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { PageHeader } from "@/components/ui/primitives";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
 
 export default async function ProfilPage() {
@@ -9,16 +10,16 @@ export default async function ProfilPage() {
 
   return (
     <main className="profile-page">
-      <header className="home-header">
-        <div>
-          <p className="eyebrow">Profil</p>
-          <h1>Meine Daten</h1>
-        </div>
-        <Link className="button-link secondary" href="/">
-          <ArrowLeft aria-hidden="true" size={18} />
-          Zurück
-        </Link>
-      </header>
+      <PageHeader
+        eyebrow="Profil"
+        title="Meine Daten"
+        actions={
+          <Link className="button-link secondary" href="/">
+            <ArrowLeft aria-hidden="true" size={18} />
+            Zurück
+          </Link>
+        }
+      />
 
       <section className="profile-details" aria-label="Profildaten">
         <div>

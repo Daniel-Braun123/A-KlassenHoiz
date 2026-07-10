@@ -1,6 +1,7 @@
 import { TippCard } from "@/components/tipps/tipp-card";
 import { SpieltagSelect, type SpieltagOption } from "@/components/tipps/spieltag-select";
 import type { SpieltagTippView } from "@/lib/domain/spieltag-view-service";
+import { EmptyState } from "@/components/ui/primitives";
 
 type SpieltagTippsProps = {
   view: SpieltagTippView;
@@ -19,10 +20,9 @@ export function SpieltagTipps({ view, spieltage }: SpieltagTippsProps) {
         spieltage={spieltage}
       />
       {view.spiele.length === 0 ? (
-        <div className="empty-state">
-          <h2>Noch keine Spiele</h2>
+        <EmptyState title="Noch keine Spiele">
           <p>Für diesen Spieltag sind noch keine Spiele gepflegt.</p>
-        </div>
+        </EmptyState>
       ) : (
         <div className="tipp-list">
           {view.spiele.map((spiel) => (

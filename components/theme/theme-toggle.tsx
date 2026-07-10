@@ -1,57 +1,109 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
-import { useState } from "react";
+import { Laptop, Moon, Sun } from "lucide-react";
+import { useEffect, useSyncExternalStore } from "react";
 
 const THEME_STORAGE_KEY = "a-klassenhoiz.theme";
-type ThemeMode = "dark" | "light";
+const THEME_CHANGE_EVENT = "a-klassenhoiz.theme-change";
+export type ThemePreference = "system" | "dark" | "light";
+type ResolvedTheme = Exclude<ThemePreference, "system">;
 
-function applyTheme(theme: ThemeMode) {
-  document.documentElement.dataset.theme = theme;
-  document.documentElement.style.colorScheme = theme;
+const THEME_OPTIONS: Array<{
+  value: ThemePreference;
+  label: string;
+  icon: typeof Laptop;
+}> = [
+  { value: "system", label: "System", icon: Laptop },
+  { value: "light", label: "Hell", icon: Sun },
+  { value: "dark", label: "Dunkel", icon: Moon },
+];
+
+function readThemePreference(): ThemePreference {
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+  return stored === "light" || stored === "dark" || stored === "system" ? stored : "system";
 }
 
-function readTheme(): ThemeMode {
-  if (typeof window === "undefined") {
-    return "dark";
+function resolveTheme(preference: ThemePreference): ResolvedTheme {
+  if (preference !== "system") {
+    return preference;
   }
 
-  return window.localStorage.getItem(THEME_STORAGE_KEY) === "light" ? "light" : "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function applyTheme(preference: ThemePreference) {
+  const resolved = resolveTheme(preference);
+  document.documentElement.dataset.themePreference = preference;
+  document.documentElement.dataset.theme = resolved;
+  document.documentElement.style.colorScheme = resolved;
+}
+
+function subscribeToTheme(callback: () => void) {
+  window.addEventListener("storage", callback);
+  window.addEventListener(THEME_CHANGE_EVENT, callback);
+  return () => {
+    window.removeEventListener("storage", callback);
+    window.removeEventListener(THEME_CHANGE_EVENT, callback);
+  };
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>(() => readTheme());
+  const preference = useSyncExternalStore(
+    subscribeToTheme,
+    readThemePreference,
+    () => "system" as const,
+  );
 
-  function handleToggle() {
-    const nextTheme = theme === "dark" ? "light" : "dark";
-    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
-    applyTheme(nextTheme);
-    setTheme(nextTheme);
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
+    const syncSystemTheme = () => {
+      if (readThemePreference() === "system") {
+        applyTheme("system");
+      }
+    };
+
+    applyTheme(preference);
+    media.addEventListener("change", syncSystemTheme);
+    return () => media.removeEventListener("change", syncSystemTheme);
+  }, [preference]);
+
+  function handleChange(nextPreference: ThemePreference) {
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextPreference);
+    applyTheme(nextPreference);
+    window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT));
   }
-
-  const isLight = theme === "light";
 
   return (
     <div className="theme-setting">
-      <div>
-        <span>
-          {isLight ? <Sun aria-hidden="true" size={16} /> : <Moon aria-hidden="true" size={16} />}
+      <div className="theme-setting-copy">
+        <span className="setting-icon">
+          <Sun aria-hidden="true" size={18} />
         </span>
         <div>
           <strong>Darstellung</strong>
-          <p>{isLight ? "Light Mode ist aktiv." : "Dark Mode ist aktiv."}</p>
+          <p>Farbschema für diese App</p>
         </div>
       </div>
-      <button
-        type="button"
-        className="theme-toggle"
-        role="switch"
-        aria-checked={isLight}
-        aria-label="Light Mode umschalten"
-        onClick={handleToggle}
-      >
-        <span aria-hidden="true">{isLight ? "Light" : "Dark"}</span>
-      </button>
+      <div className="theme-toggle" role="radiogroup" aria-label="Darstellung">
+        {THEME_OPTIONS.map((option) => {
+          const Icon = option.icon;
+          const isSelected = preference === option.value;
+
+          return (
+            <button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={isSelected}
+              className={isSelected ? "is-active" : undefined}
+              onClick={() => handleChange(option.value)}
+            >
+              <Icon aria-hidden="true" size={16} />
+              {option.label}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

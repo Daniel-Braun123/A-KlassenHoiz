@@ -18,25 +18,35 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#020617",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f6f8f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#07111f" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="de" data-theme="dark" suppressHydrationWarning>
+    <html lang="de" data-theme="light" data-theme-preference="system" suppressHydrationWarning>
       <body>
         <Script id="theme-initializer" strategy="beforeInteractive">
           {`
             try {
-              var theme = window.localStorage.getItem("a-klassenhoiz.theme");
-              var nextTheme = theme === "light" ? "light" : "dark";
-              document.documentElement.dataset.theme = nextTheme;
-              document.documentElement.style.colorScheme = nextTheme;
+              var storedTheme = window.localStorage.getItem("a-klassenhoiz.theme");
+              var preference = storedTheme === "light" || storedTheme === "dark" || storedTheme === "system"
+                ? storedTheme
+                : "system";
+              var resolvedTheme = preference === "system"
+                ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+                : preference;
+              document.documentElement.dataset.themePreference = preference;
+              document.documentElement.dataset.theme = resolvedTheme;
+              document.documentElement.style.colorScheme = resolvedTheme;
             } catch (_) {
-              document.documentElement.dataset.theme = "dark";
-              document.documentElement.style.colorScheme = "dark";
+              document.documentElement.dataset.themePreference = "system";
+              document.documentElement.dataset.theme = "light";
+              document.documentElement.style.colorScheme = "light";
             }
           `}
         </Script>

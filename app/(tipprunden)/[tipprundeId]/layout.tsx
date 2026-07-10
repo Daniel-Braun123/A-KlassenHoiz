@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 
-import { MobileShell } from "@/components/pwa/mobile-shell";
+import { AppShell } from "@/components/pwa/mobile-shell";
 import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
 import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -87,8 +87,8 @@ export default async function TipprundeLayout({
   }
 
   return (
-    <MobileShell activeTipprundeId={tipprundeId} tipprunden={tipprunden}>
+    <AppShell activeTipprundeId={tipprundeId} tipprunden={tipprunden}>
       {children}
-    </MobileShell>
+    </AppShell>
   );
 }

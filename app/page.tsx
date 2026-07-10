@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Plus, ShieldCheck, Trophy } from "lucide-react";
 
 import { ActiveTipprundeLink } from "@/components/tipps/tipprunden-switcher";
+import { EmptyState, PageHeader } from "@/components/ui/primitives";
 import { requireAuthenticatedProfile } from "@/lib/auth/guards";
 import type { ActiveTipprundeOption } from "@/lib/domain/active-tipprunde";
 import { readActiveTipprundeMembership } from "@/lib/domain/active-tipprunde-memberships";
@@ -89,32 +90,35 @@ function HomeOverview({
 }) {
   return (
     <main className="tipprunden-page">
-      <header className="home-header">
-        <div>
-          <p className="eyebrow">A-KlassenHoiz</p>
-          <h1>Meine Tipprunden</h1>
-          {profile ? <p>Servus {profile.anzeigename}, hier ist deine Übersicht.</p> : null}
-        </div>
-        <nav className="home-actions" aria-label="Home Aktionen">
-          <Link className="button-link" href="/admin/tipprunden/neu">
-            <Plus aria-hidden="true" size={18} />
-            Tipprunde erstellen
-          </Link>
-        </nav>
-      </header>
+      <PageHeader
+        eyebrow="A-KlassenHoiz"
+        title="Meine Tipprunden"
+        description={
+          profile ? `Servus ${profile.anzeigename}, hier ist deine Übersicht.` : undefined
+        }
+        actions={
+          <nav className="home-actions" aria-label="Home Aktionen">
+            <Link className="button-link" href="/admin/tipprunden/neu">
+              <Plus aria-hidden="true" size={18} />
+              Tipprunde erstellen
+            </Link>
+          </nav>
+        }
+      />
 
       {tipprunden.length === 0 ? (
-        <section className="empty-state">
-          <div className="empty-state-icon">
-            <Trophy aria-hidden="true" size={28} />
-          </div>
-          <h2>Noch keine Tipprunde</h2>
+        <EmptyState
+          icon={<Trophy aria-hidden="true" size={24} />}
+          title="Noch keine Tipprunde"
+          actions={
+            <Link className="button-link secondary" href="/login">
+              <ArrowRight aria-hidden="true" size={18} />
+              Per Einladungslink beitreten
+            </Link>
+          }
+        >
           <p>Du bist noch in keiner Tipprunde.</p>
-          <Link className="button-link secondary" href="/login">
-            <ArrowRight aria-hidden="true" size={18} />
-            Per Einladungslink beitreten
-          </Link>
-        </section>
+        </EmptyState>
       ) : (
         <section className="tipprunden-list" aria-label="Tipprunden">
           {tipprunden.map((tipprunde) => {
@@ -159,9 +163,14 @@ function LoggedOutHome() {
   return (
     <main className="tipprunden-page">
       <section className="logged-out-panel">
-        <p className="eyebrow">A-KlassenHoiz</p>
-        <h1>Lokale Fußballtipps, sauber organisiert.</h1>
-        <p>Private Tippspiel-App für lokale Fußballspiele.</p>
+        <div className="logged-out-brand">
+          <span className="app-brand-mark">
+            <Trophy aria-hidden="true" size={20} />
+          </span>
+          <strong>A-KlassenHoiz</strong>
+        </div>
+        <h1>Deine Tipprunde. Ein klarer Spieltag.</h1>
+        <p>Tipps abgeben, Ergebnisse verfolgen und gemeinsam um die Spitze spielen.</p>
         <Link className="button-link" href="/login">
           <ArrowRight aria-hidden="true" size={18} />
           Anmelden
